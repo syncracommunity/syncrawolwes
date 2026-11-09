@@ -206,7 +206,7 @@
         <div class="splash-title" id="splashTitle">
             <span>O</span><span>N</span><span>U</span><span>R</span> &nbsp; <span>B</span><span>A</span><span>R</span><span>I</span><span>Ş</span>
         </div>
-        <div class="splash-subtitle">SYNCRA CLOUD SYSTEM</div>
+        <div class="splash-subtitle">ONUR SORGU SYSTEM</div>
         <div class="splash-skip">Atlamak için tıkla</div>
     </div>
 
@@ -218,7 +218,7 @@
         <div class="auth-box">
             <div class="auth-logo"><i class="ph ph-shield-check"></i></div>
             <h2 id="authTitle">Tekrar Hoş Geldin</h2>
-            <p id="authDesc">Syncra Cloud'a erişmek için giriş yap.</p>
+            <p id="authDesc">Panel'e erişmek için giriş yap.</p>
             
             <div class="auth-error" id="authError"></div>
 
@@ -248,7 +248,7 @@
 
     <!-- SOL MENÜ -->
     <div class="sidebar" id="sidebar" style="display:none;">
-        <div class="brand"><i class="ph ph-shield-check" style="color:var(--primary)"></i> SYNCRA<span>PANEL</span></div>
+        <div class="brand"><i class="ph ph-shield-check" style="color:var(--primary)"></i> SORGU<span>PANELİ</span></div>
         <div class="nav-section">
             <div class="nav-title">Genel</div>
             <div class="nav-item active" data-page="dashboard"><i class="ph ph-squares-four"></i> Dashboard</div>
@@ -263,7 +263,7 @@
             <div class="nav-item" data-page="eokul"><i class="ph ph-graduation-cap"></i> E-Okul Sorgu</div>
             <div class="nav-item" data-page="adres"><i class="ph ph-map-pin"></i> Adres Sorgu</div>
         </div>
-        <div class="dev-credit">Developed by <b>onur_baris65</b></div>
+        <div class="dev-credit">Developed by <b>onur</b></div>
     </div>
 
     <!-- ANA İÇERİK -->
@@ -287,8 +287,8 @@
             <!-- DASHBOARD EKRANI -->
             <div id="dashboardView">
                 <div class="welcome-panel" style="margin-bottom: 25px;">
-                    <h2>Hoş Geldin, <span id="welcomeName">Operatör</span>.</h2>
-                    <p>Syncra Cloud sistemine başarıyla bağlandın. Sol taraftaki menüden yapmak istediğin sorgu türünü seçerek başlayabilirsin.</p>
+                    <h2>Hoş Geldin, <span id="welcomeName">Kullanıcı</span>.</h2>
+                    <p>Sorgu Paneli sistemine başarıyla bağlandın. Sol taraftaki menüden yapmak istediğin sorgu türünü seçerek başlayabilirsin.</p>
                 </div>
 
                 <div class="dashboard-grid" style="margin-bottom: 25px;">
@@ -479,11 +479,11 @@
             isLoginMode = !isLoginMode;
             authError.style.display = 'none';
             if (isLoginMode) {
-                authTitle.textContent = 'Tekrar Hoş Geldin'; authDesc.textContent = 'Syncra Cloud\'a erişmek için giriş yap.';
+                authTitle.textContent = 'Tekrar Hoş Geldin'; authDesc.textContent = 'Panel\'e erişmek için giriş yap.';
                 btnText.textContent = 'Giriş Yap'; authSwitch.innerHTML = 'Hesabın yok mu? <span>Hemen Kayıt Ol</span>';
                 usernameGroup.style.display = 'none';
             } else {
-                authTitle.textContent = 'Aramıza Katıl'; authDesc.textContent = 'Syncra Cloud hesabını oluştur.';
+                authTitle.textContent = 'Aramıza Katıl'; authDesc.textContent = 'Syncra hesabını oluştur.';
                 btnText.textContent = 'Kayıt Ol'; authSwitch.innerHTML = 'Zaten hesabın var mı? <span>Giriş Yap</span>';
                 usernameGroup.style.display = 'block';
             }
