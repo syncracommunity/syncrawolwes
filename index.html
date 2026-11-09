@@ -6,11 +6,11 @@
 <title>Syncra | Sorgu Paneli</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@700&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-<!-- Supabase Kütüphanesi (unpkg'den yüklüyoruz) -->
+<!-- Supabase Kütüphanesi -->
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
 <style>
@@ -42,39 +42,62 @@
 
     /* --- SPLASH EKRANI --- */
     #splash-screen { position: fixed; inset: 0; background: #05070a; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.8s ease, visibility 0.8s ease; cursor: pointer; }
-    .splash-title { font-family: 'Space Grotesk', sans-serif; font-size: 4rem; font-weight: 700; color: #fff; letter-spacing: 2px; display: flex; gap: 5px; position: relative; text-shadow: 0 0 20px rgba(59,130,246,0.5); }
-    .splash-title span { display: inline-block; animation: dropIn 0.5s ease forwards; opacity: 0; transform: translateY(-50px); }
-    @keyframes dropIn { to { opacity: 1; transform: translateY(0); } }
-    .splash-title.crack span { animation: crackAnim 0.6s ease forwards; }
-    @keyframes crackAnim { 0% { transform: scale(1); opacity: 1; filter: blur(0); } 50% { transform: scale(1.1); opacity: 1; filter: blur(1px); color: #3b82f6;} 100% { transform: translate(var(--x), var(--y)) rotate(var(--r)); opacity: 0; filter: blur(5px); } }
-    .splash-subtitle { margin-top: 20px; font-size: 1.2rem; color: var(--primary); opacity: 0; animation: fadeIn 1s ease forwards; animation-delay: 1s; font-family: 'Space Grotesk', sans-serif; letter-spacing: 4px; }
-    @keyframes fadeIn { to { opacity: 1; } }
+    .splash-content { display: flex; flex-direction: column; align-items: center; gap: 15px; animation: slideUpSplash 0.8s ease forwards; }
+    @keyframes slideUpSplash { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .splash-cmd-logo { font-size: 60px; color: var(--primary); text-shadow: 0 0 30px rgba(59,130,246,0.6); margin-bottom: 10px; }
+    .splash-title { font-family: 'Space Grotesk', sans-serif; font-size: 2.5rem; font-weight: 700; color: #fff; letter-spacing: 1px; text-align: center; }
+    .splash-title span { color: var(--primary); }
+    .splash-subtitle { font-family: 'Fira Code', monospace; font-size: 1rem; color: #475569; letter-spacing: 2px; margin-top: 5px; }
+    .splash-subtitle .cursor { display: inline-block; width: 8px; height: 15px; background: var(--primary); animation: blink 1s step-end infinite; vertical-align: middle; margin-left: 5px; }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    
     .splash-skip { position: absolute; bottom: 30px; font-size: 12px; color: #475569; animation: pulse 2s infinite; }
-    @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
-    /* --- AUTH EKRANI --- */
-    #auth-screen { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: none; justify-content: center; align-items: center; overflow: hidden; padding: 20px; }
-    .auth-bg-blob { position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, rgba(59,130,246,0.18) 0%, rgba(11,14,20,0) 70%); border-radius: 50%; filter: blur(60px); animation: float 10s infinite ease-in-out alternate; }
-    .auth-bg-blob:nth-child(2) { width: 400px; height: 400px; background: radial-gradient(circle, rgba(139,92,246,0.15) 0%, rgba(11,14,20,0) 70%); right: 10%; bottom: 10%; animation-duration: 12s; animation-delay: -5s; }
-    @keyframes float { 0% { transform: translate(0, 0); } 100% { transform: translate(50px, 50px); } }
-    .auth-box { position: relative; z-index: 2; background: rgba(23, 28, 38, 0.6); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.08); border-top: 1px solid rgba(255,255,255,0.15); padding: 45px 40px; border-radius: 24px; width: 100%; max-width: 440px; box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.7); text-align: center; animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
-    @keyframes slideUp { from { opacity: 0; transform: translateY(40px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
-    .auth-logo { width: 60px; height: 60px; background: linear-gradient(135deg, var(--primary), #6366f1); border-radius: 16px; display: grid; place-items: center; margin: 0 auto 20px; font-size: 30px; color: #fff; box-shadow: 0 10px 25px -5px rgba(59,130,246,0.5); }
-    .auth-box h2 { font-size: 26px; font-weight: 700; margin-bottom: 8px; color: #fff; font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.5px; }
-    .auth-box p { font-size: 13px; color: var(--muted); margin-bottom: 30px; }
-    .auth-input-group { position: relative; margin-bottom: 15px; text-align: left; }
-    .auth-input-group i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 18px; transition: 0.3s; }
-    .auth-input { width: 100%; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 15px 15px 15px 50px; border-radius: 12px; font-size: 14px; outline: none; transition: 0.3s; }
-    .auth-input:focus { border-color: var(--primary); background: rgba(59,130,246,0.05); box-shadow: 0 0 0 4px rgba(59,130,246,0.15); }
+    /* --- AUTH EKRANI (SPLIT LAYOUT) --- */
+    #auth-screen { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: none; flex-direction: row; }
+    
+    /* Sol Taraf: Arka Plan / Görsel */
+    .auth-left { flex: 1; position: relative; background: linear-gradient(135deg, #05070a 0%, #0b101d 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; border-right: 1px solid var(--border); }
+    
+    /* Siber Ağ Çizgileri Arka Planı */
+    .cyber-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px); background-size: 40px 40px; perspective: 500px; transform: rotateX(60deg) translateY(-200px) scale(2); opacity: 0.6; }
+    .cyber-glow { position: absolute; width: 400px; height: 400px; background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%); border-radius: 50%; filter: blur(40px); animation: float 8s infinite alternate; }
+    @keyframes float { 0% { transform: translate(0, 0); } 100% { transform: translate(30px, -30px); } }
+    
+    .auth-brand { position: relative; z-index: 2; text-align: center; }
+    .auth-brand-logo { font-size: 80px; color: var(--primary); text-shadow: 0 0 40px rgba(59,130,246,0.4); margin-bottom: 20px; }
+    .auth-brand h1 { font-family: 'Space Grotesk', sans-serif; font-size: 3rem; font-weight: 700; color: #fff; letter-spacing: -1px; margin-bottom: 10px;}
+    .auth-brand p { font-family: 'Fira Code', monospace; color: var(--primary); font-size: 1rem; letter-spacing: 2px; }
+
+    /* Sağ Taraf: Form */
+    .auth-right { width: 500px; background: var(--panel); display: flex; flex-direction: column; justify-content: center; padding: 50px; position: relative; z-index: 10; box-shadow: -10px 0 50px rgba(0,0,0,0.5); }
+    
+    .auth-right h2 { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+    .auth-right > p { font-size: 14px; color: var(--muted); margin-bottom: 35px; }
+    
+    .auth-input-group { position: relative; margin-bottom: 20px; }
+    .auth-input-group label { display: block; font-size: 12px; color: var(--muted); font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .auth-input-group i { position: absolute; left: 16px; top: 42px; color: var(--muted); font-size: 18px; transition: 0.3s; }
+    .auth-input { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 15px 15px 15px 50px; border-radius: 10px; font-size: 14px; outline: none; transition: 0.3s; }
+    .auth-input:focus { border-color: var(--primary); background: var(--sidebar); box-shadow: 0 0 0 4px rgba(59,130,246,0.15); }
     .auth-input:focus + i { color: var(--primary); }
-    .auth-input::placeholder { color: #64748b; }
-    .auth-btn { width: 100%; background: linear-gradient(135deg, var(--primary), #6366f1); color: white; padding: 15px; border-radius: 12px; border: none; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.3s; margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 10px 20px -10px rgba(59,130,246,0.5); }
-    .auth-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 25px -10px rgba(59,130,246,0.6); }
-    .auth-btn:disabled { opacity: 0.7; cursor: wait; transform: none; }
-    .auth-error { color: var(--danger); background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); border-radius: 8px; font-size: 12px; padding: 10px; margin-bottom: 15px; display: none; text-align: center; }
-    .auth-switch { margin-top: 25px; font-size: 13px; color: var(--muted); cursor: pointer; user-select: none; }
-    .auth-switch span { color: var(--primary); font-weight: 600; transition: 0.2s; }
-    .auth-switch span:hover { color: #fff; }
+    
+    .auth-btn { width: 100%; background: var(--primary); color: white; padding: 16px; border-radius: 10px; border: none; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.3s; margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(59,130,246,0.3); }
+    .auth-btn:hover { background: var(--primary-hover); transform: translateY(-1px); }
+    .auth-btn:disabled { opacity: 0.7; cursor: wait; }
+    
+    .auth-error { color: var(--danger); background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); border-radius: 8px; font-size: 13px; padding: 12px; margin-bottom: 20px; display: none; text-align: center; }
+    
+    .auth-switch { margin-top: 30px; font-size: 14px; color: var(--muted); text-align: center; }
+    .auth-switch span { color: var(--primary); font-weight: 600; cursor: pointer; transition: 0.2s; }
+    .auth-switch span:hover { text-decoration: underline; }
+
+    /* --- TOAST BİLDİRİM --- */
+    #toast-container { position: fixed; top: 20px; right: 20px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; }
+    .toast { background: var(--panel); border: 1px solid var(--border); border-left: 4px solid var(--success); color: var(--text); padding: 15px 20px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 500; animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+    .toast i { color: var(--success); font-size: 20px; }
+    @keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
 
     /* --- PANEL CSS'LERİ --- */
     .sidebar { width: 260px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; overflow-y: auto; transition: transform 0.3s ease, background-color 0.3s; }
@@ -121,7 +144,7 @@
     .history-info h4 { font-size: 14px; color: var(--text); margin-bottom: 4px; }
     .history-info p { font-size: 12px; color: var(--muted); }
     .history-time { font-size: 11px; color: var(--muted); background: var(--panel); padding: 4px 8px; border-radius: 4px; }
-    .terminal { background: #05070a; border: 1px solid var(--border); border-radius: 8px; padding: 15px; font-family: 'Courier New', monospace; font-size: 12px; height: 200px; overflow-y: auto; color: #10b981; }
+    .terminal { background: #05070a; border: 1px solid var(--border); border-radius: 8px; padding: 15px; font-family: 'Fira Code', monospace; font-size: 12px; height: 200px; overflow-y: auto; color: #10b981; }
     .terminal-line { margin-bottom: 5px; }
     .terminal-line::before { content: '> '; color: #64748b; }
     .terminal-line.error { color: #ef4444; }
@@ -179,6 +202,10 @@
     @keyframes spin { 100% { transform: rotate(360deg); } }
 
     @media (max-width: 900px) {
+        .auth-screen { flex-direction: column; }
+        .auth-left { display: none; } /* Mobilde sol tarafı gizle, direk form gelsin */
+        .auth-right { width: 100%; border-radius: 0; }
+        
         .sidebar { position: fixed; left: 0; top: 0; height: 100vh; transform: translateX(-100%); box-shadow: 10px 0 30px rgba(0,0,0,0.1); }
         .sidebar.open { transform: translateX(0); }
         .menu-toggle { display: block; }
@@ -193,46 +220,61 @@
         .button-group button { width: 100%; }
         .topbar { padding: 0 15px; }
         th, td { padding: 12px 15px; }
-        .splash-title { font-size: 2.2rem; }
-        .auth-box { padding: 30px 25px; }
+        .splash-title { font-size: 1.8rem; }
     }
 </style>
 </head>
 <body>
+    <!-- Bildirim Kutusu -->
+    <div id="toast-container"></div>
+
     <canvas id="snow-canvas"></canvas>
 
     <!-- SPLASH EKRANI -->
     <div id="splash-screen" onclick="skipSplash()">
-        <div class="splash-title" id="splashTitle">
-            <span>O</span><span>N</span><span>U</span><span>R</span> &nbsp; <span>B</span><span>A</span><span>R</span><span>I</span><span>Ş</span>
+        <div class="splash-content">
+            <i class="ph ph-command-line splash-cmd-logo"></i>
+            <div class="splash-title">Developed by <span>Onur</span></div>
+            <div class="splash-subtitle">SYNCRA CLOUD SYSTEM <span class="cursor"></span></div>
         </div>
-        <div class="splash-subtitle">ONUR SORGU SYSTEM</div>
         <div class="splash-skip">Atlamak için tıkla</div>
     </div>
 
-    <!-- GELİŞMİŞ GİRİŞ EKRANI -->
+    <!-- GELİŞMİŞ GİRİŞ EKRANI (SPLIT LAYOUT) -->
     <div id="auth-screen">
-        <div class="auth-bg-blob"></div>
-        <div class="auth-bg-blob"></div>
+        <!-- Sol Taraf: Arka Plan ve Logo -->
+        <div class="auth-left">
+            <div class="cyber-grid"></div>
+            <div class="cyber-glow"></div>
+            <div class="auth-brand">
+                <i class="ph ph-shield-check auth-brand-logo"></i>
+                <h1>Syncra Cloud</h1>
+                <p>[ SYSTEM ONLINE ]</p>
+            </div>
+        </div>
 
-        <div class="auth-box">
-            <div class="auth-logo"><i class="ph ph-shield-check"></i></div>
+        <!-- Sağ Taraf: Form -->
+        <div class="auth-right">
             <h2 id="authTitle">Tekrar Hoş Geldin</h2>
-            <p id="authDesc">Panel'e erişmek için giriş yap.</p>
+            <p id="authDesc">Syncra Cloud'a erişmek için giriş yap.</p>
             
             <div class="auth-error" id="authError"></div>
 
             <div class="auth-input-group">
-                <input type="email" id="authEmail" class="auth-input" placeholder="E-posta Adresin">
+                <label>E-posta Adresi</label>
+                <input type="email" id="authEmail" class="auth-input" placeholder="ornek@mail.com">
                 <i class="ph ph-envelope-simple"></i>
             </div>
+            
             <div class="auth-input-group">
-                <input type="password" id="authPassword" class="auth-input" placeholder="Şifren">
+                <label>Şifre</label>
+                <input type="password" id="authPassword" class="auth-input" placeholder="••••••••">
                 <i class="ph ph-lock-key"></i>
             </div>
             
             <div class="auth-input-group" id="usernameGroup" style="display:none;">
-                <input type="text" id="authUsername" class="auth-input" placeholder="Kullanıcı Adın (Takma Ad)">
+                <label>Kullanıcı Adı</label>
+                <input type="text" id="authUsername" class="auth-input" placeholder="Takma adınız">
                 <i class="ph ph-user"></i>
             </div>
 
@@ -248,7 +290,7 @@
 
     <!-- SOL MENÜ -->
     <div class="sidebar" id="sidebar" style="display:none;">
-        <div class="brand"><i class="ph ph-shield-check" style="color:var(--primary)"></i> SORGU<span>PANELİ</span></div>
+        <div class="brand"><i class="ph ph-shield-check" style="color:var(--primary)"></i> SYNCRA<span>PANEL</span></div>
         <div class="nav-section">
             <div class="nav-title">Genel</div>
             <div class="nav-item active" data-page="dashboard"><i class="ph ph-squares-four"></i> Dashboard</div>
@@ -263,7 +305,7 @@
             <div class="nav-item" data-page="eokul"><i class="ph ph-graduation-cap"></i> E-Okul Sorgu</div>
             <div class="nav-item" data-page="adres"><i class="ph ph-map-pin"></i> Adres Sorgu</div>
         </div>
-        <div class="dev-credit">Developed by <b>onur</b></div>
+        <div class="dev-credit">Developed by <b>onur_baris65</b></div>
     </div>
 
     <!-- ANA İÇERİK -->
@@ -287,8 +329,8 @@
             <!-- DASHBOARD EKRANI -->
             <div id="dashboardView">
                 <div class="welcome-panel" style="margin-bottom: 25px;">
-                    <h2>Hoş Geldin, <span id="welcomeName">Kullanıcı</span>.</h2>
-                    <p>Sorgu Paneli sistemine başarıyla bağlandın. Sol taraftaki menüden yapmak istediğin sorgu türünü seçerek başlayabilirsin.</p>
+                    <h2>Hoş Geldin, <span id="welcomeName">Operatör</span>.</h2>
+                    <p>Syncra Cloud sistemine başarıyla bağlandın. Sol taraftaki menüden yapmak istediğin sorgu türünü seçerek başlayabilirsin.</p>
                 </div>
 
                 <div class="dashboard-grid" style="margin-bottom: 25px;">
@@ -389,8 +431,7 @@
     </div>
 
     <script>
-        // --- SUPABASE İSTEMCİSİNİ BAŞLAT (Kodun en başında) ---
-        // Bu, butona bastığında kütüphanenin hazır olmasını garantiler.
+        // --- SUPABASE İSTEMCİSİNİ BAŞLAT ---
         let supabaseClient = null;
         try {
             if (window.supabase) {
@@ -406,6 +447,26 @@
             console.error("Supabase başlatma hatası:", e);
         }
 
+        // --- TOAST BİLDİRİM FONKSİYONU ---
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            if (type === 'error') {
+                toast.style.borderLeftColor = 'var(--danger)';
+                toast.querySelector('i')?.remove();
+                toast.innerHTML = `<i class="ph ph-warning-circle" style="color:var(--danger)"></i> ${message}`;
+            } else {
+                toast.innerHTML = `<i class="ph ph-check-circle"></i> ${message}`;
+            }
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(50px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
         // --- SES MOTORU ---
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx;
@@ -419,20 +480,11 @@
 
         // --- SPLASH MANTIĞI ---
         const splashScreen = document.getElementById('splash-screen');
-        const splashTitle = document.getElementById('splashTitle');
-        const titleSpans = splashTitle.querySelectorAll('span');
         let splashTimeout1, splashTimeout2;
-
-        titleSpans.forEach(span => {
-            span.style.setProperty('--x', (Math.random() * 200 - 100) + 'px');
-            span.style.setProperty('--y', (Math.random() * 200 - 100) + 'px');
-            span.style.setProperty('--r', (Math.random() * 180 - 90) + 'deg');
-            span.style.animationDelay = (Math.random() * 0.5) + 's';
-        });
 
         function startSplash() {
             splashTimeout1 = setTimeout(() => { 
-                splashTitle.classList.add('crack'); 
+                // Eski kırılma efektini iptal ettik, sadece bekleme süresi
                 playCrackSound(); 
             }, 1500);
             
@@ -479,11 +531,11 @@
             isLoginMode = !isLoginMode;
             authError.style.display = 'none';
             if (isLoginMode) {
-                authTitle.textContent = 'Tekrar Hoş Geldin'; authDesc.textContent = 'Panel\'e erişmek için giriş yap.';
+                authTitle.textContent = 'Tekrar Hoş Geldin'; authDesc.textContent = 'Syncra Cloud\'a erişmek için giriş yap.';
                 btnText.textContent = 'Giriş Yap'; authSwitch.innerHTML = 'Hesabın yok mu? <span>Hemen Kayıt Ol</span>';
                 usernameGroup.style.display = 'none';
             } else {
-                authTitle.textContent = 'Aramıza Katıl'; authDesc.textContent = 'Syncra hesabını oluştur.';
+                authTitle.textContent = 'Aramıza Katıl'; authDesc.textContent = 'Syncra Cloud hesabını oluştur.';
                 btnText.textContent = 'Kayıt Ol'; authSwitch.innerHTML = 'Zaten hesabın var mı? <span>Giriş Yap</span>';
                 usernameGroup.style.display = 'block';
             }
@@ -524,7 +576,14 @@
                         ]);
                         if (profileError) console.error("Profil oluşturma hatası:", profileError);
                     }
-                    loginSuccess(username);
+                    
+                    // KAYIT BAŞARILI BİLDİRİMİ
+                    showToast('Kayıt başarıyla tamamlandı! Panele yönlendiriliyorsunuz...', 'success');
+                    
+                    // 3 saniye bekle ve sonra giriş yap
+                    setTimeout(() => {
+                        loginSuccess(username);
+                    }, 3000);
                 }
             } catch (error) {
                 showAuthError(error.message);
