@@ -1,7 +1,6 @@
 const axios = require('axios');
 
 module.exports = async (req, res) => {
-    // CORS İzinleri
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -17,29 +16,34 @@ module.exports = async (req, res) => {
         const response = await axios.get(`${API_BASE}/${endpoint}`, {
             params: params,
             timeout: 9000,
-            // Eğer API JSON yerine metin dönerse bunu da alabilelim
-            responseType: 'text', 
-            validateStatus: () => true // Hata kodu dönse bile axios çökmesin, biz yakalayalım
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            },
+            validateStatus: () => true // 400, 500 fırlatmasın, biz yakalayalım
         });
 
-        // Gelen cevap gerçekten JSON mu diye kontrol edelim
-        let responseData;
-        try {
-            responseData = JSON.parse(response.data);
-        } catch (parseError) {
-            // Eğer JSON değilse, ham metni frontend'e gönderelim
-            return res.status(response.status).json({ 
-                error: `API Geçersiz Cevap Döndürdü (Status: ${response.status})`, 
-                rawResponse: response.data.substring(0, 200) // İlk 200 karakteri göster
-            });
+        // API'den gelen cevap string (HTML veya hata metni) mi?
+        if (typeof response.data === 'string') {
+             // Eğer içinde "A server error" varsa anlamlı bir hata dön
+             if (response.data.includes('A server error')) {
+                 return res.status(200).json({ 
+                     error: `API Sunucu Hatası (Status: ${response.status}). API geçici olarak yanıt vermiyor.` 
+                 });
+             }
+             // Değilse ham veriyi dön (JSON parse edilemezse arayüz yakalar)
+             return res.status(200).json({ 
+                 error: `Geçersiz API Yanıtı (Status: ${response.status})`, 
+                 raw: response.data.substring(0, 100) 
+             });
         }
 
-        return res.status(response.status).json(responseData);
+        // Gelen veri zaten JSON objesi ise direkt dön
+        return res.status(200).json(response.data);
 
     } catch (error) {
         console.error(`[PROXY HATA] ${endpoint}:`, error.message);
-        return res.status(500).json({ 
-            error: `Proxy Hatası: ${error.message}` 
+        return res.status(200).json({ 
+            error: `Proxy Bağlantı Hatası: ${error.message}` 
         });
     }
 };
