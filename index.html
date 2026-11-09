@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Syncra | Sorgu Paneli</title>
+<title>Syncra | Cyber Intelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@700&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
@@ -13,277 +13,194 @@
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
 <style>
-    /* --- TEMA DEĞİŞKENLERİ (Deniz Mavisi Varsayılan) --- */
+    /* --- CYBERPUNK TEMA DEĞİŞKENLERİ --- */
     :root { 
-        --bg: #050a12; 
-        --sidebar: #0a121e; 
-        --panel: #0f1a2a; 
-        --panel-hover: #14243a;
-        --border: #1b2e47; 
-        --text: #e2e8f0; 
-        --muted: #7b8ea6; 
-        --primary: #0ea5e9; /* Deniz Mavisi */
-        --primary-hover: #0284c7;
-        --danger: #ef4444; 
-        --success: #10b981;
-        --warning: #f59e0b;
-    }
-
-    /* Kızıl Tema */
-    [data-theme="red"] {
-        --bg: #0c0505; --sidebar: #140808; --panel: #1a0b0b; --panel-hover: #241111;
-        --border: #361616; --text: #f0e2e2; --muted: #9e7e7e; --primary: #ef4444; --primary-hover: #dc2626;
-    }
-    /* Zümrüt Tema */
-    [data-theme="green"] {
-        --bg: #060b08; --sidebar: #0a120d; --panel: #0f1a13; --panel-hover: #14241b;
-        --border: #1a2e22; --text: #e2e8f0; --muted: #7b8e83; --primary: #22c55e; --primary-hover: #16a34a;
-    }
-    /* Aydınlık Tema */
-    [data-theme="light"] {
-        --bg: #f8fafc; --sidebar: #ffffff; --panel: #ffffff; --panel-hover: #f1f5f9;
-        --border: #e2e8f0; --text: #0f172a; --muted: #64748b; --primary: #0ea5e9; --primary-hover: #0284c7;
+        --bg: #030508; 
+        --sidebar: #080c14; 
+        --panel: #0d131f; 
+        --panel-hover: #131c2e;
+        --border: #1c2a45; 
+        --text: #f0f4f8; 
+        --muted: #6b7c99; 
+        --primary: #00f0ff; /* Neon Cyan */
+        --primary-glow: rgba(0, 240, 255, 0.2);
+        --secondary: #ff003c; /* Neon Red */
+        --success: #00ff88; 
+        --danger: #ff003c;
+        --warning: #ffcc00;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: var(--bg); border-radius: 10px; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; transition: 0.2s; }
-    [data-theme="light"] ::-webkit-scrollbar-thumb { background: #cbd5e1; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
-    * { scrollbar-width: thin; scrollbar-color: #334155 var(--bg); }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+    
+    body { background-color: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; height: 100vh; display: flex; overflow: hidden; }
+    
+    /* Arkaplan Grid Efekti */
+    .cyber-grid { position: fixed; inset: 0; background-image: linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px); background-size: 50px 50px; z-index: 0; pointer-events: none; }
 
-    body { background-color: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; height: 100vh; display: flex; overflow: hidden; position: relative; transition: background-color 0.3s, color 0.3s; }
-    #snow-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; opacity: 0.3; }
+    /* --- LOGIN EKRANI (3D KÜP ANIMASYONU) --- */
+    #auth-screen { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: none; justify-content: center; align-items: center; overflow: hidden; }
+    
+    .scene { position: absolute; width: 100%; height: 100%; perspective: 1000px; display: flex; justify-content: center; align-items: center; opacity: 0.4; z-index: 1; pointer-events: none;}
+    .cube { width: 200px; height: 200px; position: relative; transform-style: preserve-3d; animation: rotateCube 15s infinite linear; }
+    .face { position: absolute; width: 200px; height: 200px; border: 1px solid var(--primary); box-shadow: 0 0 20px var(--primary-glow) inset; }
+    .front { transform: translateZ(100px); }
+    .back { transform: rotateY(180deg) translateZ(100px); }
+    .right { transform: rotateY(90deg) translateZ(100px); }
+    .left { transform: rotateY(-90deg) translateZ(100px); }
+    .top { transform: rotateX(90deg) translateZ(100px); }
+    .bottom { transform: rotateX(-90deg) translateZ(100px); }
+    @keyframes rotateCube { 0% { transform: rotateX(0) rotateY(0); } 100% { transform: rotateX(360deg) rotateY(360deg); } }
 
-    /* --- YENİ NESİL AUTH EKRANI --- */
-    #auth-screen { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: none; flex-direction: row; }
+    .auth-box { position: relative; z-index: 10; background: rgba(8, 12, 20, 0.8); backdrop-filter: blur(20px); border: 1px solid var(--border); border-top: 2px solid var(--primary); padding: 50px 40px; border-radius: 20px; width: 100%; max-width: 420px; box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px var(--primary-glow); }
+    .auth-box h2 { font-family: 'Space Grotesk', sans-serif; font-size: 32px; font-weight: 700; margin-bottom: 5px; color: #fff; text-align: center;}
+    .auth-box p { font-size: 13px; color: var(--muted); margin-bottom: 30px; text-align: center;}
     
-    .auth-left { flex: 1.2; position: relative; background: linear-gradient(135deg, #050a12 0%, #0a1a2f 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; }
-    
-    /* Deniz Dalgası Animasyonu */
-    .wave { position: absolute; bottom: 0; left: 0; width: 200%; height: 100%; background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg"><path fill="%230ea5e9" fill-opacity="0.1" d="M0,160L48,176C96,192,192,224,288,213.3C384,203,480,149,576,138.7C672,128,768,160,864,186.7C960,213,1056,235,1152,224C1248,213,1344,171,1392,149.3L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>'); background-size: 50% 100%; animation: waveAnim 10s linear infinite; }
-    @keyframes waveAnim { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-    
-    .auth-brand { position: relative; z-index: 2; text-align: center; }
-    .auth-brand-logo { font-size: 80px; color: var(--primary); margin-bottom: 20px; filter: drop-shadow(0 0 20px rgba(14,165,233,0.5)); }
-    .auth-brand h1 { font-family: 'Space Grotesk', sans-serif; font-size: 3rem; font-weight: 700; color: #fff; margin-bottom: 10px;}
-    .auth-brand h1 span { color: var(--primary); }
-    .auth-brand p { font-family: 'Fira Code', monospace; color: var(--muted); font-size: 0.9rem; letter-spacing: 2px; }
-
-    .auth-right { width: 450px; background: rgba(10, 18, 30, 0.8); backdrop-filter: blur(20px); display: flex; flex-direction: column; justify-content: center; padding: 50px; border-left: 1px solid var(--border); z-index: 10; }
-    .auth-right h2 { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
-    .auth-right > p { font-size: 14px; color: var(--muted); margin-bottom: 30px; }
-    
-    .auth-input-group { position: relative; margin-bottom: 15px; }
+    .auth-input-group { position: relative; margin-bottom: 20px; }
     .auth-input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 18px; }
-    .auth-input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: var(--text); padding: 15px 15px 15px 45px; border-radius: 8px; font-size: 14px; outline: none; transition: 0.3s; }
-    .auth-input:focus { border-color: var(--primary); background: var(--sidebar); box-shadow: 0 0 0 4px rgba(14,165,233,0.1); }
+    .auth-input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: var(--text); padding: 15px 15px 15px 45px; border-radius: 10px; font-size: 14px; outline: none; transition: 0.3s; }
+    .auth-input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); }
     
-    .auth-btn { width: 100%; background: var(--primary); color: #fff; padding: 15px; border-radius: 8px; border: none; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.3s; margin-top: 15px; display: flex; justify-content: center; align-items: center; gap: 8px; }
-    .auth-btn:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 10px 20px -10px rgba(14,165,233,0.5); }
-    
-    .auth-switch { margin-top: 25px; font-size: 14px; color: var(--muted); text-align: center; }
+    .auth-btn { width: 100%; background: var(--primary); color: #000; padding: 15px; border-radius: 10px; border: none; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+    .auth-btn:hover { background: #fff; box-shadow: 0 0 20px var(--primary); }
+    .auth-switch { margin-top: 25px; font-size: 13px; color: var(--muted); text-align: center; }
     .auth-switch span { color: var(--primary); font-weight: 600; cursor: pointer; }
     .auth-switch span:hover { text-decoration: underline; }
-
-    /* --- TOAST BİLDİRİM --- */
-    #toast-container { position: fixed; top: 20px; right: 20px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; }
-    .toast { background: var(--panel); border: 1px solid var(--border); border-left: 4px solid var(--success); color: var(--text); padding: 15px 20px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 500; animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-    .toast i { color: var(--success); font-size: 20px; }
-    @keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
-
-    /* --- MODAL --- */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); z-index: 10000; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; }
-    .modal-overlay.show { display: flex; opacity: 1; }
-    .modal-box { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 30px; width: 100%; max-width: 500px; text-align: center; transform: scale(0.9); transition: transform 0.3s; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
-    .modal-overlay.show .modal-box { transform: scale(1); }
-    .modal-box h3 { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
-    .modal-box p { font-size: 14px; color: var(--muted); margin-bottom: 30px; }
-    .modal-actions { display: flex; gap: 12px; justify-content: center; }
-    .modal-btn { padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; border: none; transition: 0.2s; }
-    .btn-cancel { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
-    .btn-confirm { background: var(--primary); color: white; }
+    .auth-error { color: var(--danger); background: rgba(255,0,60,0.1); border: 1px solid var(--danger); padding: 10px; border-radius: 8px; margin-bottom: 20px; display: none; font-size: 13px; text-align: center;}
 
     /* --- PANEL CSS'LERİ --- */
-    .sidebar { width: 260px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; overflow-y: auto; }
-    .brand { padding: 20px; font-size: 22px; font-weight: 800; display: flex; align-items: center; gap: 10px; color: var(--text); border-bottom: 1px solid var(--border); letter-spacing: -1px;}
+    .sidebar { width: 270px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; overflow-y: auto; }
+    .brand { padding: 25px 20px; font-size: 24px; font-weight: 800; display: flex; align-items: center; gap: 10px; color: #fff; border-bottom: 1px solid var(--border); font-family: 'Space Grotesk', sans-serif; letter-spacing: -1px;}
+    .brand i { color: var(--primary); }
     .brand span { color: var(--primary); }
     
-    .side-profile { padding: 15px; margin: 15px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; display: flex; align-items: center; gap: 12px; }
-    .side-avatar { width: 40px; height: 40px; border-radius: 8px; background: rgba(14,165,233,0.1); color: var(--primary); display: grid; place-items: center; font-size: 20px; }
-    .side-info b { display: block; font-size: 14px; color: var(--text); }
-    .side-info small { display: block; font-size: 11px; color: var(--primary); margin-top: 2px;}
+    /* Profil Kartı */
+    .side-profile { padding: 20px; margin: 15px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; display: flex; flex-direction: column; gap: 12px; transition: 0.3s; }
+    .side-profile:hover { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); }
+    .profile-top { display: flex; align-items: center; gap: 15px; }
+    .side-avatar { width: 50px; height: 50px; border-radius: 10px; background: rgba(0, 240, 255, 0.1); border: 1px solid var(--primary); color: var(--primary); display: grid; place-items: center; font-size: 24px; overflow: hidden;}
+    .side-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .side-info b { display: block; font-size: 15px; color: #fff; }
+    
+    /* Rozetler */
+    .badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 5px; }
+    .badge-admin { background: rgba(255, 0, 60, 0.15); color: var(--danger); border: 1px solid rgba(255, 0, 60, 0.3); }
+    .badge-free { background: rgba(0, 255, 136, 0.15); color: var(--success); border: 1px solid rgba(0, 255, 136, 0.3); }
 
     .nav-section { padding: 0 15px 20px 15px; flex: 1; }
-    .nav-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 600; margin-bottom: 10px; padding-left: 10px; margin-top: 15px; }
+    .nav-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); font-weight: 700; margin-bottom: 10px; padding-left: 10px; margin-top: 20px; }
     
-    /* Gelişmiş Menü Kutuları */
-    .nav-item { padding: 12px 15px; color: var(--muted); cursor: pointer; font-size: 14px; font-weight: 500; border-radius: 10px; transition: 0.2s; display: flex; align-items: center; gap: 12px; margin-bottom: 5px; border: 1px solid transparent; }
-    .nav-item i { font-size: 18px; }
-    .nav-item:hover { background: var(--panel-hover); color: var(--text); border-color: var(--border); }
-    .nav-item.active { background: rgba(14, 165, 233, 0.1); color: var(--primary); border-color: rgba(14, 165, 233, 0.3); }
-    .dev-credit { padding: 20px; text-align: center; font-size: 12px; color: var(--muted); border-top: 1px solid var(--border); }
+    .nav-item { padding: 12px 15px; color: var(--muted); cursor: pointer; font-size: 14px; font-weight: 500; border-radius: 8px; transition: 0.2s; display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+    .nav-item i { font-size: 20px; }
+    .nav-item:hover { background: var(--panel-hover); color: #fff; }
+    .nav-item.active { background: rgba(0, 240, 255, 0.08); color: var(--primary); border-left: 3px solid var(--primary); border-radius: 0 8px 8px 0; margin-left: -15px; padding-left: 27px; }
+    .dev-credit { padding: 20px; text-align: center; font-size: 11px; color: var(--muted); border-top: 1px solid var(--border); }
 
-    .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; z-index: 1; background: var(--bg); }
-    .topbar { height: 70px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; background: var(--bg); position: sticky; top: 0; z-index: 50; }
-    .topbar-left { display: flex; align-items: center; gap: 15px; font-weight: 600; font-size: 16px; color: var(--text);}
+    .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; z-index: 1; }
+    .topbar { height: 75px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; background: rgba(8, 12, 20, 0.8); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 50; }
+    .topbar-left { display: flex; align-items: center; gap: 15px; font-weight: 600; font-size: 16px; color: #fff;}
     .topbar-right { display: flex; align-items: center; gap: 15px; color: var(--muted); font-size: 20px; }
     
-    .user-profile { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--text); background: var(--panel); padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border);}
-    .user-profile i { color: var(--primary); font-size: 16px; }
-    .logout-btn { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--danger); background: rgba(239, 68, 68, 0.1); padding: 6px 12px; border-radius: 20px; border: 1px solid rgba(239, 68, 68, 0.2); cursor: pointer; transition: 0.2s; }
-    .logout-btn:hover { background: rgba(239, 68, 68, 0.2); }
-    .menu-toggle { display: none; cursor: pointer; font-size: 24px; color: var(--text); }
+    .logout-btn { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--danger); background: rgba(255, 0, 60, 0.1); padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(255, 0, 60, 0.2); cursor: pointer; transition: 0.2s; }
+    .logout-btn:hover { background: var(--danger); color: #fff; }
 
     .content { padding: 30px; max-width: 1400px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 25px; }
     
-    .welcome-text { font-size: 24px; font-weight: 700; color: #fff; margin-bottom: 5px;}
+    /* İstatistik Kartları */
+    .welcome-text { font-size: 26px; font-weight: 700; color: #fff; margin-bottom: 5px; font-family: 'Space Grotesk', sans-serif;}
     .welcome-text span { color: var(--primary); }
-    .welcome-sub { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+    .welcome-sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
 
     .dashboard-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
-    .dash-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 15px; transition: transform 0.2s; }
-    .dash-card:hover { transform: translateY(-3px); border-color: var(--primary); }
+    .dash-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 25px; display: flex; flex-direction: column; gap: 15px; position: relative; overflow: hidden;}
+    .dash-card::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: var(--primary); opacity: 0.5; }
+    .dash-card:hover::after { opacity: 1; box-shadow: 0 0 10px var(--primary); }
     .dash-top { display: flex; justify-content: space-between; align-items: flex-start; }
-    .dash-top h3 { font-size: 28px; font-weight: 700; color: #fff; margin: 0; font-family: 'Space Grotesk', sans-serif;}
-    .dash-top .icon-box { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; font-size: 20px; background: rgba(14, 165, 233, 0.1); color: var(--primary); border: 1px solid rgba(14, 165, 233, 0.2);}
-    .dash-card p { font-size: 12px; color: var(--muted); margin: 0; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;}
-    
-    .panel-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 15px;}
-    .panel-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 5px;}
-    .panel-header h3 { font-size: 15px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 8px;}
+    .dash-top h3 { font-size: 32px; font-weight: 700; color: #fff; margin: 0; font-family: 'Space Grotesk', sans-serif;}
+    .dash-top .icon-box { width: 45px; height: 45px; border-radius: 10px; display: grid; place-items: center; font-size: 22px; background: rgba(0, 240, 255, 0.1); color: var(--primary); border: 1px solid var(--border);}
+    .dash-card p { font-size: 12px; color: var(--muted); margin: 0; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;}
+
+    /* Paneller */
+    .panel-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 25px; display: flex; flex-direction: column; gap: 20px;}
+    .panel-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px;}
+    .panel-header h3 { font-size: 16px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 10px;}
     .panel-header h3 i { color: var(--primary); }
 
-    .history-list { display: flex; flex-direction: column; gap: 8px; }
-    .history-item { background: var(--bg); border: 1px solid var(--border); padding: 12px 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; }
-    .history-item:hover { border-color: var(--primary); }
-    .history-info h4 { font-size: 13px; color: var(--text); margin-bottom: 4px; }
-    .history-info p { font-size: 11px; color: var(--muted); }
-    .history-time { font-size: 10px; color: var(--primary); background: rgba(14,165,233,0.1); padding: 3px 8px; border-radius: 4px; }
-    
-    .terminal { background: #03070c; border: 1px solid var(--border); border-radius: 8px; padding: 15px; font-family: 'Fira Code', monospace; font-size: 12px; height: 180px; overflow-y: auto; color: var(--primary); }
+    /* Terminal */
+    .terminal { background: #020408; border: 1px solid var(--border); border-radius: 8px; padding: 15px; font-family: 'Fira Code', monospace; font-size: 12px; height: 200px; overflow-y: auto; color: var(--success); }
     .terminal-line { margin-bottom: 5px; }
-    .terminal-line::before { content: '> '; color: #475569; }
-    .terminal-line.error { color: #ef4444; }
+    .terminal-line::before { content: '> '; color: var(--muted); }
+    .terminal-line.error { color: var(--danger); }
 
+    /* Sorgu Ekranı */
     .search-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 30px; }
-    .search-header { margin-bottom: 25px; }
-    .search-header h2 { font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 5px; }
-    .search-header p { font-size: 13px; color: var(--muted); }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
-    .form-group { display: flex; flex-direction: column; gap: 8px; position: relative; }
-    .form-group label { font-size: 12px; color: var(--muted); font-weight: 500; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; margin-top:20px;}
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-group label { font-size: 12px; color: var(--muted); font-weight: 600; }
     .input-wrapper { position: relative; display: flex; align-items: center; }
     .input-wrapper i { position: absolute; left: 15px; color: var(--muted); font-size: 18px; }
-    .input-wrapper input { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 14px 16px 14px 45px; border-radius: 10px; font-size: 14px; outline: none; transition: all 0.3s ease; }
-    .input-wrapper input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(14,165,233,0.15); }
-    .button-group { display: flex; justify-content: flex-end; gap: 15px; }
-    button { border: none; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-weight: 600; transition: 0.2s; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 15px rgba(14,165,233,0.3); }
-    .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
-    .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
-    .btn-share { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
-
-    .results-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-    .results-header { padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
-    .results-header h3 { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 5px;}
-    .results-header p { font-size: 12px; color: var(--muted); }
-    .download-group { display: flex; gap: 10px; }
-    .btn-download { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+    .input-wrapper input { width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: var(--text); padding: 14px 16px 14px 45px; border-radius: 8px; font-size: 14px; outline: none; transition: all 0.3s ease; }
+    .input-wrapper input:focus { border-color: var(--primary); box-shadow: 0 0 10px var(--primary-glow); }
     
-    .table-container { width: 100%; overflow-x: auto; max-height: 500px; overflow-y: auto; }
-    table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
-    th { padding: 15px 30px; font-size: 11px; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); font-weight: 600; background: var(--bg); position: sticky; top: 0; z-index: 2; cursor: pointer; }
-    th:hover { color: var(--primary); }
-    td { padding: 15px 30px; font-size: 13px; border-bottom: 1px solid var(--border); color: var(--text); }
+    .btn-primary { background: var(--primary); color: #000; padding: 12px 24px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; transition: 0.2s; }
+    .btn-primary:hover { box-shadow: 0 0 15px var(--primary); }
+    
+    /* Tablo */
+    .table-container { width: 100%; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; margin-top:15px; }
+    th { padding: 15px; font-size: 11px; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); font-weight: 700; background: var(--bg); }
+    td { padding: 15px; font-size: 13px; border-bottom: 1px solid var(--border); color: var(--text); }
     tr:hover td { background: var(--panel-hover); }
-    .empty-state { padding: 50px; text-align: center; color: var(--muted); font-size: 14px; }
 
-    /* --- ADMIN PANELİ VE AYARLAR CSS --- */
-    .admin-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-    .admin-table th, .admin-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 13px;}
-    .admin-table th { color: var(--muted); font-weight: 600; }
-
-    .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    /* Ayarlar & Admin */
+    .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
     .setting-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 25px; }
-    .setting-card h3 { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 15px; display: flex; align-items: center; gap: 8px;}
-    .theme-options { display: flex; gap: 10px; }
-    .theme-btn-opt { flex: 1; height: 50px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; display: flex; justify-content: center; align-items: center; color: white; font-weight: 600; transition: 0.2s;}
-    .theme-btn-opt:hover { transform: scale(1.05); }
-    .theme-btn-opt.active { border-color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.5); }
+    .setting-card h3 { font-size: 16px; color: #fff; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;}
     
-    /* Duyuru Modal */
-    .announcement-modal .modal-box { border-top: 5px solid var(--primary); text-align: left; }
-    .announcement-modal h3 { display: flex; align-items: center; gap: 10px; color: var(--primary);}
-    .announcement-content { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; line-height: 1.6; color: var(--text);}
+    .admin-table { width: 100%; border-collapse: collapse; }
+    .admin-table th, .admin-table td { padding: 12px; border-bottom: 1px solid var(--border); font-size: 13px;}
+    .admin-table th { color: var(--muted); text-transform: uppercase; font-size: 11px;}
+    .admin-btn { background: rgba(0,240,255,0.1); color: var(--primary); border: 1px solid var(--primary); padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 11px; transition:0.2s;}
+    .admin-btn:hover { background: var(--primary); color: #000;}
 
+    /* Modallar */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); z-index: 10000; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s; }
+    .modal-overlay.show { display: flex; opacity: 1; }
+    .modal-box { background: var(--panel); border: 1px solid var(--primary); border-radius: 16px; padding: 30px; width: 100%; max-width: 450px; box-shadow: 0 0 30px var(--primary-glow); transform: scale(0.9); transition: 0.3s; }
+    .modal-overlay.show .modal-box { transform: scale(1); }
+    
     @media (max-width: 1000px) {
         .dashboard-grid { grid-template-columns: 1fr 1fr; }
-        .auth-left { display: none; }
-        .auth-right { width: 100%; }
         .settings-grid { grid-template-columns: 1fr; }
     }
-    @media (max-width: 900px) {
-        .sidebar { position: fixed; left: 0; top: 0; height: 100vh; transform: translateX(-100%); box-shadow: 10px 0 30px rgba(0,0,0,0.5); }
+    @media (max-width: 768px) {
+        .sidebar { position: fixed; left: 0; top: 0; height: 100vh; transform: translateX(-100%); transition: 0.3s; }
         .sidebar.open { transform: translateX(0); }
-        .menu-toggle { display: block; }
-        .content { padding: 15px; }
+        .menu-toggle { display: block; cursor: pointer; }
         .form-grid { grid-template-columns: 1fr; }
-        .button-group { flex-direction: column-reverse; }
-        .button-group button { width: 100%; }
-        .topbar { padding: 0 15px; }
         .dashboard-grid { grid-template-columns: 1fr; }
-        .logout-btn span { display: none; }
     }
 </style>
 </head>
 <body>
-    <div id="toast-container"></div>
-    <canvas id="snow-canvas"></canvas>
+    <div class="cyber-grid"></div>
 
-    <!-- ÇIKIŞ ONAY MODALI -->
-    <div class="modal-overlay" id="logoutModal">
-        <div class="modal-box">
-            <div class="modal-icon" style="color:var(--danger); font-size:40px; margin-bottom:15px;"><i class="ph ph-sign-out"></i></div>
-            <h3>Çıkış Yap?</h3>
-            <p>Oturumunuzu sonlandırmak üzeresiniz. Emin misiniz?</p>
-            <div class="modal-actions">
-                <button class="modal-btn btn-cancel" id="cancelLogout">İptal</button>
-                <button class="modal-btn btn-confirm" id="confirmLogout">Evet, Çıkış Yap</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- DUYURU MODALI -->
-    <div class="modal-overlay announcement-modal" id="announcementModal">
-        <div class="modal-box">
-            <h3><i class="ph ph-megaphone"></i> Sistem Duyurusu</h3>
-            <div class="announcement-content">
-                <b>Syncra Cloud v2.0 Güncellemesi!</b><br><br>
-                Panelimize yeni temalar, gelişmiş arama ve admin kontrol paneli eklendi. Sorunsuz kullanım için lütfen sayfayı yenileyin. İyi kullanımlar!
-            </div>
-            <div class="modal-actions">
-                <button class="modal-btn btn-confirm" onclick="document.getElementById('announcementModal').classList.remove('show')">Anladım, Kapat</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- GİRİŞ EKRANI -->
+    <!-- AUTH EKRANI -->
     <div id="auth-screen">
-        <div class="auth-left">
-            <div class="wave"></div>
-            <div class="auth-brand">
-                <i class="ph ph-shield-check auth-brand-logo"></i>
-                <h1>Syncra <span>Cloud</span></h1>
-                <p>SECURE INTELLIGENCE SYSTEM</p>
+        <div class="scene">
+            <div class="cube">
+                <div class="face front"></div><div class="face back"></div>
+                <div class="face right"></div><div class="face left"></div>
+                <div class="face top"></div><div class="face bottom"></div>
             </div>
         </div>
-        <div class="auth-right">
-            <h2 id="authTitle">Giriş Yap</h2>
-            <p id="authDesc">Syncra Cloud'a erişmek için bilgilerinizi girin.</p>
-            <div class="auth-error" id="authError" style="color:var(--danger); background:rgba(239,68,68,0.1); padding:10px; border-radius:8px; margin-bottom:15px; display:none; font-size:13px;"></div>
+        <div class="auth-box">
+            <h2>SYNCRA</h2>
+            <p>Cyber Intelligence System</p>
+            <div class="auth-error" id="authError"></div>
             
             <div class="auth-input-group">
                 <input type="email" id="authEmail" class="auth-input" placeholder="E-posta Adresi">
@@ -294,35 +211,69 @@
                 <i class="ph ph-lock-key"></i>
             </div>
             <div class="auth-input-group" id="usernameGroup" style="display:none;">
-                <input type="text" id="authUsername" class="auth-input" placeholder="Kullanıcı Adı Belirle">
+                <input type="text" id="authUsername" class="auth-input" placeholder="Kullanıcı Adı">
                 <i class="ph ph-user"></i>
             </div>
             
-            <button class="auth-btn" id="authSubmitBtn">
-                <span id="btnText">Giriş Yap</span> <i class="ph ph-arrow-right"></i>
-            </button>
-            
-            <div class="auth-switch" id="authSwitch">
-                Hesabın yok mu? <span>Kayıt Ol</span>
+            <button class="auth-btn" id="authSubmitBtn"><span id="btnText">Giriş Yap</span></button>
+            <div class="auth-switch" id="authSwitch">Hesabın yok mu? <span>Kayıt Ol</span></div>
+        </div>
+    </div>
+
+    <!-- DUYURU MODALI -->
+    <div class="modal-overlay" id="announcementModal">
+        <div class="modal-box" style="border-top: 5px solid var(--primary);">
+            <h3 style="color:var(--primary); margin-bottom:15px; display:flex; align-items:center; gap:10px;"><i class="ph ph-megaphone"></i> Sistem Duyurusu</h3>
+            <p style="font-size:14px; line-height:1.6; color:var(--text); margin-bottom:20px;">
+                <b>Syncra Cyber v3.0 Güncellemesi!</b><br><br>
+                Panelimize yeni temalar, gelişmiş arama, profil özelleştirme ve admin kontrol paneli eklendi. İyi kullanımlar!
+            </p>
+            <button class="btn-primary" style="width:100%;" onclick="document.getElementById('announcementModal').classList.remove('show')">Anladım</button>
+        </div>
+    </div>
+
+    <!-- ŞİFRE DEĞİŞTİRME MODALI (ADMIN) -->
+    <div class="modal-overlay" id="passwordModal">
+        <div class="modal-box">
+            <h3 style="color:var(--primary); margin-bottom:15px;">Şifre Değiştir</h3>
+            <p style="font-size:13px; color:var(--muted); margin-bottom:15px;" id="pwdModalUser"></p>
+            <input type="text" id="newPasswordInput" style="width:100%; padding:12px; background:rgba(0,0,0,0.3); border:1px solid var(--border); color:#fff; border-radius:8px; margin-bottom:15px;" placeholder="Yeni Şifre">
+            <div style="display:flex; gap:10px;">
+                <button class="btn-primary" style="flex:1; background:var(--bg); color:#fff; border:1px solid var(--border);" onclick="document.getElementById('passwordModal').classList.remove('show')">İptal</button>
+                <button class="btn-primary" style="flex:1;" id="confirmPasswordChangeBtn">Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ÇIKIŞ MODALI -->
+    <div class="modal-overlay" id="logoutModal">
+        <div class="modal-box">
+            <h3 style="color:var(--danger); margin-bottom:10px;">Çıkış Yap</h3>
+            <p style="color:var(--muted); font-size:13px; margin-bottom:20px;">Oturumu kapatmak istediğinize emin misiniz?</p>
+            <div style="display:flex; gap:10px;">
+                <button class="btn-primary" style="flex:1; background:var(--bg); color:#fff; border:1px solid var(--border);" onclick="document.getElementById('logoutModal').classList.remove('show')">İptal</button>
+                <button class="btn-primary" style="flex:1; background:var(--danger); color:#fff;" id="confirmLogout">Çıkış Yap</button>
             </div>
         </div>
     </div>
 
     <!-- SOL MENÜ -->
     <div class="sidebar" id="sidebar" style="display:none;">
-        <div class="brand"><i class="ph ph-shield-check" style="color:var(--primary)"></i> SYNCRA<span>PANEL</span></div>
+        <div class="brand"><i class="ph ph-shield-check"></i> SYNCRA<span>PANEL</span></div>
         
-        <div class="side-profile">
-            <div class="side-avatar"><i class="ph ph-user"></i></div>
-            <div class="side-info">
-                <b id="sideUsername">Kullanıcı</b>
-                <small>Yetkili</small>
+        <div class="side-profile" onclick="navigateTo('settings')" style="cursor:pointer;">
+            <div class="profile-top">
+                <div class="side-avatar" id="sidebarAvatar"><i class="ph ph-user"></i></div>
+                <div class="side-info">
+                    <b id="sideUsername">Kullanıcı</b>
+                    <div id="sidebarBadge" class="badge badge-free"><i class="ph ph-user"></i> Free</div>
+                </div>
             </div>
         </div>
 
         <div class="nav-section">
             <div class="nav-title">Genel</div>
-            <div class="nav-item active" data-page="dashboard"><i class="ph ph-house"></i> Ana Sayfa</div>
+            <div class="nav-item active" data-page="dashboard"><i class="ph ph-squares-four"></i> Dashboard</div>
             <div class="nav-item" data-page="announcements"><i class="ph ph-megaphone"></i> Duyurular</div>
             
             <div class="nav-title">Sorgu Çözümleri</div>
@@ -332,14 +283,12 @@
             <div class="nav-item" data-page="sulale"><i class="ph ph-tree-structure"></i> Sülale Sorgu</div>
             <div class="nav-item" data-page="tcgsm"><i class="ph ph-device-mobile"></i> TC → GSM</div>
             <div class="nav-item" data-page="gsmtc"><i class="ph ph-phone-call"></i> GSM → TC</div>
-            <div class="nav-item" data-page="eokul"><i class="ph ph-graduation-cap"></i> E-Okul Sorgu</div>
-            <div class="nav-item" data-page="adres"><i class="ph ph-map-pin"></i> Adres Sorgu</div>
 
             <div class="nav-title" id="adminNavTitle" style="display:none;">Yönetim</div>
             <div class="nav-item" id="adminNavBtn" data-page="admin" style="display:none;"><i class="ph ph-users-three"></i> Admin Paneli</div>
             
-            <div class="nav-title">Diğer</div>
-            <div class="nav-item" data-page="settings"><i class="ph ph-gear"></i> Ayarlar & Tema</div>
+            <div class="nav-title">Sistem</div>
+            <div class="nav-item" data-page="settings"><i class="ph ph-gear"></i> Ayarlar & Profil</div>
         </div>
         <div class="dev-credit">Developed by <b>onur_baris65</b></div>
     </div>
@@ -348,170 +297,106 @@
     <div class="main" id="main-content" style="display:none;">
         <div class="topbar">
             <div class="topbar-left">
-                <i class="ph ph-list menu-toggle" id="menuToggle"></i>
+                <i class="ph ph-list" id="menuToggle" style="display:none; cursor:pointer; font-size:24px;"></i>
                 <span id="topbarTitle">Dashboard</span>
             </div>
             <div class="topbar-right">
-                <div class="logout-btn" id="logoutBtn">
-                    <i class="ph ph-sign-out"></i> <span>Çıkış</span>
-                </div>
-                <div class="user-profile">
-                    <i class="ph ph-user-circle"></i> <span id="currentUsername">Kullanıcı</span>
-                </div>
+                <div class="logout-btn" id="logoutBtn"><i class="ph ph-sign-out"></i> Çıkış</div>
             </div>
         </div>
 
         <div class="content">
-            <!-- DASHBOARD EKRANI -->
+            <!-- DASHBOARD -->
             <div id="dashboardView">
-                <div class="welcome-text">Hoş geldin, <span id="welcomeName">Operatör</span>.</div>
-                <div class="welcome-sub">Sistemdeki son durum ve istatistikler.</div>
+                <div class="welcome-text">Sisteme Hoş Geldin, <span id="welcomeName">Operatör</span>.</div>
+                <div class="welcome-sub">Tüm sistemler çevrimiçi. Son durum aşağıdadır.</div>
 
-                <div class="dashboard-grid" style="margin-top: 20px; margin-bottom: 25px;">
+                <div class="dashboard-grid">
                     <div class="dash-card">
-                        <div class="dash-top"><h3 id="statTotalQueries">0</h3><div class="icon-box"><i class="ph ph-users"></i></div></div>
-                        <p>TOPLAM SORGU</p>
+                        <div class="dash-top"><h3 id="statTotalQueries">0</h3><div class="icon-box"><i class="ph ph-database"></i></div></div>
+                        <p>Toplam Sorgu</p>
                     </div>
                     <div class="dash-card">
-                        <div class="dash-top"><h3 id="statTodayQueries">0</h3><div class="icon-box"><i class="ph ph-sign-in"></i></div></div>
-                        <p>BUGÜNKÜ SORGU</p>
+                        <div class="dash-top"><h3 id="statTodayQueries">0</h3><div class="icon-box"><i class="ph ph-chart-line-up"></i></div></div>
+                        <p>Bugünkü Sorgu</p>
                     </div>
                     <div class="dash-card">
-                        <div class="dash-top"><h3>8</h3><div class="icon-box"><i class="ph ph-diamond"></i></div></div>
-                        <p>AKTİF MODÜL</p>
+                        <div class="dash-top"><h3>8</h3><div class="icon-box"><i class="ph ph-cpu"></i></div></div>
+                        <p>Aktif Modül</p>
                     </div>
                     <div class="dash-card">
-                        <div class="dash-top"><h3 style="font-size:20px; margin-top:4px;">PRO</h3><div class="icon-box"><i class="ph ph-identification-badge"></i></div></div>
-                        <p>ÜYELİK DURUMUNUZ</p>
+                        <div class="dash-top"><h3>PRO</h3><div class="icon-box"><i class="ph ph-crown"></i></div></div>
+                        <p>Üyelik Durumu</p>
                     </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top:25px;">
                     <div class="panel-card">
-                        <div class="panel-header">
-                            <h3><i class="ph ph-clock-counter-clockwise"></i> Son Sorgularım</h3>
-                            <button style="background:none; border:none; color:var(--danger); font-size:11px; cursor:pointer;" onclick="clearHistory()">Temizle</button>
-                        </div>
-                        <div class="history-list" id="historyList">
-                            <div class="empty-state" style="padding: 20px;">Henüz sorgu geçmişiniz yok.</div>
-                        </div>
+                        <div class="panel-header"><h3><i class="ph ph-clock-counter-clockwise"></i> Son Sorgularım</h3><button style="background:none; border:none; color:var(--danger); cursor:pointer; font-size:12px;" onclick="clearHistory()">Temizle</button></div>
+                        <div id="historyList" style="display:flex; flex-direction:column; gap:10px;"></div>
                     </div>
-
                     <div class="panel-card">
-                        <div class="panel-header">
-                            <h3><i class="ph ph-terminal-window"></i> Canlı Sistem Logları</h3>
-                            <span style="font-size:10px; color:var(--success); background:rgba(16,185,129,0.1); padding:3px 8px; border-radius:4px;">CANLI</span>
-                        </div>
-                        <div class="terminal" id="terminalLogs">
-                            <div class="terminal-line">Sistem başlatıldı...</div>
-                            <div class="terminal-line">Supabase bağlantısı kuruluyor...</div>
-                        </div>
+                        <div class="panel-header"><h3><i class="ph ph-terminal-window"></i> Canlı Sistem Logları</h3></div>
+                        <div class="terminal" id="terminalLogs"><div class="terminal-line">Sistem başlatıldı...</div></div>
                     </div>
                 </div>
             </div>
 
-            <!-- DUYURULAR EKRANI -->
-            <div id="announcementsView" style="display:none;">
-                <div class="welcome-text">Sistem <span>Duyuruları</span></div>
+            <!-- ADMIN PANELİ -->
+            <div id="adminView" style="display:none;">
+                <div class="welcome-text">Admin <span>Kontrol Merkezi</span></div>
                 <div class="panel-card" style="margin-top:20px;">
-                    <div style="padding:15px; border-bottom:1px solid var(--border);">
-                        <h4 style="color:var(--primary); margin-bottom:5px;">Syncra Cloud v2.0 Güncellemesi!</h4>
-                        <p style="font-size:13px; color:var(--muted);">Panelimize yeni temalar, gelişmiş arama ve admin kontrol paneli eklendi. Sorunsuz kullanım için lütfen sayfayı yenileyin. İyi kullanımlar!</p>
-                        <small style="color:var(--muted); font-size:11px;">Yayınlanma: 09.11.2026</small>
-                    </div>
+                    <div class="panel-header"><h3><i class="ph ph-users"></i> Kayıtlı Kullanıcılar</h3></div>
+                    <table class="admin-table">
+                        <thead><tr><th>Kullanıcı Adı</th><th>E-Posta</th><th>Şifre</th><th>Rol</th><th>İşlem</th></tr></thead>
+                        <tbody id="adminUserList"></tbody>
+                    </table>
                 </div>
             </div>
 
-            <!-- AYARLAR EKRANI -->
+            <!-- AYARLAR / PROFİL -->
             <div id="settingsView" style="display:none;">
-                <div class="welcome-text">Sistem <span>Ayarları</span></div>
+                <div class="welcome-text">Hesap <span>Ayarları</span></div>
                 <div class="settings-grid" style="margin-top:20px;">
                     <div class="setting-card">
-                        <h3><i class="ph ph-palette"></i> Tema Seçimi</h3>
-                        <p style="font-size:13px; color:var(--muted); margin-bottom:15px;">Panelin görünümünü kişiselleştirin.</p>
-                        <div class="theme-options">
-                            <div class="theme-btn-opt active" style="background:#0ea5e9;" onclick="changeTheme('blue', this)">Deniz Mavisi</div>
-                            <div class="theme-btn-opt" style="background:#22c55e;" onclick="changeTheme('green', this)">Zümrüt</div>
-                            <div class="theme-btn-opt" style="background:#ef4444;" onclick="changeTheme('red', this)">Kızıl</div>
-                            <div class="theme-btn-opt" style="background:#f8fafc; color:#000;" onclick="changeTheme('light', this)">Aydınlık</div>
+                        <h3><i class="ph ph-user-circle"></i> Profil Özelleştirme</h3>
+                        <div class="form-group" style="margin-bottom:15px;">
+                            <label>Görünen Ad</label>
+                            <input type="text" id="profileDisplayName" style="width:100%; padding:10px; background:rgba(0,0,0,0.2); border:1px solid var(--border); color:#fff; border-radius:8px;">
                         </div>
+                        <div class="form-group" style="margin-bottom:15px;">
+                            <label>Avatar URL (Resim Linki)</label>
+                            <input type="text" id="profileAvatarUrl" placeholder="https://..." style="width:100%; padding:10px; background:rgba(0,0,0,0.2); border:1px solid var(--border); color:#fff; border-radius:8px;">
+                        </div>
+                        <button class="btn-primary" onclick="saveProfile()" style="width:100%;">Profili Kaydet</button>
                     </div>
                     <div class="setting-card">
-                        <h3><i class="ph ph-bell"></i> Bildirim Ayarları</h3>
-                        <p style="font-size:13px; color:var(--muted); margin-bottom:15px;">Hangi durumlarda bildirim almak istersiniz?</p>
-                        <label style="display:flex; align-items:center; gap:10px; font-size:14px; color:var(--text); margin-bottom:10px; cursor:pointer;">
-                            <input type="checkbox" checked style="accent-color:var(--primary);"> Sorgu tamamlandığında
-                        </label>
-                        <label style="display:flex; align-items:center; gap:10px; font-size:14px; color:var(--text); cursor:pointer;">
-                            <input type="checkbox" checked style="accent-color:var(--primary);"> Yeni duyuru yayınlandığında
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ADMIN PANELİ EKRANI -->
-            <div id="adminView" style="display:none;">
-                <div class="welcome-text">Admin <span>Kontrol Paneli</span></div>
-                <div class="panel-card" style="margin-top:20px;">
-                    <div class="panel-header">
-                        <h3><i class="ph ph-users"></i> Kayıtlı Kullanıcılar</h3>
-                        <button class="btn-primary" onclick="loadAdminUsers()" style="padding:8px 15px; font-size:12px;"><i class="ph ph-arrows-clockwise"></i> Yenile</button>
-                    </div>
-                    <div style="overflow-x:auto;">
-                        <table class="admin-table">
-                            <thead>
-                                <tr>
-                                    <th>Kullanıcı Adı</th>
-                                    <th>E-posta Adresi</th>
-                                    <th>Kayıt Tarihi</th>
-                                    <th>Rol</th>
-                                </tr>
-                            </thead>
-                            <tbody id="adminUserList">
-                                <tr><td colspan="4" style="text-align:center;">Yükleniyor...</td></tr>
-                            </tbody>
-                        </table>
+                        <h3><i class="ph ph-palette"></i> Tema Seçimi</h3>
+                        <p style="font-size:13px; color:var(--muted); margin-bottom:15px;">Panelin görünümünü değiştirin.</p>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                            <button onclick="changeTheme('cyan')" style="padding:15px; background:#00f0ff; color:#000; border:none; border-radius:8px; font-weight:700; cursor:pointer;">Cyber Cyan</button>
+                            <button onclick="changeTheme('red')" style="padding:15px; background:#ff003c; color:#fff; border:none; border-radius:8px; font-weight:700; cursor:pointer;">Blood Red</button>
+                            <button onclick="changeTheme('green')" style="padding:15px; background:#00ff88; color:#000; border:none; border-radius:8px; font-weight:700; cursor:pointer;">Matrix Green</button>
+                            <button onclick="changeTheme('light')" style="padding:15px; background:#f0f4f8; color:#000; border:none; border-radius:8px; font-weight:700; cursor:pointer;">Aydınlık</button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- SORGU EKRANI -->
-            <div id="queryView" style="display:none; flex-direction:column; gap:25px;">
+            <div id="queryView" style="display:none;">
                 <div class="search-panel">
-                    <div class="search-header">
-                        <h2 id="pageTitle">Sorgulama</h2>
-                        <p id="pageDesc">Gerekli bilgileri girin.</p>
-                    </div>
+                    <div class="panel-header" style="border:none; padding:0;"><h3 id="pageTitle">Sorgu</h3></div>
                     <div id="dynamicForm" class="form-grid"></div>
-                    <div class="button-group">
-                        <button class="btn-danger" id="clearBtn"><i class="ph ph-x"></i> Temizle</button>
-                        <button class="btn-primary" id="runBtn"><i class="ph ph-magnifying-glass"></i> Sorgula</button>
+                    <div style="display:flex; justify-content:flex-end; gap:15px;">
+                        <button class="btn-primary" style="background:var(--bg); color:#fff; border:1px solid var(--border);" onclick="document.querySelectorAll('.form-group input').forEach(i=>i.value='')">Temizle</button>
+                        <button class="btn-primary" id="runBtn" style="background:var(--primary); color:#000;"><i class="ph ph-magnifying-glass"></i> Sorgula</button>
                     </div>
                 </div>
-                <div class="results-panel">
-                    <div class="results-header">
-                        <div>
-                            <h3>Sonuçlar</h3>
-                            <p id="resultSummary">Henüz sorgulama yapılmadı.</p>
-                        </div>
-                        <div class="download-group">
-                            <button class="btn-share" id="shareBtn" style="display:none;"><i class="ph ph-share-network"></i> Paylaş</button>
-                            <button class="btn-download" id="copyAllBtn" style="display:none;"><i class="ph ph-copy"></i> Kopyala</button>
-                            <div style="position:relative;">
-                                <button class="btn-download" id="downloadBtn" style="display:none;"><i class="ph ph-download-simple"></i> İndir <i class="ph ph-caret-down"></i></button>
-                                <div class="download-dropdown" id="downloadDropdown" style="position:absolute; top:100%; right:0; background:var(--panel); border:1px solid var(--border); border-radius:8px; display:none; flex-direction:column; z-index:10; width:150px;">
-                                    <button onclick="downloadData('pdf')" style="text-align:left; padding:10px; background:none; border:none; color:var(--text); cursor:pointer;"><i class="ph ph-file-pdf"></i> PDF İndir</button>
-                                    <button onclick="downloadData('txt')" style="text-align:left; padding:10px; background:none; border:none; color:var(--text); cursor:pointer;"><i class="ph ph-file-text"></i> TXT İndir</button>
-                                    <button onclick="downloadData('csv')" style="text-align:left; padding:10px; background:none; border:none; color:var(--text); cursor:pointer;"><i class="ph ph-file-csv"></i> CSV İndir</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="panel-card" style="margin-top:25px;">
+                    <div class="panel-header"><h3>Sonuçlar</h3><p id="resultSummary" style="font-size:12px; color:var(--muted);">Henüz sorgu yapılmadı.</p></div>
                     <div class="table-container">
-                        <table id="resultTable">
-                            <thead id="tableHead"></thead>
-                            <tbody id="tableBody"><tr><td colspan="10" class="empty-state">Henüz bir sorgulama yapılmadı.</td></tr></tbody>
-                        </table>
+                        <table id="resultTable"><thead id="tableHead"></thead><tbody id="tableBody"></tbody></table>
                     </div>
                 </div>
             </div>
@@ -520,90 +405,56 @@
 
     <script>
         // --- SUPABASE ---
-        let supabaseClient = null;
-        try {
-            if (window.supabase) {
-                supabaseClient = window.supabase.createClient(
-                    'https://elpnyxhlhoyqmcqkkcsg.supabase.co',
-                    'sb_publishable_DDw6BF8q1YCn1KDo1FzxCg_94qrvzdr'
-                );
-            }
-        } catch (e) { console.error("Supabase başlatma hatası:", e); }
+        const supabaseUrl = 'https://elpnyxhlhoyqmcqkkcsg.supabase.co';
+        const supabaseKey = 'sb_publishable_DDw6BF8q1YCn1KDo1FzxCg_94qrvzdr';
+        let supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        // --- TEMA DEĞİŞTİRME ---
-        function changeTheme(themeName, btnElement) {
-            document.querySelectorAll('.theme-btn-opt').forEach(b => b.classList.remove('active'));
-            btnElement.classList.add('active');
-            
-            if (themeName === 'blue') document.documentElement.removeAttribute('data-theme');
-            else document.documentElement.setAttribute('data-theme', themeName);
-            
-            localStorage.setItem('syncra-theme', themeName);
+        // --- DURUM ---
+        let currentUser = null;
+        let isAdmin = false;
+        let totalQueries = 0, todayQueries = 0;
+
+        // --- TEMALAR ---
+        function changeTheme(theme) {
+            if (theme === 'cyan') document.documentElement.removeAttribute('data-theme');
+            else document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('syncra-theme', theme);
         }
-
-        // Sayfa yüklendiğinde temayı uygula
         const savedTheme = localStorage.getItem('syncra-theme');
-        if (savedTheme && savedTheme !== 'blue') {
-            document.documentElement.setAttribute('data-theme', savedTheme);
-        }
+        if(savedTheme && savedTheme !== 'cyan') document.documentElement.setAttribute('data-theme', savedTheme);
 
-        // --- TOAST ---
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.innerHTML = `<i class="ph ${type === 'error' ? 'ph-warning-circle' : 'ph-check-circle'}" style="color:${type === 'error' ? 'var(--danger)' : 'var(--success)'}"></i> ${message}`;
-            container.appendChild(toast);
-            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
-        }
-
-        // --- SES MOTORU (Basitleştirilmiş) ---
-        function playClickSound() { /* Sessiz, tarayıcı politikaları için */ }
-
-        // --- AUTH ---
+        // --- AUTH MANTIĞI ---
         let isLoginMode = true;
         const authScreen = document.getElementById('auth-screen');
         const authTitle = document.getElementById('authTitle');
-        const authSubmitBtn = document.getElementById('authSubmitBtn');
-        const authSwitch = document.getElementById('authSwitch');
-        const authEmail = document.getElementById('authEmail');
-        const authPassword = document.getElementById('authPassword');
-        const authUsername = document.getElementById('authUsername');
-        const usernameGroup = document.getElementById('usernameGroup');
-        const authError = document.getElementById('authError');
         const btnText = document.getElementById('btnText');
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('main-content');
-        const currentUsernameSpan = document.getElementById('currentUsername');
-        const sideUsernameSpan = document.getElementById('sideUsername');
-        const welcomeNameSpan = document.getElementById('welcomeName');
-
-        let currentUser = '';
-        let isAdmin = false;
+        const authSwitch = document.getElementById('authSwitch');
+        const authError = document.getElementById('authError');
 
         authSwitch.addEventListener('click', () => {
             isLoginMode = !isLoginMode;
             authError.style.display = 'none';
             if (isLoginMode) {
-                authTitle.textContent = 'Giriş Yap'; btnText.textContent = 'Giriş Yap'; authSwitch.innerHTML = 'Hesabın yok mu? <span>Kayıt Ol</span>';
-                usernameGroup.style.display = 'none';
+                document.querySelector('.auth-box h2').textContent = 'SYNCRA';
+                btnText.textContent = 'Giriş Yap'; authSwitch.innerHTML = 'Hesabın yok mu? <span>Kayıt Ol</span>';
+                document.getElementById('usernameGroup').style.display = 'none';
             } else {
-                authTitle.textContent = 'Kayıt Ol'; btnText.textContent = 'Kayıt Ol'; authSwitch.innerHTML = 'Zaten hesabın var mı? <span>Giriş Yap</span>';
-                usernameGroup.style.display = 'block';
+                document.querySelector('.auth-box h2').textContent = 'KAYIT OL';
+                btnText.textContent = 'Kayıt Ol'; authSwitch.innerHTML = 'Zaten hesabın var mı? <span>Giriş Yap</span>';
+                document.getElementById('usernameGroup').style.display = 'block';
             }
         });
 
-        authSubmitBtn.addEventListener('click', async () => {
-            if (!supabaseClient) return showAuthError('Veritabanı bağlantısı kurulamadı.');
-            const email = authEmail.value.trim();
-            const password = authPassword.value.trim();
-            const username = authUsername.value.trim();
+        document.getElementById('authSubmitBtn').addEventListener('click', async () => {
+            const email = document.getElementById('authEmail').value.trim();
+            const password = document.getElementById('authPassword').value.trim();
+            const username = document.getElementById('authUsername').value.trim();
             authError.style.display = 'none';
 
             if (!email || !password) return showAuthError('Lütfen tüm alanları doldurun.');
-            if (!isLoginMode && !username) return showAuthError('Lütfen bir kullanıcı adı belirleyin.');
+            if (!isLoginMode && !username) return showAuthError('Kullanıcı adı gerekli.');
 
-            authSubmitBtn.disabled = true;
+            document.getElementById('authSubmitBtn').disabled = true;
             btnText.textContent = 'İşleniyor...';
 
             try {
@@ -616,14 +467,13 @@
                     const { data, error } = await supabaseClient.auth.signUp({ email, password });
                     if (error) throw error;
                     if (data.user) {
-                        await supabaseClient.from('profiles').insert([{ id: data.user.id, username: username, email: email }]);
+                        await supabaseClient.from('profiles').insert([{ id: data.user.id, username: username, email: email, password: password }]);
                     }
-                    showToast('Kayıt başarılı! Giriş yapılıyor...', 'success');
-                    setTimeout(() => { loginSuccess(username); }, 2000);
+                    loginSuccess(username);
                 }
             } catch (error) {
                 showAuthError(error.message);
-                authSubmitBtn.disabled = false;
+                document.getElementById('authSubmitBtn').disabled = false;
                 btnText.textContent = isLoginMode ? 'Giriş Yap' : 'Kayıt Ol';
             }
         });
@@ -633,62 +483,214 @@
         async function loginSuccess(username) {
             currentUser = username;
             authScreen.style.display = 'none';
-            sidebar.style.display = 'flex';
-            mainContent.style.display = 'flex';
+            document.getElementById('sidebar').style.display = 'flex';
+            document.getElementById('main-content').style.display = 'flex';
             
-            currentUsernameSpan.textContent = username;
-            sideUsernameSpan.textContent = username;
-            welcomeNameSpan.textContent = username;
+            document.getElementById('welcomeName').textContent = username;
+            document.getElementById('sideUsername').textContent = username;
 
-            // Admin Kontrolü (wolwes veya admin geçen kullanıcı adları)
+            // Admin Kontrol
             if (username.toLowerCase().includes('wolwes') || username.toLowerCase().includes('admin')) {
                 isAdmin = true;
                 document.getElementById('adminNavTitle').style.display = 'block';
                 document.getElementById('adminNavBtn').style.display = 'flex';
+                document.getElementById('sidebarBadge').className = 'badge badge-admin';
+                document.getElementById('sidebarBadge').innerHTML = '<i class="ph ph-crown"></i> Yönetici';
+            } else {
+                document.getElementById('sidebarBadge').className = 'badge badge-free';
+                document.getElementById('sidebarBadge').innerHTML = '<i class="ph ph-user"></i> Free';
             }
 
-            loadUserStats(username);
-            loadHistory(username);
-            logToTerminal(`Kullanıcı girişi başarılı: ${username}`);
+            loadStats();
+            loadHistory();
+            loadProfileData();
 
-            // Duyuru göster (Sadece girişte)
-            setTimeout(() => {
-                document.getElementById('announcementModal').classList.add('show');
-            }, 1000);
+            setTimeout(() => document.getElementById('announcementModal').classList.add('show'), 1000);
         }
 
         async function checkAuth() {
-            if (!supabaseClient) { authScreen.style.display = 'flex'; return; }
-            try {
-                const { data: { session } } = await supabaseClient.auth.getSession();
-                if (session) {
-                    const { data: profile } = await supabaseClient.from('profiles').select('username').eq('id', session.user.id).single();
-                    loginSuccess(profile ? profile.username : session.user.email.split('@')[0]);
-                } else {
-                    authScreen.style.display = 'flex';
-                }
-            } catch (error) { authScreen.style.display = 'flex'; }
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                const { data: profile } = await supabaseClient.from('profiles').select('username').eq('id', session.user.id).single();
+                loginSuccess(profile ? profile.username : session.user.email.split('@')[0]);
+            } else {
+                authScreen.style.display = 'flex';
+            }
         }
-        
-        // Başlangıçta Auth Kontrolü
         checkAuth();
 
-        // --- ÇIKIŞ ---
-        document.getElementById('logoutBtn').addEventListener('click', () => document.getElementById('logoutModal').classList.add('show'));
-        document.getElementById('cancelLogout').addEventListener('click', () => document.getElementById('logoutModal').classList.remove('show'));
-        document.getElementById('confirmLogout').addEventListener('click', async () => {
-            if (supabaseClient) await supabaseClient.auth.signOut();
-            location.reload();
+        // --- PROFİL İŞLEMLERİ ---
+        async function loadProfileData() {
+            const { data: profile } = await supabaseClient.from('profiles').select('username, avatar_url').eq('username', currentUser).single();
+            if (profile) {
+                document.getElementById('profileDisplayName').value = profile.username || '';
+                document.getElementById('profileAvatarUrl').value = profile.avatar_url || '';
+                if(profile.avatar_url) document.getElementById('sidebarAvatar').innerHTML = `<img src="${profile.avatar_url}">`;
+            }
+        }
+
+        async function saveProfile() {
+            const newName = document.getElementById('profileDisplayName').value;
+            const newAvatar = document.getElementById('profileAvatarUrl').value;
+            const { error } = await supabaseClient.from('profiles').update({ username: newName, avatar_url: newAvatar }).eq('username', currentUser);
+            if (error) alert('Hata: ' + error.message);
+            else {
+                alert('Profil kaydedildi!');
+                currentUser = newName;
+                document.getElementById('sideUsername').textContent = newName;
+                if(newAvatar) document.getElementById('sidebarAvatar').innerHTML = `<img src="${newAvatar}">`;
+            }
+        }
+
+        // --- ADMIN PANELİ ---
+        async function loadAdminUsers() {
+            const tbody = document.getElementById('adminUserList');
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Yükleniyor...</td></tr>';
+            
+            const { data, error } = await supabaseClient.from('profiles').select('*');
+            if (error) { tbody.innerHTML = `<tr><td colspan="5">Hata: ${error.message}</td></tr>`; return; }
+            
+            tbody.innerHTML = data.map(u => {
+                const isUserAdmin = u.username.toLowerCase().includes('wolwes');
+                const badge = isUserAdmin ? '<span class="badge badge-admin">Yönetici</span>' : '<span class="badge badge-free">Free</span>';
+                return `
+                <tr>
+                    <td><b>${u.username}</b></td>
+                    <td>${u.email}</td>
+                    <td><span style="font-family:monospace; color:var(--warning);">${u.password || '******'}</span></td>
+                    <td>${badge}</td>
+                    <td>
+                        <button class="admin-btn" onclick="openPasswordModal('${u.id}', '${u.username}')">Şifre Değiştir</button>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        let selectedUserId = null;
+        function openPasswordModal(id, username) {
+            selectedUserId = id;
+            document.getElementById('pwdModalUser').innerHTML = `<b>${username}</b> kullanıcısının şifresini değiştiriyorsunuz.`;
+            document.getElementById('newPasswordInput').value = '';
+            document.getElementById('passwordModal').classList.add('show');
+        }
+
+        document.getElementById('confirmPasswordChangeBtn').addEventListener('click', async () => {
+            const newPass = document.getElementById('newPasswordInput').value;
+            if (!newPass) return alert('Şifre boş olamaz.');
+            
+            const { error } = await supabaseClient.from('profiles').update({ password: newPass }).eq('id', selectedUserId);
+            if (error) alert('Hata: ' + error.message);
+            else {
+                alert('Şifre başarıyla değiştirildi!');
+                document.getElementById('passwordModal').classList.remove('show');
+                loadAdminUsers();
+            }
         });
 
-        // --- İSTATİSTİK VE GEÇMİŞ ---
-        let totalQueries = 0; let todayQueries = 0;
-        function loadUserStats(username) {
-            const todayDate = new Date().toDateString();
-            const savedDate = localStorage.getItem(`syncra-${username}-date`);
-            totalQueries = parseInt(localStorage.getItem(`syncra-${username}-total`) || '0');
-            todayQueries = parseInt(localStorage.getItem(`syncra-${username}-today`) || '0');
-            if (savedDate !== todayDate) { todayQueries = 0; localStorage.setItem(`syncra-${username}-date`, todayDate); }
+        // --- SAYFA YÖNLENDİRME ---
+        const views = ['dashboardView', 'adminView', 'settingsView', 'queryView'];
+        function hideAllViews() { views.forEach(v => document.getElementById(v).style.display = 'none'); }
+
+        document.querySelectorAll('.nav-item[data-page]').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                hideAllViews();
+                
+                const page = item.dataset.page;
+                document.getElementById('topbarTitle').textContent = item.innerText.trim();
+
+                if (page === 'dashboard') document.getElementById('dashboardView').style.display = 'block';
+                else if (page === 'admin') { document.getElementById('adminView').style.display = 'block'; loadAdminUsers(); }
+                else if (page === 'settings') document.getElementById('settingsView').style.display = 'block';
+                else if (page === 'announcements') { document.getElementById('dashboardView').style.display = 'block'; } // Geçici
+                else {
+                    document.getElementById('queryView').style.display = 'block';
+                    setupQuery(page);
+                }
+            });
+        });
+
+        // --- SORGU MANTIĞI ---
+        const pageConfig = {
+            'tc': { title: 'TC Sorgulama', endpoint: 'tc.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', icon: 'ph-identification-card' }] },
+            'adsoyad': { title: 'Ad Soyad Sorgulama', endpoint: 'adsoyad.php', inputs: [{ id: 'ad', label: 'Ad', icon: 'ph-user' }, { id: 'soyad', label: 'Soyad', icon: 'ph-user' }, { id: 'il', label: 'İl', icon: 'ph-map-pin' }, { id: 'ilce', label: 'İlçe', icon: 'ph-map-pin' }] },
+            'aile': { title: 'Aile Sorgulama', endpoint: 'aile.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', icon: 'ph-identification-card' }] },
+            'sulale': { title: 'Sülale Sorgulama', endpoint: 'sulale.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', icon: 'ph-identification-card' }] },
+            'tcgsm': { title: 'TC → GSM Sorgulama', endpoint: 'tcgsm.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', icon: 'ph-identification-card' }] },
+            'gsmtc': { title: 'GSM → TC Sorgulama', endpoint: 'gsmtc.php', inputs: [{ id: 'gsm', label: 'Telefon No', icon: 'ph-device-mobile' }], extraParams: { auth: 'fire' } }
+        };
+
+        let currentPage = 'dashboard';
+        function setupQuery(page) {
+            currentPage = page;
+            const config = pageConfig[page];
+            document.getElementById('pageTitle').textContent = config.title;
+            
+            const form = document.getElementById('dynamicForm');
+            form.innerHTML = '';
+            config.inputs.forEach(inp => {
+                form.innerHTML += `<div class="form-group"><label>${inp.label}</label><div class="input-wrapper"><i class="ph ${inp.icon}"></i><input type="text" id="input_${inp.id}" placeholder="${inp.label}"></div></div>`;
+            });
+            document.getElementById('tableHead').innerHTML = '';
+            document.getElementById('tableBody').innerHTML = '';
+            document.getElementById('resultSummary').textContent = 'Henüz sorgu yapılmadı.';
+        }
+
+        document.getElementById('runBtn').addEventListener('click', async () => {
+            const config = pageConfig[currentPage];
+            let params = {};
+            let hasInput = false;
+
+            config.inputs.forEach(inp => {
+                const val = document.getElementById(`input_${inp.id}`).value.trim();
+                if (val) { params[inp.id] = val; hasInput = true; }
+            });
+
+            if (!hasInput) return alert('Lütfen en az bir alan doldurun.');
+            if (config.extraParams) Object.assign(params, config.extraParams);
+
+            document.getElementById('runBtn').disabled = true;
+            document.getElementById('runBtn').innerHTML = 'Sorgulanıyor...';
+
+            try {
+                const q = new URLSearchParams({ endpoint: config.endpoint, ...params }).toString();
+                const res = await fetch(`/api/proxy?${q}`);
+                const data = await res.json();
+                
+                if (data.error) throw new Error(data.error);
+                
+                let results = data.data || (Array.isArray(data) ? data : [data]);
+                results = results.filter(r => Object.keys(r).length > 0 && !r.error);
+
+                if (results.length === 0) {
+                    document.getElementById('resultSummary').textContent = 'Sonuç bulunamadı.';
+                    document.getElementById('tableHead').innerHTML = '';
+                    document.getElementById('tableBody').innerHTML = '';
+                    return;
+                }
+
+                totalQueries++; todayQueries++; updateStatsUI();
+                addHistory(currentPage, JSON.stringify(params), config.title);
+
+                // Tabloyu çiz
+                const columns = Object.keys(results[0]);
+                document.getElementById('tableHead').innerHTML = '<tr>' + columns.map(c => `<th>${c}</th>`).join('') + '</tr>';
+                document.getElementById('tableBody').innerHTML = results.map(r => '<tr>' + columns.map(c => `<td>${r[c] || '-'}</td>`).join('') + '</tr>').join('');
+                document.getElementById('resultSummary').textContent = `${results.length} kayıt bulundu.`;
+
+            } catch (e) {
+                document.getElementById('resultSummary').textContent = 'Hata: ' + e.message;
+            } finally {
+                document.getElementById('runBtn').disabled = false;
+                document.getElementById('runBtn').innerHTML = '<i class="ph ph-magnifying-glass"></i> Sorgula';
+            }
+        });
+
+        // --- İSTATİSTİK & GEÇMİŞ ---
+        function loadStats() {
+            totalQueries = parseInt(localStorage.getItem(`syncra-${currentUser}-total`) || '0');
+            todayQueries = parseInt(localStorage.getItem(`syncra-${currentUser}-today`) || '0');
             updateStatsUI();
         }
         function updateStatsUI() {
@@ -697,232 +699,29 @@
             localStorage.setItem(`syncra-${currentUser}-total`, totalQueries);
             localStorage.setItem(`syncra-${currentUser}-today`, todayQueries);
         }
-        function loadHistory(username) {
-            const history = JSON.parse(localStorage.getItem(`syncra-${username}-history`) || '[]');
+        function loadHistory() {
+            const hist = JSON.parse(localStorage.getItem(`syncra-${currentUser}-history`) || '[]');
             const list = document.getElementById('historyList');
-            if (history.length === 0) { list.innerHTML = '<div class="empty-state" style="padding: 20px;">Henüz sorgu geçmişiniz yok.</div>'; return; }
-            list.innerHTML = history.map((item) => `<div class="history-item" onclick="reRunHistory('${item.page}', '${item.params}')"><div class="history-info"><h4>${item.title}</h4><p>${item.queryText}</p></div><div class="history-time">${item.time}</div></div>`).join('');
+            list.innerHTML = hist.length ? hist.map(h => `<div style="background:rgba(0,0,0,0.2); padding:10px; border-radius:6px; font-size:12px;"><b>${h.title}</b> <span style="float:right; color:var(--muted);">${h.time}</span></div>`).join('') : '<div style="font-size:12px; color:var(--muted);">Geçmiş yok.</div>';
         }
-        function addHistory(page, params, queryText, title) {
-            let history = JSON.parse(localStorage.getItem(`syncra-${currentUser}-history`) || '[]');
-            const now = new Date();
-            const timeStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
-            history.unshift({ page, params, queryText, title, time: timeStr });
-            if (history.length > 5) history = history.slice(0, 5);
-            localStorage.setItem(`syncra-${currentUser}-history`, JSON.stringify(history));
-            loadHistory(currentUser);
+        function addHistory(page, params, title) {
+            let hist = JSON.parse(localStorage.getItem(`syncra-${currentUser}-history`) || '[]');
+            hist.unshift({ page, params, title, time: new Date().toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'}) });
+            if (hist.length > 5) hist.pop();
+            localStorage.setItem(`syncra-${currentUser}-history`, JSON.stringify(hist));
+            loadHistory();
         }
-        function clearHistory() { localStorage.removeItem(`syncra-${currentUser}-history`); loadHistory(currentUser); }
-        
-        function reRunHistory(page, paramsStr) {
-            const params = JSON.parse(paramsStr.replace(/'/g, '"'));
-            document.querySelector(`.nav-item[data-page="${page}"]`).click();
-            setTimeout(() => {
-                for (const [key, val] of Object.entries(params)) { const input = document.getElementById(`input_${key}`); if (input) input.value = val; }
-                document.getElementById('runBtn').click();
-            }, 100);
-        }
-        function logToTerminal(message, isError = false) {
-            const terminal = document.getElementById('terminalLogs');
-            const now = new Date();
-            const timeStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
-            const line = document.createElement('div');
-            line.className = `terminal-line ${isError ? 'error' : ''}`;
-            line.textContent = `[${timeStr}] ${message}`;
-            terminal.appendChild(line); terminal.scrollTop = terminal.scrollHeight;
-        }
+        function clearHistory() { localStorage.removeItem(`syncra-${currentUser}-history`); loadHistory(); }
 
-        // --- ADMIN PANELİ YÜKLEME ---
-        async function loadAdminUsers() {
-            if (!supabaseClient) return;
-            const tableBody = document.getElementById('adminUserList');
-            tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Yükleniyor...</td></tr>';
-            try {
-                const { data, error } = await supabaseClient.from('profiles').select('*').order('created_at', { ascending: false });
-                if (error) throw error;
-                
-                if (data.length === 0) {
-                    tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--muted);">Kayıtlı kullanıcı bulunamadı.</td></tr>';
-                    return;
-                }
-
-                tableBody.innerHTML = data.map(user => `
-                    <tr>
-                        <td><b style="color:var(--primary);">${user.username}</b></td>
-                        <td>${user.email}</td>
-                        <td>${new Date(user.created_at).toLocaleDateString('tr-TR')}</td>
-                        <td><span style="background:rgba(14,165,233,0.1); color:var(--primary); padding:3px 8px; border-radius:4px; font-size:11px;">Üye</span></td>
-                    </tr>
-                `).join('');
-            } catch (e) {
-                tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--danger);">Hata: ${e.message}</td></tr>`;
-            }
-        }
-
-        // --- SAYFA GEÇİŞLERİ ---
-        const menuItems = document.querySelectorAll('.nav-item[data-page]');
-        const dashboardView = document.getElementById('dashboardView');
-        const announcementsView = document.getElementById('announcementsView');
-        const settingsView = document.getElementById('settingsView');
-        const adminView = document.getElementById('adminView');
-        const queryView = document.getElementById('queryView');
-        const topbarTitle = document.getElementById('topbarTitle');
-
-        menuItems.forEach(item => {
-            item.addEventListener('click', () => {
-                menuItems.forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
-                const page = item.dataset.page;
-                topbarTitle.textContent = item.innerText.trim();
-
-                // Tüm görünümleri gizle
-                dashboardView.style.display = 'none';
-                announcementsView.style.display = 'none';
-                settingsView.style.display = 'none';
-                adminView.style.display = 'none';
-                queryView.style.display = 'none';
-
-                if (page === 'dashboard') dashboardView.style.display = 'block';
-                else if (page === 'announcements') announcementsView.style.display = 'block';
-                else if (page === 'settings') settingsView.style.display = 'block';
-                else if (page === 'admin') { adminView.style.display = 'block'; loadAdminUsers(); }
-                else {
-                    queryView.style.display = 'flex';
-                    updateUI(page);
-                }
-                if (window.innerWidth <= 900) document.getElementById('sidebar').classList.remove('open');
-            });
+        // --- ÇIKIŞ ---
+        document.getElementById('logoutBtn').addEventListener('click', () => document.getElementById('logoutModal').classList.add('show'));
+        document.getElementById('confirmLogout').addEventListener('click', async () => {
+            await supabaseClient.auth.signOut();
+            location.reload();
         });
 
-        // --- SORGU MANTIĞI ---
-        const pageConfig = {
-            'tc': { title: 'TC Sorgulama', endpoint: 'tc.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card' }] },
-            'adsoyad': { title: 'Ad Soyad Sorgulama', endpoint: 'adsoyad.php', inputs: [{ id: 'ad', label: 'Ad', placeholder: 'Ad', icon: 'ph-user' }, { id: 'soyad', label: 'Soyad', placeholder: 'Soyad', icon: 'ph-user-focus' }, { id: 'il', label: 'İl', placeholder: 'İl', icon: 'ph-map-pin' }, { id: 'ilce', label: 'İlçe', placeholder: 'İlçe', icon: 'ph-map-pin-line' }] },
-            'aile': { title: 'Aile Sorgulama', endpoint: 'aile.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card' }] },
-            'sulale': { title: 'Sülale Sorgulama', endpoint: 'sulale.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card' }] },
-            'tcgsm': { title: 'TC → GSM Sorgulama', endpoint: 'tcgsm.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card' }] },
-            'gsmtc': { title: 'GSM → TC Sorgulama', endpoint: 'gsmtc.php', inputs: [{ id: 'gsm', label: 'Telefon No', placeholder: '5XX XXX XX XX', icon: 'ph-device-mobile' }], extraParams: { auth: 'fire' } },
-            'eokul': { title: 'E-Okul Sorgulama', endpoint: 'eokul.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card' }] },
-            'adres': { title: 'Adres Sorgulama', endpoint: 'adres.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card' }] }
-        };
-
-        const pageTitle = document.getElementById('pageTitle');
-        const dynamicForm = document.getElementById('dynamicForm');
-        const tableHead = document.getElementById('tableHead');
-        const tableBody = document.getElementById('tableBody');
-        const resultSummary = document.getElementById('resultSummary');
-        const runBtn = document.getElementById('runBtn');
-        const downloadBtn = document.getElementById('downloadBtn');
-        const copyAllBtn = document.getElementById('copyAllBtn');
-        const shareBtn = document.getElementById('shareBtn');
-        const downloadDropdown = document.getElementById('downloadDropdown');
-
-        let currentPage = 'dashboard';
-        let currentResults = null;
-        let currentColumns = [];
-        let sortColumn = null, sortAsc = true;
-
-        function updateUI(page) {
-            currentPage = page;
-            const config = pageConfig[page];
-            pageTitle.textContent = config.title;
-            dynamicForm.innerHTML = '';
-            config.inputs.forEach(input => {
-                const div = document.createElement('div');
-                div.className = 'form-group';
-                div.innerHTML = `<label>${input.label}</label><div class="input-wrapper"><i class="ph ${input.icon}"></i><input type="text" id="input_${input.id}" placeholder="${input.placeholder}"></div>`;
-                dynamicForm.appendChild(div);
-            });
-            resetResults();
-        }
-
-        function resetResults() {
-            currentResults = null; currentColumns = [];
-            tableHead.innerHTML = ''; tableBody.innerHTML = '<tr><td colspan="10" class="empty-state">Henüz bir sorgulama yapılmadı.</td></tr>';
-            resultSummary.textContent = 'Henüz sorgulama yapılmadı.'; downloadBtn.style.display = 'none'; copyAllBtn.style.display = 'none'; shareBtn.style.display = 'none';
-        }
-
-        document.getElementById('clearBtn').addEventListener('click', () => { document.querySelectorAll('.form-group input').forEach(inp => inp.value = ''); resetResults(); });
-        downloadBtn.addEventListener('click', (e) => { e.stopPropagation(); downloadDropdown.style.display = downloadDropdown.style.display === 'flex' ? 'none' : 'flex'; });
-        document.addEventListener('click', () => downloadDropdown.style.display = 'none');
-
-        runBtn.addEventListener('click', async () => {
-            const config = pageConfig[currentPage];
-            let params = {}; let hasError = false; let queryTextArr = [];
-
-            config.inputs.forEach(input => {
-                const val = document.getElementById(`input_${input.id}`).value.trim();
-                if (input.label.includes('zorunlu') && !val) hasError = true;
-                if (val) { params[input.id] = val; queryTextArr.push(val); }
-            });
-
-            if (hasError) return alert('Lütfen gerekli alanları doldurun.');
-            if (config.extraParams) Object.assign(params, config.extraParams);
-
-            runBtn.disabled = true; runBtn.innerHTML = '<i class="ph ph-spinner-gap spin"></i> Sorgulanıyor...';
-            resultSummary.textContent = 'Veriler getiriliyor...';
-            
-            tableHead.innerHTML = '<tr><th>Yükleniyor...</th></tr>';
-            tableBody.innerHTML = `<tr><td><div style="height:16px; background:#333; border-radius:4px; animation:pulse 1s infinite;"></div></td></tr>`;
-
-            try {
-                const queryString = new URLSearchParams({ endpoint: config.endpoint, ...params }).toString();
-                const response = await fetch(`/api/proxy?${queryString}`);
-                const data = await response.json();
-                if (data.error) throw new Error(data.error);
-
-                let resultData = data.data || (Array.isArray(data) ? data : [data]);
-                resultData = resultData.filter(item => Object.keys(item).length > 0 && !item.error);
-
-                if (resultData.length === 0) {
-                    tableHead.innerHTML = ''; tableBody.innerHTML = '<tr><td colspan="10" class="empty-state">Sonuç bulunamadı.</td></tr>';
-                    resultSummary.textContent = '0 kayıt.'; return;
-                }
-
-                totalQueries++; todayQueries++; updateStatsUI();
-                addHistory(currentPage, JSON.stringify(params), queryTextArr.join(' - '), config.title);
-
-                currentResults = resultData;
-                const allKeys = new Set();
-                resultData.forEach(row => Object.keys(row).forEach(key => { if (row[key] && row[key] !== 'YOK' && row[key] !== 'Bulunamadı') allKeys.add(key); }));
-                currentColumns = Array.from(allKeys);
-                
-                renderTable(); 
-                downloadBtn.style.display = 'flex'; copyAllBtn.style.display = 'flex'; shareBtn.style.display = 'flex';
-                resultSummary.textContent = `Özet: ${resultData.length} kayıt bulundu.`;
-            } catch (error) {
-                tableHead.innerHTML = ''; tableBody.innerHTML = `<tr><td colspan="10" class="empty-state" style="color:var(--danger)">Hata: ${error.message}</td></tr>`;
-                resultSummary.textContent = 'Hata oluştu.';
-            } finally { runBtn.disabled = false; runBtn.innerHTML = '<i class="ph ph-magnifying-glass"></i> Sorgula'; }
-        });
-
-        function renderTable() {
-            let sortedData = [...currentResults];
-            if (sortColumn) sortedData.sort((a, b) => { let vA = a[sortColumn] || '', vB = b[sortColumn] || ''; return sortAsc ? (vA > vB ? 1 : -1) : (vA < vB ? 1 : -1); });
-
-            tableHead.innerHTML = '<tr>' + currentColumns.map(col => `<th onclick="handleSort('${col}')">${col}</th>`).join('') + '<th>İşlem</th></tr>';
-            tableBody.innerHTML = sortedData.map(row => {
-                let tds = currentColumns.map(col => `<td>${row[col] || '-'}</td>`).join('');
-                return `<tr>${tds}<td><button onclick='copyRow(${JSON.stringify(row)})' style="background:none; border:none; color:var(--primary); cursor:pointer;"><i class="ph ph-copy"></i></button></td></tr>`;
-            }).join('');
-        }
-        function handleSort(col) { if (sortColumn === col) sortAsc = !sortAsc; else { sortColumn = col; sortAsc = true; } renderTable(); }
-        function copyRow(row) { navigator.clipboard.writeText(JSON.stringify(row, null, 2)); showToast('Kopyalandı!'); }
-
-        // PDF / TXT İndirme (Basitleştirilmiş)
-        function downloadData(format) {
-            if (!currentResults) return;
-            let content = "";
-            if (format === 'txt') { currentResults.forEach(r => { for (let k in r) content += `${k}: ${r[k]}\n`; content += "---\n"; }); }
-            if (format === 'csv') { content = currentColumns.join(',') + '\n'; currentResults.forEach(r => content += currentColumns.map(c => `"${r[c] || ''}"`).join(',') + '\n'); }
-            if (format === 'pdf') { 
-                const { jsPDF } = window.jspdf; const doc = new jsPDF();
-                doc.text("Syncra Raporu", 10, 10); let y = 20;
-                currentResults.forEach(r => { for (let k in r) { if(y>280){doc.addPage();y=10;} doc.text(`${k}: ${r[k]}`, 10, y); y+=7; } y+=5; });
-                doc.save("rapor.pdf"); return;
-            }
-            const blob = new Blob([content], { type: 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `rapor.${format}`; a.click();
-        }
+        // --- MOBİL MENÜ ---
+        document.getElementById('menuToggle').addEventListener('click', () => document.getElementById('sidebar').classList.toggle('open'));
     </script>
 </body>
 </html>
