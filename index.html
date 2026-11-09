@@ -1,175 +1,175 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Syncra Cloud | Sorgu Paneli</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #e2e8f0; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .loader { border: 4px solid rgba(255, 255, 255, 0.1); border-left-color: #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090d18">
+<title>Syncra — 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#090d18;--sidebar:#0d1220;--panel:#111a2b;--panel2:#141f32;--line:#202c40;--text:#edf2fc;--muted:#8390a7;--accent:#8b7cff;--green:#4dd6a0;--blue:#64a9ff;--orange:#f4b56a;--red:#ff7185;--font:'DM Sans',sans-serif;--display:'Space Grotesk',sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px var(--font);min-height:100vh}button,input{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+.app{min-height:100vh}.sidebar{position:fixed;inset:0 auto 0 0;width:250px;background:var(--sidebar);border-right:1px solid #1b2639;padding:25px 16px 16px;display:flex;flex-direction:column;z-index:5}
+.brand{display:flex;align-items:center;gap:10px;padding:0 8px 26px;font:700 20px var(--display);letter-spacing:-.8px}.brand-mark{width:32px;height:32px;display:grid;place-items:center;border-radius:10px;background:linear-gradient(145deg,#9a8cff,#6354d9);color:white;font:700 18px var(--display)}.muted-brand{color:#8e9ab2;font-weight:500}
+.workspace{display:flex;align-items:center;gap:10px;background:#141d2e;border:1px solid #253149;border-radius:10px;padding:10px;margin-bottom:32px}.workspace-icon{width:32px;height:32px;display:grid;place-items:center;background:#292d54;color:#b3aaff;border-radius:8px;font-size:10px;font-weight:700}.workspace b,.workspace small{display:block}.workspace b{font-size:11px}.workspace small{font-size:10px;color:var(--muted);margin-top:4px}.chevron{margin-left:auto;color:#75829a}
+.nav-label{font-size:9px;letter-spacing:1.7px;color:#68758d;font-weight:700;padding:0 10px 10px}.nav{display:grid;gap:5px}.nav-item{border:0;background:transparent;color:#8996ad;text-align:left;padding:11px 12px;border-radius:8px;font-size:12px;display:flex;align-items:center;gap:12px;transition:.18s}.nav-item:hover{background:#151f32;color:#dce3f5}.nav-item.active{background:#242348;color:#b5aaff;box-shadow:inset 2px 0 #9587ff}.nav-icon{width:17px;text-align:center;font-size:16px}.management-label{margin-top:30px}
+.sidebar-bottom{margin-top:auto}.help-card{background:linear-gradient(145deg,#1c2440,#171d32);border:1px solid #34365d;padding:14px;border-radius:10px;margin-bottom:17px}.help-icon{color:#a69bff;font-size:18px;margin-bottom:10px}.help-card b{font-size:11px}.help-card p{font-size:10px;line-height:1.5;color:#8793ac}.help-card span{font-size:10px;color:#a99fff}.user-card{border-top:1px solid #202b3e;padding:16px 5px 0;display:flex;align-items:center;gap:10px}.avatar,.top-avatar{width:31px;height:31px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#6c60d9,#37346d);font-weight:700;color:#fff;font-size:12px}.user-meta{flex:1}.user-meta b,.user-meta small{display:block}.user-meta b{font-size:11px}.user-meta small{font-size:10px;color:var(--muted);margin-top:4px}.user-card button{border:0;background:none;color:#8996ad;font-size:16px}
+.main{margin-left:250px;min-height:100vh;display:flex;flex-direction:column}.topbar{height:67px;border-bottom:1px solid #1b2639;display:flex;align-items:center;justify-content:space-between;padding:0 38px;background:#0b101d;position:sticky;top:0;z-index:4}.breadcrumb{color:#718099;font-size:11px}.breadcrumb span{padding:0 10px;color:#3e4b63}.breadcrumb b{color:#dce3f4;font-weight:600}.top-actions{display:flex;align-items:center;gap:18px}.status-pill{display:flex;align-items:center;gap:8px;color:#8da49e;font-size:10px;background:#14251f;border:1px solid #244438;padding:7px 10px;border-radius:30px}.status-pill i,.secure-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 10px #4dd6a066}.icon-btn{border:1px solid #28344b;background:#131d2e;color:#aab5c9;width:31px;height:31px;border-radius:8px;font-size:18px}.top-avatar{width:29px;height:29px}
+.content{width:min(1440px,100%);margin:0 auto;padding:35px 38px 50px;flex:1}.page-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:27px}.eyebrow{font-size:10px;letter-spacing:2px;color:#9388ff;font-weight:700}.page-heading h1{font:600 29px var(--display);letter-spacing:-1px;margin:8px 0 5px}.page-heading p{margin:0;color:#8794ab;font-size:12px}.date-chip{border:1px solid #26334a;background:#111a2a;padding:9px 12px;border-radius:8px;color:#aab5c9;font-size:10px}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}.stat-card,.panel-card{background:linear-gradient(145deg,#121c2e,#101827);border:1px solid #202d42;border-radius:12px}.stat-card{padding:17px 18px 15px;position:relative;overflow:hidden}.stat-top{display:flex;justify-content:space-between;align-items:center;color:#9aa7bc;font-size:11px}.stat-icon{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-size:14px}.purple{color:#b0a6ff;background:#342f61}.green{color:#6ce0ae;background:#1e453a}.blue{color:#83bdff;background:#1d3b5a}.orange{color:#ffc17e;background:#4a3828}.stat-card strong{display:block;font:600 28px var(--display);margin:12px 0 4px}.stat-card small{font-size:10px;color:#728099}.stat-line{position:absolute;bottom:0;left:0;height:2px;width:100%;opacity:.75}.purple-line{background:linear-gradient(90deg,#8b7cff,transparent)}.green-line{background:linear-gradient(90deg,#4dd6a0,transparent)}.blue-line{background:linear-gradient(90deg,#64a9ff,transparent)}.orange-line{background:linear-gradient(90deg,#f4b56a,transparent)}
+.dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:18px}.panel-card{padding:19px;min-height:250px}.panel-heading{display:flex;justify-content:space-between;align-items:flex-start}.panel-heading h3{font:600 14px var(--display);margin:0 0 5px}.panel-heading p{font-size:10px;color:#78869d;margin:0}.text-btn{border:0;background:transparent;color:#a79dff;font-size:10px}.category-bars{margin-top:27px;display:grid;gap:18px}.bar-head{display:flex;justify-content:space-between;font-size:10px;color:#b6c0d2;margin-bottom:8px}.bar-head span:last-child{color:#8795ac}.bar-track{height:6px;background:#202c40;border-radius:10px;overflow:hidden}.bar-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,#8a7cff,#5e91ed)}.empty-state{padding:30px 10px;text-align:center;color:#74829a;font-size:11px}.activity-list{margin-top:16px}.activity{display:flex;gap:11px;padding:11px 0;border-bottom:1px solid #202a3d}.activity:last-child{border:0}.activity-dot{width:7px;height:7px;background:#8e82ff;border-radius:50%;margin-top:4px}.activity b{display:block;font-size:10px;font-weight:600}.activity p{margin:4px 0 0;color:#8190a8;font-size:10px}.activity time{margin-left:auto;white-space:nowrap;color:#68758d;font-size:9px}
+.search-panel{margin-top:18px;background:linear-gradient(145deg,#121c2e,#101827);border:1px solid #202d42;border-radius:12px;padding:20px}.search-heading{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px}.search-heading h3{font:600 15px var(--display);margin:0 0 5px}.search-heading p{font-size:10px;color:#78869d;margin:0}.demo-label{font-size:9px;letter-spacing:1px;color:#a99fff;border:1px solid #39365e;background:#242348;padding:6px 9px;border-radius:20px}
+.query-tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:15px}.query-tab{border:1px solid #29364e;background:#101827;color:#8f9bb0;border-radius:7px;padding:8px 11px;font-size:10px}.query-tab.active{background:#242348;border-color:#49427b;color:#c3bbff}.query-row{display:flex;gap:9px}.query-input{flex:1;min-width:0;border:1px solid #29364e;background:#0e1626;color:#edf2fc;border-radius:9px;padding:12px 14px;outline:none;font-size:12px}.query-input:focus{border-color:#897cff;box-shadow:0 0 0 3px #897cff1b}.primary-btn,.ghost-btn{border:0;border-radius:9px;padding:11px 16px;font-weight:700;transition:.2s}.primary-btn{background:linear-gradient(110deg,#8c7cff,#6d60e8);color:white;box-shadow:0 6px 20px #7668ff25}.primary-btn:hover{filter:brightness(1.1);transform:translateY(-1px)}.primary-btn:disabled{opacity:.65;cursor:wait;transform:none}.ghost-btn{background:#19243a;border:1px solid #2b3851;color:#c5cde0}.result-box{margin-top:16px;padding:15px;border:1px solid #26334a;background:#0e1626;border-radius:9px;min-height:105px;font:11px/1.8 'Space Grotesk',monospace;color:#9ba9c0}.result-top{display:flex;justify-content:space-between;border-bottom:1px solid #26334a;padding-bottom:8px;margin-bottom:10px;color:#a99fff;font-size:10px}.result-line{margin:3px 0}.result-line strong{color:#6ed6ad;font-weight:600}.result-line .accent{color:#b4aaff}.result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.result-cell{padding:9px;background:#151f31;border-radius:7px}.result-cell small{display:block;color:#718099;font-size:8px}.result-cell b{display:block;color:#c8d2e4;font-size:10px;margin-top:3px}.spin{width:13px;height:13px;border:2px solid #ffffff55;border-top-color:white;border-radius:50%;display:inline-block;vertical-align:middle;animation:spin .7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+.footer{border-top:1px solid #1a2538;padding:16px 38px;display:flex;justify-content:space-between;color:#59677f;font-size:9px}.toast{position:fixed;top:20px;right:20px;z-index:50;background:#1a2a28;border:1px solid #2b6352;color:#9de7c7;padding:12px 16px;border-radius:9px;font-size:11px;opacity:0;transform:translateY(-8px);transition:.2s;pointer-events:none}.toast.show{opacity:1;transform:translateY(0)}.fade{animation:fade .35s ease}@keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@media(max-width:1100px){.sidebar{width:215px}.main{margin-left:215px}.content{padding:28px 24px}.stats-grid{grid-template-columns:repeat(2,1fr)}.dashboard-grid{grid-template-columns:1fr}}
+@media(max-width:760px){.sidebar{width:66px;padding:18px 9px}.sidebar .brand{padding:0 7px 28px;font-size:0}.brand-mark{flex-shrink:0}.workspace{justify-content:center;padding:8px}.workspace>div:not(.workspace-icon),.workspace .chevron,.nav-label,.nav-item:not(.active){display:none}.nav-item{font-size:0;justify-content:center;padding:12px 5px}.nav-icon{font-size:17px}.management-label{display:none}.help-card,.user-meta,.user-card button{display:none}.user-card{justify-content:center}.main{margin-left:66px}.topbar{padding:0 15px;height:58px}.content{padding:24px 14px}.page-heading{align-items:flex-start;gap:15px}.page-heading h1{font-size:24px}.page-heading p{max-width:250px;line-height:1.5}.date-chip{display:none}.stats-grid{gap:9px}.stat-card{padding:13px}.stat-card strong{font-size:23px}.panel-card,.search-panel{padding:15px}.footer{padding:14px;gap:8px;flex-direction:column}.top-actions{gap:8px}.status-pill{font-size:0;padding:8px}.status-pill i{width:7px;height:7px}}
+@media(max-width:520px){.query-row{flex-direction:column}.query-row .primary-btn{width:100%}.result-grid{grid-template-columns:1fr 1fr}.search-heading{gap:10px}.demo-label{white-space:nowrap}.top-avatar{display:none}}
+</style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4">
-
-    <div class="w-full max-w-4xl">
-        <!-- Başlık -->
-        <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-blue-400 mb-2">SYNCRA CLOUD</h1>
-            <p class="text-slate-400">Gelişmiş Sorgu Paneli</p>
-        </div>
-
-        <!-- Ana Kart -->
-        <div class="glass rounded-2xl p-6 md:p-8 shadow-2xl">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                
-                <!-- Sol Taraf (Menü) -->
-                <div class="col-span-1 space-y-2">
-                    <h2 class="text-lg font-semibold text-slate-300 mb-4">Sorgu Türü</h2>
-                    <button onclick="selectSorgu('tc')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-700 transition menu-btn active">TC Sorgu</button>
-                    <button onclick="selectSorgu('adsoyad')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-700 transition menu-btn">Ad Soyad Sorgu</button>
-                    <button onclick="selectSorgu('tcgsm')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-700 transition menu-btn">TC -> GSM</button>
-                    <button onclick="selectSorgu('gsmtc')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-700 transition menu-btn">GSM -> TC</button>
-                    <button onclick="selectSorgu('adres')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-700 transition menu-btn">TC -> Adres</button>
-                    <button onclick="selectSorgu('eokul')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-700 transition menu-btn">TC -> E-Okul</button>
-                    <button onclick="selectSorgu('aile')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-700 transition menu-btn">TC -> Aile</button>
-                    <button onclick="selectSorgu('sulale')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-700 transition menu-btn">TC -> Sülale</button>
-                    <button onclick="selectSorgu('tapu')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-700 transition menu-btn">TC -> Tapu</button>
-                </div>
-
-                <!-- Sağ Taraf (İçerik) -->
-                <div class="col-span-2">
-                    <div id="form-alani" class="space-y-4">
-                        <h3 id="form-baslik" class="text-xl font-semibold text-blue-300">TC Kimlik Numarası Girin</h3>
-                        
-                        <div id="input-grubu">
-                            <input type="text" id="sorgu-input" placeholder="11 haneli TC Kimlik No" maxlength="11" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-3 text-slate-200 focus:outline-none focus:border-blue-500 transition">
-                        </div>
-
-                        <button onclick="sorgula()" id="sorgula-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition shadow-lg">Sorgula</button>
-                    </div>
-
-                    <!-- Sonuç Alanı -->
-                    <div id="sonuc-alani" class="mt-6 hidden">
-                        <h3 class="text-lg font-semibold text-green-400 mb-2">Sonuçlar</h3>
-                        <div id="sonuc-icerik" class="bg-slate-900 rounded-lg p-4 text-sm font-mono overflow-y-auto max-h-[400px] border border-slate-700"></div>
-                    </div>
-                    
-                    <!-- Yükleniyor -->
-                    <div id="loading" class="hidden flex justify-center items-center mt-6">
-                        <div class="loader"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<body>
+<div id="toast" class="toast"></div>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><span class="brand-mark">S</span><span>syncra<span class="muted-brand">cloud</span></span></div>
+  <div class="workspace"><div class="workspace-icon">SC</div><div><b>Syncra Workspace</b><small>Personal workspace</small></div><span class="chevron">⌄</span></div>
+  <div class="nav-label">WORKSPACE</div>
+  <nav class="nav">
+    <button class="nav-item active" data-page="dashboard"><span class="nav-icon">▦</span> Genel Bakış</button>
+    <button class="nav-item" data-page="tc"><span class="nav-icon">⌗</span> TC Sorgu</button>
+    <button class="nav-item" data-page="name"><span class="nav-icon">◎</span> Ad Soyad Sorgu</button>
+    <button class="nav-item" data-page="gsm"><span class="nav-icon">▤</span> GSM Sorgu</button>
+    <button class="nav-item" data-page="family"><span class="nav-icon">♧</span> Aile Ağacı</button>
+    <button class="nav-item" data-page="surname"><span class="nav-icon">⌘</span> Sülale Sorgu</button>
+    <button class="nav-item" data-page="deed"><span class="nav-icon">▧</span> Tapu Kayıtları</button>
+  </nav>
+  <div class="nav-label management-label">SYSTEM</div>
+  <nav class="nav"><button class="nav-item" data-page="logs"><span class="nav-icon">◷</span> Sistem Logları</button></nav>
+  <div class="sidebar-bottom">
+    <div class="help-card"><div class="help-icon">✦</div><b>Syncra yardım merkezi</b><p>Panelin demo arayüzünü keşfet.</p><span>Arayüz sürümü · v1.0</span></div>
+    <div class="user-card"><div class="avatar">S</div><div class="user-meta"><b>System Operator</b><small>Admin account</small></div><button title="Hesap">↗</button></div>
+  </div>
+</aside>
+<main class="main">
+<header class="topbar"><div class="breadcrumb">Workspace <span>/</span> <b id="crumb">Genel Bakış</b></div><div class="top-actions"><span class="status-pill"><i></i> Sistem aktif</span><button class="icon-btn" id="refreshBtn" title="Yenile">↻</button><div class="top-avatar">S</div></div></header>
+<div class="content">
+  <section class="page-heading"><div><div class="eyebrow">WORKSPACE / OVERVIEW</div><h1 id="pageTitle">Genel Bakış</h1><p id="pageDescription">Syncra Cloud yönetim merkezine hoş geldin.</p></div><div class="date-chip" id="today"></div></section>
+  <section class="stats-grid" id="statsGrid">
+    <article class="stat-card"><div class="stat-top"><span>Toplam sorgu</span><span class="stat-icon purple">⌕</span></div><strong id="totalQueries">0</strong><small>Bu oturumdaki sorgu sayısı</small><div class="stat-line purple-line"></div></article>
+    <article class="stat-card"><div class="stat-top"><span>Tamamlanan</span><span class="stat-icon green">✓</span></div><strong id="completed">0</strong><small>Başarıyla tamamlanan</small><div class="stat-line green-line"></div></article>
+    <article class="stat-card"><div class="stat-top"><span>Aktif modüller</span><span class="stat-icon blue">▦</span></div><strong>08</strong><small>Kullanıma hazır modül</small><div class="stat-line blue-line"></div></article>
+    <article class="stat-card"><div class="stat-top"><span>Sistem durumu</span><span class="stat-icon orange">●</span></div><strong style="font-size:22px">Aktif</strong><small>API bağlantısı sağlıklı</small><div class="stat-line orange-line"></div></article>
+  </section>
+  <section class="search-panel fade" id="searchPanel">
+    <div class="search-heading"><div><h3 id="searchTitle">Yeni sorgu oluştur</h3><p id="searchDesc">Devam etmek için gerekli bilgileri girin.</p></div><span class="demo-label">CANLI SİSTEM</span></div>
+    <div class="query-tabs" id="queryTabs">
+        <button class="query-tab active" data-kind="tc" data-endpoint="tc.php">TC Sorgu</button>
+        <button class="query-tab" data-kind="name" data-endpoint="adsoyad.php">Ad Soyad</button>
+        <button class="query-tab" data-kind="gsm" data-endpoint="tcgsm.php">TC → GSM</button>
+        <button class="query-tab" data-kind="gsmtc" data-endpoint="gsmtc.php">GSM → TC</button>
+        <button class="query-tab" data-kind="adres" data-endpoint="adres.php">TC → Adres</button>
+        <button class="query-tab" data-kind="eokul" data-endpoint="eokul.php">TC → Okul</button>
+        <button class="query-tab" data-kind="aile" data-endpoint="aile.php">TC → Aile</button>
+        <button class="query-tab" data-kind="sulale" data-endpoint="sulale.php">TC → Sülale</button>
+        <button class="query-tab" data-kind="tapu" data-endpoint="tapu.php">TC → Tapu</button>
     </div>
+    <div class="query-row" id="queryInputs">
+        <input id="queryInput" class="query-input" placeholder="11 haneli TC Kimlik No" maxlength="11">
+    </div>
+    <div class="query-row" style="margin-top:10px;">
+        <button id="runQuery" class="primary-btn" style="width:100%">Sorgula &nbsp;↗</button>
+    </div>
+    <div class="result-box" id="resultBox"><div class="result-top"><span>SYNCRA / CONSOLE</span><span>READY</span></div><div class="result-line"><strong>[HAZIR]</strong> Sorgu sistemi kullanıma hazır.</div><div class="result-line">Bir sorgu türü seçip gerekli bilgileri girin.</div></div>
+  </section>
+  <section class="dashboard-grid">
+    <article class="panel-card"><div class="panel-heading"><div><h3>Sistem durumu</h3><p>API kaynak kullanım oranları</p></div><span class="text-btn">GÜNCEL</span></div><div class="category-bars">
+      <div><div class="bar-head"><span>İşlem kapasitesi</span><span>34%</span></div><div class="bar-track"><div class="bar-fill" style="width:34%"></div></div></div>
+      <div><div class="bar-head"><span>Hafıza kullanımı</span><span>62%</span></div><div class="bar-track"><div class="bar-fill" style="width:62%"></div></div></div>
+      <div><div class="bar-head"><span>Bağlantı durumu</span><span>18%</span></div><div class="bar-track"><div class="bar-fill" style="width:18%"></div></div></div>
+    </div></article>
+    <article class="panel-card"><div class="panel-heading"><div><h3>Son aktiviteler</h3><p>Bu oturumdaki sorgu hareketleri</p></div><button class="text-btn" id="clearLogs">Temizle</button></div><div class="activity-list" id="activityList"><div class="activity"><i class="activity-dot"></i><div><b>Panel başlatıldı</b><p>Syncra Cloud hazır.</p></div><time>Şimdi</time></div></div></article>
+  </section>
+</div>
+<footer class="footer"><span>© 2026 Syncra Cloud</span><span>Canlı Sorgu Sistemi</span></footer>
+</main></div>
+<script>
+const $=s=>document.querySelector(s);const $$=s=>[...document.querySelectorAll(s)];
+let currentKind = "tc", endpoint = "tc.php", count = 0, completed = 0, activePage = "dashboard";
 
-    <script>
-        let aktifSorgu = 'tc';
+const pageNames={dashboard:"Genel Bakış",tc:"TC Sorgu",name:"Ad Soyad Sorgu",gsm:"GSM Sorgu",family:"Aile Ağacı",surname:"Sülale Sorgu",deed:"Tapu Kayıtları",logs:"Sistem Logları"};
+const pageHints={dashboard:"Syncra Cloud yönetim merkezine hoş geldin.",tc:"Kimlik sorgulama ekranı.",name:"Ad ve soyad ile arama ekranı.",gsm:"Telefon numarası ile arama ekranı.",family:"Aile bireylerini listeler.",surname:"Geniş aile ağacını listeler.",deed:"Tapu kayıtlarını listeler.",logs:"Bu oturumda gerçekleşen sorgu hareketleri."};
+const pageEndpoints={tc:"tc.php",name:"adsoyad.php",gsm:"tcgsm.php",family:"aile.php",surname:"sulale.php",deed:"tapu.php",logs:null};
 
-        function selectSorgu(type) {
-            aktifSorgu = type;
-            // Menü stillerini güncelle
-            document.querySelectorAll('.menu-btn').forEach(btn => btn.classList.remove('bg-blue-600', 'active'));
-            event.target.classList.add('bg-blue-600', 'active');
+function addActivity(title, detail) {
+    const row = document.createElement("div");
+    row.className = "activity fade";
+    row.innerHTML = '<i class="activity-dot"></i><div><b></b><p></p></div><time>Şimdi</time>';
+    row.querySelector("b").textContent = title;
+    row.querySelector("p").textContent = detail;
+    $("#activityList").prepend(row);
+    while($("#activityList").children.length > 5) $("#activityList").lastElementChild.remove();
+}
 
-            const inputGrubu = document.getElementById('input-grubu');
-            const formBaslik = document.getElementById('form-baslik');
+function updateInputs(kind) {
+    currentKind = kind;
+    endpoint = $$(`.query-tab[data-kind="${kind}"]`).dataset?.endpoint || "tc.php";
+    
+    if (kind === "name") {
+        $("#queryInputs").innerHTML = `
+            <input id="input-ad" class="query-input" placeholder="Ad" style="margin-bottom:8px;">
+            <input id="input-soyad" class="query-input" placeholder="Soyad">
+        `;
+    } else if (kind === "gsmtc") {
+        $("#queryInputs").innerHTML = `<input id="queryInput" class="query-input" placeholder="10 haneli telefon numarası" maxlength="10">`;
+    } else {
+        $("#queryInputs").innerHTML = `<input id="queryInput" class="query-input" placeholder="${kind === 'gsm' || kind === 'gsmtc' ? 'Telefon No' : '11 haneli TC Kimlik No'}" maxlength="${kind === 'gsm' || kind === 'gsmtc' ? 10 : 11}">`;
+    }
+}
 
-            // Formu sıfırla
-            document.getElementById('sonuc-alani').classList.add('hidden');
-            document.getElementById('loading').classList.add('hidden');
+$$(".query-tab").forEach(b => b.addEventListener("click", () => {
+    $$(".query-tab").forEach(x => x.classList.remove("active"));
+    b.classList.add("active");
+    updateInputs(b.dataset.kind);
+}));
 
-            if (type === 'adsoyad') {
-                formBaslik.innerText = 'Ad ve Soyad Girin';
-                inputGrubu.innerHTML = `
-                    <div class="grid grid-cols-2 gap-4">
-                        <input type="text" id="input-ad" placeholder="Ad" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500">
-                        <input type="text" id="input-soyad" placeholder="Soyad" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500">
-                    </div>
-                `;
-            } else {
-                formBaslik.innerText = (type === 'gsmtc') ? 'Telefon Numarası Girin (10 Hane)' : 'TC Kimlik Numarası Girin (11 Hane)';
-                inputGrubu.innerHTML = `<input type="text" id="sorgu-input" placeholder="${type === 'gsmtc' ? '5XX XXX XX XX' : '11 haneli TC'}" maxlength="${type === 'gsmtc' ? 10 : 11}" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500">`;
-            }
+$$(".nav-item[data-page]").forEach(b => b.addEventListener("click", () => {
+    activePage = b.dataset.page;
+    $$(".nav-item").forEach(x => x.classList.toggle("active", x === b));
+    $("#crumb").textContent = pageNames[activePage];
+    $("#pageTitle").textContent = pageNames[activePage];
+    $("#pageDescription").textContent = pageHints[activePage];
+    $("#searchTitle").textContent = activePage === "dashboard" ? "Yeni sorgu oluştur" : pageNames[activePage] + " · Canlı Sorgu";
+    
+    // Menüye tıklandığında ilgili tab'ı seç
+    if (pageEndpoints[activePage]) {
+        const tab = $$(`.query-tab[data-kind="${activePage === 'family' ? 'aile' : activePage === 'surname' ? 'sulale' : activePage === 'deed' ? 'tapu' : activePage}"]`)[0];
+        if (tab) tab.click();
+    }
+    if(activePage === "logs") addActivity("Sistem logları açıldı", "Oturum hareketleri listeleniyor.");
+}));
+
+$("#runQuery").addEventListener("click", async () => {
+    const btn = $("#runQuery");
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spin"></span> Sorgulanıyor...';
+    
+    $("#resultBox").innerHTML = '<div class="result-top"><span>SYNCRA / CONSOLE</span><span>PROCESSING</span></div><div class="result-line"><strong>[BAŞLATILDI]</strong> API isteği gönderiliyor...</div>';
+    
+    let params = {};
+    if (currentKind === "name") {
+        const ad = $("#input-ad").value.trim();
+        const soyad = $("#input-soyad").value.trim();
+        if (!ad || !soyad) {
+            $("#resultBox").innerHTML = '<div class="result-line" style="color:#f4b56a">Lütfen ad ve soyad girin.</div>';
+            btn.disabled = false; btn.textContent = "Sorgula ↗"; return;
         }
-
-        async function sorgula() {
-            const sonucAlani = document.getElementById('sonuc-alani');
-            const sonucIcerik = document.getElementById('sonuc-icerik');
-            const loading = document.getElementById('loading');
-            const sorgulaBtn = document.getElementById('sorgula-btn');
-            
-            sonucAlani.classList.add('hidden');
-            loading.classList.remove('hidden');
-            sorgulaBtn.disabled = true;
-            sorgulaBtn.innerText = 'Sorgulanıyor...';
-
-            let params = {};
-            let endpoint = '';
-
-            try {
-                if (aktifSorgu === 'adsoyad') {
-                    const ad = document.getElementById('input-ad').value.trim();
-                    const soyad = document.getElementById('input-soyad').value.trim();
-                    if (!ad || !soyad) throw new Error('Ad ve Soyad zorunludur.');
-                    params = { ad, soyad };
-                    endpoint = 'adsoyad.php';
-                } else {
-                    const val = document.getElementById('sorgu-input').value.trim();
-                    if (!val) throw new Error('Lütfen gerekli alanı doldurun.');
-                    
-                    if (aktifSorgu === 'tc') { endpoint = 'tc.php'; params = { tc: val }; }
-                    else if (aktifSorgu === 'tcgsm') { endpoint = 'tcgsm.php'; params = { tc: val }; }
-                    else if (aktifSorgu === 'gsmtc') { endpoint = 'gsmtc.php'; params = { gsm: val, auth: 'fire' }; }
-                    else if (aktifSorgu === 'adres') { endpoint = 'adres.php'; params = { tc: val }; }
-                    else if (aktifSorgu === 'eokul') { endpoint = 'eokul.php'; params = { tc: val }; }
-                    else if (aktifSorgu === 'aile') { endpoint = 'aile.php'; params = { tc: val }; }
-                    else if (aktifSorgu === 'sulale') { endpoint = 'sulale.php'; params = { tc: val }; }
-                    else if (aktifSorgu === 'tapu') { endpoint = 'tapu.php'; params = { tc: val }; }
-                }
-
-                // Vercel Proxy'sine istek at
-                const queryParams = new URLSearchParams({ endpoint, ...params }).toString();
-                const response = await fetch(`/api/proxy?${queryParams}`);
-                
-                if (!response.ok) throw new Error('Sunucu hatası: ' + response.status);
-                
-                const data = await response.json();
-
-                if (data.error) throw new Error(data.error);
-                if (!data.data || data.data.length === 0) {
-                    sonucIcerik.innerHTML = '<span class="text-yellow-400">⚠️ Kayıt bulunamadı.</span>';
-                } else {
-                    // Veriyi okunaklı formata çevir
-                    let html = '';
-                    data.data.forEach((row, index) => {
-                        html += `<div class="mb-4 border-b border-slate-700 pb-2">
-                            <span class="text-blue-400 font-bold">#${index + 1} ${row.AD || row.ADI || ''} ${row.SOYAD || row.SOYADI || ''}</span><br>`;
-                        
-                        for (const [key, value] of Object.entries(row)) {
-                            if (value && value !== 'Bulunamadı' && value !== 'YOK') {
-                                html += `<span class="text-slate-400">${key}:</span> <span class="text-slate-200">${value}</span><br>`;
-                            }
-                        }
-                        html += `</div>`;
-                    });
-                    sonucIcerik.innerHTML = html;
-                }
-
-                sonucAlani.classList.remove('hidden');
-            } catch (error) {
-                sonucIcerik.innerHTML = `<span class="text-red-400">❌ Hata: ${error.message}</span>`;
-                sonucAlani.classList.remove('hidden');
-            } finally {
-                loading.classList.add('hidden');
-                sorgulaBtn.disabled = false;
-                sorgulaBtn.innerText = 'Sorgula';
-            }
+        params = { ad, soyad };
+    } else {
+        const val = $("#queryInput").value.trim();
+        if (!val) {
+            $("#resultBox").innerHTML = '<div class="result-line" style="color:#f4b56a">Lütfen gerekli alanı doldurun.</div>';
+            btn.disabled = false; btn.textContent = "Sorgula ↗"; return;
         }
-    </script>
-</body>
-</html>
+        params = currentKind === "gsmtc" ? { gsm: val, auth: 'fire' } : { tc: val };
+    }
