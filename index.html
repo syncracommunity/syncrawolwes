@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syncra Cloud | Sorgu Paneli</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #e2e8f0; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .loader { border: 4px solid rgba(255, 255, 255, 0.1); border-left-color: #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="w-full max-w-4xl">
+        <!-- Başlık -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-blue-400 mb-2">SYNCRA CLOUD</h1>
+            <p class="text-slate-400">Gelişmiş Sorgu Paneli</p>
+        </div>
+
+        <!-- Ana Kart -->
+        <div class="glass rounded-2xl p-6 md:p-8 shadow-2xl">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- Sol Taraf (Menü) -->
+                <div class="col-span-1 space-y-2">
+                    <h2 class="text-lg font-semibold text-slate-300 mb-4">Sorgu Türü</h2>
+                    <button onclick="selectSorgu('tc')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-700 transition menu-btn active">TC Sorgu</button>
+                    <button onclick="selectSorgu('adsoyad')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-700 transition menu-btn">Ad Soyad Sorgu</button>
+                    <button onclick="selectSorgu('tcgsm')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-700 transition menu-btn">TC -> GSM</button>
+                    <button onclick="selectSorgu('gsmtc')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-700 transition menu-btn">GSM -> TC</button>
+                    <button onclick="selectSorgu('adres')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-700 transition menu-btn">TC -> Adres</button>
+                    <button onclick="selectSorgu('eokul')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-700 transition menu-btn">TC -> E-Okul</button>
+                    <button onclick="selectSorgu('aile')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-700 transition menu-btn">TC -> Aile</button>
+                    <button onclick="selectSorgu('sulale')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-700 transition menu-btn">TC -> Sülale</button>
+                    <button onclick="selectSorgu('tapu')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-700 transition menu-btn">TC -> Tapu</button>
+                </div>
+
+                <!-- Sağ Taraf (İçerik) -->
+                <div class="col-span-2">
+                    <div id="form-alani" class="space-y-4">
+                        <h3 id="form-baslik" class="text-xl font-semibold text-blue-300">TC Kimlik Numarası Girin</h3>
+                        
+                        <div id="input-grubu">
+                            <input type="text" id="sorgu-input" placeholder="11 haneli TC Kimlik No" maxlength="11" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-3 text-slate-200 focus:outline-none focus:border-blue-500 transition">
+                        </div>
+
+                        <button onclick="sorgula()" id="sorgula-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition shadow-lg">Sorgula</button>
+                    </div>
+
+                    <!-- Sonuç Alanı -->
+                    <div id="sonuc-alani" class="mt-6 hidden">
+                        <h3 class="text-lg font-semibold text-green-400 mb-2">Sonuçlar</h3>
+                        <div id="sonuc-icerik" class="bg-slate-900 rounded-lg p-4 text-sm font-mono overflow-y-auto max-h-[400px] border border-slate-700"></div>
+                    </div>
+                    
+                    <!-- Yükleniyor -->
+                    <div id="loading" class="hidden flex justify-center items-center mt-6">
+                        <div class="loader"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let aktifSorgu = 'tc';
+
+        function selectSorgu(type) {
+            aktifSorgu = type;
+            // Menü stillerini güncelle
+            document.querySelectorAll('.menu-btn').forEach(btn => btn.classList.remove('bg-blue-600', 'active'));
+            event.target.classList.add('bg-blue-600', 'active');
+
+            const inputGrubu = document.getElementById('input-grubu');
+            const formBaslik = document.getElementById('form-baslik');
+
+            // Formu sıfırla
+            document.getElementById('sonuc-alani').classList.add('hidden');
+            document.getElementById('loading').classList.add('hidden');
+
+            if (type === 'adsoyad') {
+                formBaslik.innerText = 'Ad ve Soyad Girin';
+                inputGrubu.innerHTML = `
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="text" id="input-ad" placeholder="Ad" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500">
+                        <input type="text" id="input-soyad" placeholder="Soyad" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500">
+                    </div>
+                `;
+            } else {
+                formBaslik.innerText = (type === 'gsmtc') ? 'Telefon Numarası Girin (10 Hane)' : 'TC Kimlik Numarası Girin (11 Hane)';
+                inputGrubu.innerHTML = `<input type="text" id="sorgu-input" placeholder="${type === 'gsmtc' ? '5XX XXX XX XX' : '11 haneli TC'}" maxlength="${type === 'gsmtc' ? 10 : 11}" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500">`;
+            }
+        }
+
+        async function sorgula() {
+            const sonucAlani = document.getElementById('sonuc-alani');
+            const sonucIcerik = document.getElementById('sonuc-icerik');
+            const loading = document.getElementById('loading');
+            const sorgulaBtn = document.getElementById('sorgula-btn');
+            
+            sonucAlani.classList.add('hidden');
+            loading.classList.remove('hidden');
+            sorgulaBtn.disabled = true;
+            sorgulaBtn.innerText = 'Sorgulanıyor...';
+
+            let params = {};
+            let endpoint = '';
+
+            try {
+                if (aktifSorgu === 'adsoyad') {
+                    const ad = document.getElementById('input-ad').value.trim();
+                    const soyad = document.getElementById('input-soyad').value.trim();
+                    if (!ad || !soyad) throw new Error('Ad ve Soyad zorunludur.');
+                    params = { ad, soyad };
+                    endpoint = 'adsoyad.php';
+                } else {
+                    const val = document.getElementById('sorgu-input').value.trim();
+                    if (!val) throw new Error('Lütfen gerekli alanı doldurun.');
+                    
+                    if (aktifSorgu === 'tc') { endpoint = 'tc.php'; params = { tc: val }; }
+                    else if (aktifSorgu === 'tcgsm') { endpoint = 'tcgsm.php'; params = { tc: val }; }
+                    else if (aktifSorgu === 'gsmtc') { endpoint = 'gsmtc.php'; params = { gsm: val, auth: 'fire' }; }
+                    else if (aktifSorgu === 'adres') { endpoint = 'adres.php'; params = { tc: val }; }
+                    else if (aktifSorgu === 'eokul') { endpoint = 'eokul.php'; params = { tc: val }; }
+                    else if (aktifSorgu === 'aile') { endpoint = 'aile.php'; params = { tc: val }; }
+                    else if (aktifSorgu === 'sulale') { endpoint = 'sulale.php'; params = { tc: val }; }
+                    else if (aktifSorgu === 'tapu') { endpoint = 'tapu.php'; params = { tc: val }; }
+                }
+
+                // Vercel Proxy'sine istek at
+                const queryParams = new URLSearchParams({ endpoint, ...params }).toString();
+                const response = await fetch(`/api/proxy?${queryParams}`);
+                
+                if (!response.ok) throw new Error('Sunucu hatası: ' + response.status);
+                
+                const data = await response.json();
+
+                if (data.error) throw new Error(data.error);
+                if (!data.data || data.data.length === 0) {
+                    sonucIcerik.innerHTML = '<span class="text-yellow-400">⚠️ Kayıt bulunamadı.</span>';
+                } else {
+                    // Veriyi okunaklı formata çevir
+                    let html = '';
+                    data.data.forEach((row, index) => {
+                        html += `<div class="mb-4 border-b border-slate-700 pb-2">
+                            <span class="text-blue-400 font-bold">#${index + 1} ${row.AD || row.ADI || ''} ${row.SOYAD || row.SOYADI || ''}</span><br>`;
+                        
+                        for (const [key, value] of Object.entries(row)) {
+                            if (value && value !== 'Bulunamadı' && value !== 'YOK') {
+                                html += `<span class="text-slate-400">${key}:</span> <span class="text-slate-200">${value}</span><br>`;
+                            }
+                        }
+                        html += `</div>`;
+                    });
+                    sonucIcerik.innerHTML = html;
+                }
+
+                sonucAlani.classList.remove('hidden');
+            } catch (error) {
+                sonucIcerik.innerHTML = `<span class="text-red-400">❌ Hata: ${error.message}</span>`;
+                sonucAlani.classList.remove('hidden');
+            } finally {
+                loading.classList.add('hidden');
+                sorgulaBtn.disabled = false;
+                sorgulaBtn.innerText = 'Sorgula';
+            }
+        }
+    </script>
+</body>
+</html>
