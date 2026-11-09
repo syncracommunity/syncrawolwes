@@ -97,9 +97,12 @@ function setMode(m){
     $('#authSub').textContent=m==='login'?'Hesabına giriş yaparak çalışma alanına devam et.':'Birkaç adımda kendi çalışma alanını oluştur.';
     $('#authSubmit').innerHTML=m==='login'?'<i class="ph ph-arrow-right"></i> Giriş Yap':'<i class="ph ph-user-plus"></i> Kayıt Ol';
 }
+
+// Tıklama olaylarını bağla
 $('#loginTab').onclick=()=>setMode('login');
 $('#registerTab').onclick=()=>setMode('register');
 
+// --- FORM GÖNDERİMİ ---
 $('#authForm').onsubmit=async e=>{
     e.preventDefault();
     const email=$('#email').value.trim().toLowerCase(), password=$('#password').value;
@@ -111,29 +114,28 @@ $('#authForm').onsubmit=async e=>{
             const username = $('#username').value.trim();
             if(!username) throw Error('Kullanıcı adı gerekli.');
             
+            // 1. Supabase Auth ile kayıt
             const { data, error } = await supabase.auth.signUp({ email, password });
             if (error) throw error;
             
+            // 2. Profiles tablosuna ekle
             if (data.user) {
                 await supabase.from('profiles').insert([{ 
                     id: data.user.id, 
                     username: username, 
                     email: email,
-                    password: password // Demo amaçlı
+                    password: password // Demo amaçlı açık tutuluyor
                 }]);
             }
+            
             toast('Kayıt Başarılı! Giriş yapılıyor...');
-            current = { username, email, role: username.toLowerCase()==='wolwes' ? 'admin' : 'free' };
-            setTimeout(() => enterApp(), 1000);
+            // Kayıt sonrası oturum açmışsa içeri al
+            setTimeout(() => checkSession(), 1500);
+            
         } else {
             const { data, error } = await supabase.auth.signInWithPassword({ email, password });
             if (error) throw error;
-            
-            const { data: profile } = await supabase.from('profiles').select('*').eq('id', data.user.id).single();
-            current = profile || { username: email.split('@')[0], email, role: 'free' };
-            
-            if(current.username.toLowerCase() === 'wolwes') current.role = 'admin';
-            enterApp();
+            checkSession(); // Başarılıysa oturum kontrolü yapıp içeri al
         }
     } catch(err) {
         toast(err.message || 'Bir hata oluştu.');
@@ -143,7 +145,31 @@ $('#authForm').onsubmit=async e=>{
     }
 };
 
-// --- UYGULAMA GİRİŞİ ---
+// --- OTURUM KONTROLÜ & GİRİŞ ---
+async function checkSession() {
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (session) {
+        // Kullanıcının profil bilgilerini çek
+        const { data: profile } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
+        
+        if (profile) {
+            current = profile;
+            if(current.username.toLowerCase() === 'wolwes') current.role = 'admin';
+            enterApp();
+        } else {
+            // Profil yoksa (nadiren olur), temel bilgilerle gir
+            current = { username: session.user.email.split('@')[0], email: session.user.email, role: 'free' };
+            enterApp();
+        }
+    } else {
+        // Oturum yoksa auth ekranında kal
+        $('#auth').style.display='grid';
+        $('#app').style.display='none';
+        setMode('login');
+    }
+}
+
 function enterApp(){
     $('#auth').style.display='none';
     $('#app').style.display='block';
@@ -259,7 +285,8 @@ $('#runQuery').onclick = async () => {
         } else {
             window.lastRows = rows;
             renderRows(rows);
-            // İstatistikleri güncelle
+            
+            // İstatistikleri güncelle (LocalStorage)
             let total = parseInt(localStorage.getItem(`syncra_${current.username}_total`) || '0') + 1;
             let today = parseInt(localStorage.getItem(`syncra_${current.username}_today`) || '0') + 1;
             localStorage.setItem(`syncra_${current.username}_total`, total);
@@ -387,18 +414,6 @@ $('#logout').onclick = async () => {
 // --- BAŞLANGIÇ ---
 if(localStorage.getItem('sc_theme')) setTheme(localStorage.getItem('sc_theme'));
 setMode('login');
-
-// Oturum kontrolü
-supabase.auth.getSession().then(({data: {session}}) => {
-    if(session) {
-        supabase.from('profiles').select('*').eq('id', session.user.id).single().then(({data}) => {
-            if(data) {
-                current = data;
-                if(current.username.toLowerCase() === 'wolwes') current.role = 'admin';
-                enterApp();
-            }
-        });
-    }
-});
+checkSession(); // Sayfa açılır açılmaz oturum var mı diye bak
 </script>
 </body></html>
