@@ -3,11 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Syncra | Yönetim Paneli</title>
+<title>Syncra | Sorgu Paneli</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<!-- İkonlar için Phosphor Icons -->
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
 <style>
     :root { 
@@ -18,7 +17,7 @@
         --border: #2a2e42; 
         --text: #ffffff; 
         --muted: #8b92a5; 
-        --primary: #3b82f6; /* Mavi vurgu */
+        --primary: #3b82f6;
         --primary-glow: rgba(59, 130, 246, 0.2);
         --danger: #ef4444;
         --success: #10b981;
@@ -29,24 +28,24 @@
     body { background-color: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; height: 100vh; display: flex; overflow: hidden; }
     
     /* --- SOL MENÜ --- */
-    .sidebar { width: 260px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 10; }
+    .sidebar { width: 260px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 10; overflow-y: auto; }
     .brand { padding: 25px 20px; font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); }
     .brand-icon { width: 28px; height: 28px; background: var(--primary); border-radius: 8px; display: grid; place-items: center; font-size: 16px; }
     
-    .nav-section { padding: 20px 15px; }
+    .nav-section { padding: 15px 15px; }
     .nav-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 600; margin-bottom: 10px; padding-left: 10px; }
     .nav-item { 
-        padding: 12px 15px; 
+        padding: 10px 15px; 
         color: var(--muted); 
         cursor: pointer; 
-        font-size: 14px; 
+        font-size: 13px; 
         font-weight: 500;
         border-radius: 8px; 
         transition: 0.2s; 
         display: flex; 
         align-items: center; 
         gap: 12px;
-        margin-bottom: 4px;
+        margin-bottom: 2px;
     }
     .nav-item i { font-size: 18px; }
     .nav-item:hover { background: var(--panel-hover); color: #fff; }
@@ -56,23 +55,19 @@
     /* --- ANA İÇERİK --- */
     .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
     
-    /* Üst Bar */
     .topbar { height: 70px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; background: var(--bg); position: sticky; top: 0; z-index: 5; }
     .topbar-left { display: flex; align-items: center; gap: 15px; font-weight: 600; font-size: 16px; }
     .topbar-right { display: flex; align-items: center; gap: 20px; color: var(--muted); font-size: 20px; }
     .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--panel); border: 1px solid var(--border); display: grid; place-items: center; overflow: hidden; }
     .avatar img { width: 100%; height: 100%; object-fit: cover; }
 
-    /* İçerik Alanı */
     .content { padding: 30px; max-width: 1600px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 25px; }
 
-    /* Başlık */
     .page-header { display: flex; flex-direction: column; gap: 5px; }
     .page-header h1 { font-size: 24px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
     .page-header h1::before { content: ''; display: block; width: 4px; height: 24px; background: var(--primary); border-radius: 2px; }
     .page-header p { color: var(--muted); font-size: 13px; padding-left: 14px; }
 
-    /* İstatistik Kartları */
     .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
     .stat-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; align-items: center; gap: 15px; position: relative; overflow: hidden; }
     .stat-icon { width: 45px; height: 45px; border-radius: 10px; display: grid; place-items: center; font-size: 22px; }
@@ -87,10 +82,8 @@
     .stat-badge.premium { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
     .stat-badge.restricted { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
 
-    /* Orta Panel (Sorgu + Duyurular) */
     .middle-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
     
-    /* Sorgu Paneli */
     .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
     .panel-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
     .panel-header h2 { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; margin: 0; }
@@ -152,7 +145,6 @@
     .data-val { color: var(--text); font-weight: 500; }
     .highlight { color: var(--primary); font-weight: 600; }
 
-    /* Duyurular Tablosu */
     .table-container { width: 100%; overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; text-align: left; }
     th { padding: 12px 20px; font-size: 11px; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); font-weight: 600; }
@@ -175,25 +167,25 @@
         <div class="nav-section">
             <div class="nav-title">Panel</div>
             <div class="nav-item" onclick="window.location.reload()"><i class="ph ph-squares-four"></i> Ana Menü</div>
-            <div class="nav-item"><i class="ph ph-paper-plane-tilt"></i> Telegram</div>
         </div>
 
         <div class="nav-section">
             <div class="nav-title">Sorgu Çözümleri</div>
             <div class="nav-item active" data-page="tc"><i class="ph ph-identification-card"></i> TC Sorgu</div>
+            <div class="nav-item" data-page="tcpro"><i class="ph ph-identification-badge"></i> TC Pro Sorgu</div>
             <div class="nav-item" data-page="adsoyad"><i class="ph ph-user"></i> Ad Soyad Sorgu</div>
             <div class="nav-item" data-page="aile"><i class="ph ph-users"></i> Aile Sorgu</div>
             <div class="nav-item" data-page="sulale"><i class="ph ph-tree-structure"></i> Sülale Sorgu</div>
-            <div class="nav-item" data-page="gsmtc"><i class="ph ph-device-mobile"></i> GSM Sorgu</div>
-            <div class="nav-item" data-page="adres"><i class="ph ph-map-pin"></i> Adres Sorgu</div>
+            <div class="nav-item" data-page="tcgsm"><i class="ph ph-device-mobile"></i> TC → GSM</div>
+            <div class="nav-item" data-page="gsmtc"><i class="ph ph-phone-call"></i> GSM → TC</div>
             <div class="nav-item" data-page="eokul"><i class="ph ph-graduation-cap"></i> E-Okul Sorgu</div>
+            <div class="nav-item" data-page="adres"><i class="ph ph-map-pin"></i> Adres Sorgu</div>
             <div class="nav-item" data-page="tapu"><i class="ph ph-house-line"></i> Tapu Sorgu</div>
         </div>
     </div>
 
     <!-- ANA İÇERİK -->
     <div class="main">
-        <!-- Üst Bar -->
         <div class="topbar">
             <div class="topbar-left">
                 <i class="ph ph-list" style="cursor:pointer; font-size:20px; color:var(--muted);"></i>
@@ -206,15 +198,12 @@
             </div>
         </div>
 
-        <!-- İçerik -->
         <div class="content">
-            <!-- Başlık -->
             <div class="page-header">
                 <h1 id="pageTitle">TC Sorgu</h1>
                 <p id="pageDesc">Piyasanın En Kaliteli Sorgu Paneli</p>
             </div>
 
-            <!-- İstatistikler -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-icon blue"><i class="ph ph-users"></i></div>
@@ -238,10 +227,7 @@
                 </div>
             </div>
 
-            <!-- Orta Panel -->
             <div class="middle-grid">
-                
-                <!-- Sorgu Alanı -->
                 <div class="panel">
                     <div class="panel-header">
                         <h2><i class="ph ph-terminal-window" style="color:var(--primary)"></i> <span id="panelTitle">Sorgulama Motoru</span></h2>
@@ -262,7 +248,6 @@
                     </div>
                 </div>
 
-                <!-- Duyurular / Loglar -->
                 <div class="panel">
                     <div class="panel-header">
                         <h2><i class="ph ph-bell-ringing" style="color:var(--warning)"></i> Duyurular</h2>
@@ -284,7 +269,7 @@
                                     <td>Bugün 12:45</td>
                                 </tr>
                                 <tr>
-                                    <td><span class="tag">BİLGİ</span> E-Okul Vesika</td>
+                                    <td><span class="tag">BİLGİ</span> Vesika</td>
                                     <td>Vesika sorgusu aktif edildi.</td>
                                     <td>Dün 18:30</td>
                                 </tr>
@@ -297,7 +282,6 @@
                         </table>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -315,17 +299,18 @@
         let currentPage = 'tc';
 
         const pageConfig = {
-            'tc': { title: 'TC Sorgu', desc: 'Piyasanın En Kaliteli Sorgu Paneli', placeholder: '11 haneli TC Kimlik No', max: 11, endpoint: 'tc.php', type: 'tc' },
+            'tc': { title: 'TC Sorgu', desc: 'Piyasanın En Kaliteli Sorgu Paneli', endpoint: 'tc.php', type: 'tc' },
+            'tcpro': { title: 'TC Pro Sorgu', desc: 'Detaylı TC Kimlik Sorgulama', endpoint: 'tcpro.php', type: 'tc' },
             'adsoyad': { title: 'Ad Soyad Sorgu', desc: 'İsim ve soyisim ile veritabanı araması.', endpoint: 'adsoyad.php', type: 'adsoyad' },
-            'aile': { title: 'Aile Sorgu', desc: 'Kişinin aile bireylerini listeler.', placeholder: '11 haneli TC Kimlik No', max: 11, endpoint: 'aile.php', type: 'tc' },
-            'sulale': { title: 'Sülale Sorgu', desc: 'Kişinin geniş aile ağacını listeler.', placeholder: '11 haneli TC Kimlik No', max: 11, endpoint: 'sulale.php', type: 'tc' },
-            'gsmtc': { title: 'GSM Sorgu', desc: 'Telefon numarası ile TC ve isim bilgisi.', placeholder: '10 haneli Telefon No', max: 10, endpoint: 'gsmtc.php', type: 'gsm' },
-            'adres': { title: 'Adres Sorgu', desc: 'TC Kimlik Numarası ile adres bilgileri.', placeholder: '11 haneli TC Kimlik No', max: 11, endpoint: 'adres.php', type: 'tc' },
-            'eokul': { title: 'E-Okul Sorgu', desc: 'Öğrenci okul ve kayıt bilgileri.', placeholder: '11 haneli TC Kimlik No', max: 11, endpoint: 'eokul.php', type: 'tc' },
-            'tapu': { title: 'Tapu Sorgu', desc: 'Tapu ve gayrimenkul kayıtları.', placeholder: '11 haneli TC Kimlik No', max: 11, endpoint: 'tapu.php', type: 'tc' },
+            'aile': { title: 'Aile Sorgu', desc: 'Kişinin aile bireylerini listeler.', endpoint: 'aile.php', type: 'tc' },
+            'sulale': { title: 'Sülale Sorgu', desc: 'Kişinin geniş aile ağacını listeler.', endpoint: 'sulale.php', type: 'tc' },
+            'tcgsm': { title: 'TC → GSM', desc: 'TC Kimlik Numarası ile telefon bilgisi.', endpoint: 'tcgsm.php', type: 'tc' },
+            'gsmtc': { title: 'GSM → TC', desc: 'Telefon numarası ile TC ve isim bilgisi.', endpoint: 'gsmtc.php', type: 'gsm' },
+            'eokul': { title: 'E-Okul Sorgu', desc: 'Öğrenci okul ve kayıt bilgileri.', endpoint: 'eokul.php', type: 'tc' },
+            'adres': { title: 'Adres Sorgu', desc: 'TC Kimlik Numarası ile adres bilgileri.', endpoint: 'adres.php', type: 'tc' },
+            'tapu': { title: 'Tapu Sorgu', desc: 'Tapu ve gayrimenkul kayıtları.', endpoint: 'tapu.php', type: 'tc' },
         };
 
-        // Menü tıklama
         menuItems.forEach(item => {
             item.addEventListener('click', () => {
                 menuItems.forEach(i => i.classList.remove('active'));
@@ -338,7 +323,6 @@
         function updateUI(page) {
             const config = pageConfig[page];
             
-            // Başlıkları Güncelle
             pageTitle.textContent = config.title;
             pageDesc.textContent = config.desc;
             topbarTitle.textContent = config.title;
@@ -346,24 +330,23 @@
             
             resultBox.innerHTML = '<span class="highlight">> Sistem hazır.</span> Lütfen gerekli bilgileri girip sorgulama yapın...';
 
-            // Input alanlarını güncelle
             if (config.type === 'adsoyad') {
                 inputArea.innerHTML = `
                     <input type="text" id="inputAd" placeholder="Ad" style="margin-right: 10px;">
                     <input type="text" id="inputSoyad" placeholder="Soyad">
                 `;
+            } else if (config.type === 'gsm') {
+                inputArea.innerHTML = `<input type="text" id="queryInput" placeholder="10 haneli Telefon No (5XX XXX XX XX)" maxlength="10">`;
             } else {
-                inputArea.innerHTML = `<input type="text" id="queryInput" placeholder="${config.placeholder}" maxlength="${config.max}">`;
+                inputArea.innerHTML = `<input type="text" id="queryInput" placeholder="11 haneli TC Kimlik No" maxlength="11">`;
             }
         }
 
-        // Sorgula Butonu
         runBtn.addEventListener('click', async () => {
             const config = pageConfig[currentPage];
             let params = {};
             let endpoint = config.endpoint;
 
-            // Değerleri al
             if (config.type === 'adsoyad') {
                 const ad = document.getElementById('inputAd').value.trim();
                 const soyad = document.getElementById('inputSoyad').value.trim();
@@ -379,40 +362,50 @@
                 }
             }
 
-            // UI Güncelle
             runBtn.disabled = true;
             runBtn.innerHTML = '<i class="ph ph-spinner-gap" style="animation: spin 1s linear infinite;"></i> Sorgulanıyor...';
             resultBox.innerHTML = '<span class="loading">> API isteği gönderiliyor, lütfen bekleyin...</span>';
 
-                        try {
-                // Vercel Proxy'sine istek at
+            try {
                 const queryString = new URLSearchParams({ endpoint, ...params }).toString();
                 const response = await fetch(`/api/proxy?${queryString}`);
                 
-                // Gelen cevabın JSON olup olmadığını kontrol et
-                const textData = await response.text();
+                const rawText = await response.text();
                 let data;
+                
                 try {
-                    data = JSON.parse(textData);
+                    data = JSON.parse(rawText);
                 } catch (e) {
-                    throw new Error(`Sunucu JSON yerine şu cevabı döndürdü: ${textData.substring(0, 100)}...`);
+                    throw new Error(`API'den geçersiz yanıt geldi. Ham Veri: "${rawText.substring(0, 150)}..."`);
                 }
 
                 if (!response.ok || data.error) {
-                    // Eğer proxy'den "rawResponse" geldiyse onu da ekrana bas
-                    const extraInfo = data.rawResponse ? `\nAPI Ham Cevabı: ${data.rawResponse}` : '';
-                    throw new Error((data.error || 'Sunucu hatası') + extraInfo);
+                    throw new Error(data.error || 'Sunucu hatası döndü.');
                 }
 
-                if (!data.data || data.data.length === 0) {
+                // API'nin döndürdüğü veri yapısını kontrol et
+                // Bazıları data array döner, bazıları direkt array döner.
+                let resultData = null;
+                if (data.data && Array.isArray(data.data)) {
+                    resultData = data.data;
+                } else if (Array.isArray(data)) {
+                    resultData = data;
+                } else if (data.Status === true || data.status === 'success') {
+                    // Eğer data diye bir şey yoksa ama status true ise, tüm objeyi göster
+                    resultData = [data];
+                } else {
+                     // Tanımlanamayan bir yapıysa ham JSON'u göster
+                     resultData = [data];
+                }
+
+                if (!resultData || resultData.length === 0) {
                     resultBox.innerHTML = '<span class="error">> Sonuç bulunamadı. Girdiğiniz bilgileri kontrol edin.</span>';
                 } else {
-                    // JSON verisini okunaklı yazdır
-                    let output = '<span class="success">> Sorgu Başarılı! (' + data.data.length + ' kayıt bulundu)</span>\n\n';
-                    data.data.forEach((row, index) => {
+                    let output = '<span class="success">> Sorgu Başarılı! (' + resultData.length + ' kayıt bulundu)</span>\n\n';
+                    resultData.forEach((row, index) => {
                         output += `<span class="highlight">[Kayıt ${index + 1}]</span>\n`;
                         for (const [key, value] of Object.entries(row)) {
-                            if (value && value !== 'Bulunamadı' && value !== 'YOK') {
+                            if (value !== null && value !== undefined && value !== '' && value !== 'Bulunamadı' && value !== 'YOK') {
                                 output += `  <span class="data-key">${key.padEnd(15)}</span>: <span class="data-val">${value}</span>\n`;
                             }
                         }
@@ -428,7 +421,6 @@
             }
         });
 
-        // Spinner animasyonu için CSS
         const style = document.createElement('style');
         style.innerHTML = '@keyframes spin { 100% { transform: rotate(360deg); } }';
         document.head.appendChild(style);
