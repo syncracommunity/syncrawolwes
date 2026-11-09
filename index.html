@@ -6,7 +6,7 @@
 <title>Syncra | Sorgu Paneli</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
@@ -39,6 +39,44 @@
     body { background-color: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; height: 100vh; display: flex; overflow: hidden; position: relative; transition: background-color 0.3s, color 0.3s; }
     
     #snow-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; opacity: 0.6; transition: 0.3s; }
+
+    /* --- SPLASH EKRANI --- */
+    #splash-screen {
+        position: fixed; inset: 0; background: #05070a; z-index: 9999;
+        display: flex; flex-direction: column; justify-content: center; align-items: center;
+        transition: opacity 1s ease, visibility 1s ease;
+    }
+    .splash-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 4rem; font-weight: 700; color: #fff; letter-spacing: 2px;
+        display: flex; gap: 5px; position: relative;
+        text-shadow: 0 0 20px rgba(59,130,246,0.5);
+    }
+    .splash-title span {
+        display: inline-block;
+        animation: dropIn 0.5s ease forwards;
+        opacity: 0; transform: translateY(-50px);
+    }
+    @keyframes dropIn {
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Harflerin Kırılma Animasyonu */
+    .splash-title.crack span {
+        animation: crackAnim 0.6s ease forwards;
+    }
+    @keyframes crackAnim {
+        0% { transform: scale(1); opacity: 1; filter: blur(0); }
+        50% { transform: scale(1.1); opacity: 1; filter: blur(1px); color: #3b82f6;}
+        100% { transform: translate(var(--x), var(--y)) rotate(var(--r)); opacity: 0; filter: blur(5px); }
+    }
+
+    .splash-subtitle {
+        margin-top: 20px; font-size: 1.2rem; color: var(--primary); opacity: 0;
+        animation: fadeIn 1s ease forwards; animation-delay: 1.5s;
+        font-family: 'Space Grotesk', sans-serif; letter-spacing: 4px;
+    }
+    @keyframes fadeIn { to { opacity: 1; } }
 
     /* --- SOL MENÜ --- */
     .sidebar { width: 260px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; overflow-y: auto; transition: transform 0.3s ease, background-color 0.3s; }
@@ -159,15 +197,24 @@
         .button-group button { width: 100%; }
         .topbar { padding: 0 15px; }
         th, td { padding: 12px 15px; }
+        .splash-title { font-size: 2.5rem; }
     }
 </style>
 </head>
 <body>
     <canvas id="snow-canvas"></canvas>
 
+    <!-- SPLASH EKRANI -->
+    <div id="splash-screen">
+        <div class="splash-title" id="splashTitle">
+            <span>O</span><span>N</span><span>U</span><span>R</span> &nbsp; <span>B</span><span>A</span><span>R</span><span>I</span><span>Ş</span>
+        </div>
+        <div class="splash-subtitle">ONUR SYSTEM</div>
+    </div>
+
     <!-- SOL MENÜ -->
     <div class="sidebar" id="sidebar">
-        <div class="brand"><i class="ph ph-shield-check" style="color:var(--primary)"></i> SYNCRA<span>PANEL</span></div>
+        <div class="brand"><i class="ph ph-shield-check" style="color:var(--primary)"></i> SORGU<span>PANEL</span></div>
         <div class="nav-section">
             <div class="nav-title">Genel</div>
             <div class="nav-item active" data-page="dashboard"><i class="ph ph-squares-four"></i> Dashboard</div>
@@ -182,7 +229,7 @@
             <div class="nav-item" data-page="eokul"><i class="ph ph-graduation-cap"></i> E-Okul Sorgu</div>
             <div class="nav-item" data-page="adres"><i class="ph ph-map-pin"></i> Adres Sorgu</div>
         </div>
-        <div class="dev-credit">Developed by <b>onur_baris65</b></div>
+        <div class="dev-credit">Developed by <b>onur</b></div>
     </div>
 
     <!-- ANA İÇERİK -->
@@ -193,7 +240,6 @@
                 <span id="topbarTitle">Dashboard</span>
             </div>
             <div class="topbar-right">
-                <!-- Tema Değiştirme Butonu -->
                 <div class="theme-btn" id="themeToggle" title="Temayı Değiştir">
                     <i class="ph ph-moon" id="themeIcon"></i>
                 </div>
@@ -201,7 +247,7 @@
         </div>
 
         <div class="content">
-            <!-- DASHBOARD EKRANI (Başlangıçta görünür) -->
+            <!-- DASHBOARD EKRANI -->
             <div id="dashboardView">
                 <div class="welcome-panel" style="margin-bottom: 25px;">
                     <h2>Hoş Geldin, Operatör.</h2>
@@ -233,7 +279,7 @@
                 </div>
             </div>
 
-            <!-- SORGU EKRANI (Seçim yapılınca açılır) -->
+            <!-- SORGU EKRANI -->
             <div id="queryView" style="display:none; flex-direction:column; gap:25px;">
                 <div class="search-panel">
                     <div class="search-header">
@@ -279,6 +325,103 @@
     </div>
 
     <script>
+        // --- SES MOTORU (Web Audio API) ---
+        // Harici mp3 dosyasına gerek kalmadan tarayıcıda ses üretir.
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
+
+        function initAudio() {
+            if (!audioCtx) audioCtx = new AudioContext();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        // Tıklama Sesi
+        function playClickSound() {
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.1);
+        }
+
+        // Hoş Geldiniz Sesi (Melodi)
+        function playWelcomeSound() {
+            initAudio();
+            const notes = [440, 554.37, 659.25, 880]; // A, C#, E, A
+            notes.forEach((freq, index) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0, audioCtx.currentTime + index * 0.15);
+                gain.gain.linearRampToValueAtTime(0.1, audioCtx.currentTime + index * 0.15 + 0.05);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + index * 0.15 + 0.5);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(audioCtx.currentTime + index * 0.15);
+                osc.stop(audioCtx.currentTime + index * 0.15 + 0.5);
+            });
+        }
+
+        // Harf Kırılma Sesi
+        function playCrackSound() {
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.3);
+            gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
+        }
+
+        // --- SPLASH EKRANI MANTIĞI ---
+        const splashScreen = document.getElementById('splash-screen');
+        const splashTitle = document.getElementById('splashTitle');
+        const titleSpans = splashTitle.querySelectorAll('span');
+
+        // Harflere rastgele kırılma yönü ata
+        titleSpans.forEach(span => {
+            span.style.setProperty('--x', (Math.random() * 200 - 100) + 'px');
+            span.style.setProperty('--y', (Math.random() * 200 - 100) + 'px');
+            span.style.setProperty('--r', (Math.random() * 180 - 90) + 'deg');
+            // Harflerin tek tek düşme animasyonu için gecikme
+            span.style.animationDelay = (Math.random() * 0.5) + 's';
+        });
+
+        // Splash Ekranını başlat
+        setTimeout(() => {
+            // 1. Kırılma animasyonunu başlat ve ses çal
+            splashTitle.classList.add('crack');
+            playCrackSound();
+        }, 1500); // 1.5 saniye sonra kırılsın
+
+        setTimeout(() => {
+            // 2. Ekranı karart ve Hoş Geldiniz sesini çal
+            splashScreen.style.opacity = '0';
+            splashScreen.style.visibility = 'hidden';
+            playWelcomeSound();
+        }, 2200); // 2.2 saniye sonra ekran kaybolsun
+
+        // Kullanıcı ilk tıklamasında ses motorunu başlat (Tarayıcı politikası gereği)
+        document.body.addEventListener('click', initAudio, { once: true });
+
+        // Tüm butonlara tıklama sesi ekle
+        document.querySelectorAll('button, .nav-item, .theme-btn').forEach(btn => {
+            btn.addEventListener('click', playClickSound);
+        });
+
         // --- TEMA MANTIĞI ---
         const themeToggle = document.getElementById('themeToggle');
         const themeIcon = document.getElementById('themeIcon');
@@ -305,10 +448,18 @@
             }
         });
 
-        // --- İSTATİSTİK SAYACI (Dashboard) ---
+        // --- İSTATİSTİK SAYACI (Tarih Bazlı) ---
+        const todayDate = new Date().toDateString(); // Örn: "Mon Nov 06 2023"
+        let savedDate = localStorage.getItem('syncra-stats-date');
         let totalQueries = parseInt(localStorage.getItem('syncra-total-queries') || '0');
         let todayQueries = parseInt(localStorage.getItem('syncra-today-queries') || '0');
-        
+
+        // Eğer gün değiştiyse bugünkü sorguyu sıfırla
+        if (savedDate !== todayDate) {
+            todayQueries = 0;
+            localStorage.setItem('syncra-stats-date', todayDate);
+        }
+
         function updateStats() {
             document.getElementById('statTotalQueries').textContent = totalQueries;
             document.getElementById('statTodayQueries').textContent = todayQueries;
@@ -402,7 +553,6 @@
             'adres': { title: 'Adres Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'adres.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card', maxlength: 11 }] }
         };
 
-        // Menüye tıklama
         menuItems.forEach(item => {
             item.addEventListener('click', () => {
                 menuItems.forEach(i => i.classList.remove('active'));
@@ -462,7 +612,6 @@
         downloadBtn.addEventListener('click', (e) => { e.stopPropagation(); downloadDropdown.classList.toggle('show'); });
         document.addEventListener('click', () => downloadDropdown.classList.remove('show'));
 
-        // Hepsini Kopyala Butonu
         copyAllBtn.addEventListener('click', () => {
             if (!currentResults) return;
             let text = "";
@@ -483,7 +632,6 @@
             });
         });
 
-        // Sorgula Butonu
         runBtn.addEventListener('click', async () => {
             const config = pageConfig[currentPage];
             let params = {};
@@ -560,7 +708,6 @@
 
                 resultData = resultData.filter(item => Object.keys(item).length > 0 && !item.error);
 
-                // Boş veri kontrolü ve akıllı mesaj
                 if (!resultData || resultData.length === 0) {
                     tableHead.innerHTML = '';
                     tableBody.innerHTML = `<tr><td colspan="10" class="empty-state">
@@ -572,7 +719,7 @@
                     return;
                 }
 
-                // Başarılıysa istatistikleri güncelle
+                // İstatistikleri güncelle
                 totalQueries++;
                 todayQueries++;
                 updateStats();
@@ -607,7 +754,6 @@
             }
         });
 
-        // Tabloyu Çiz (Sıralama Destekli)
         function renderTable() {
             if (!currentResults) return;
             let sortedData = [...currentResults];
@@ -676,7 +822,6 @@
             });
         }
 
-        // İndirme Fonksiyonları
         function downloadData(format) {
             if (!currentResults || currentResults.length === 0) return alert('İndirilecek veri yok.');
             const fileName = `syncra_sorgu_${Date.now()}`;
