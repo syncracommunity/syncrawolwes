@@ -10,6 +10,8 @@
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+<!-- Supabase Kütüphanesi (unpkg'den yüklüyoruz) -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
 <style>
     /* --- TEMA DEĞİŞKENLERİ --- */
@@ -387,6 +389,23 @@
     </div>
 
     <script>
+        // --- SUPABASE İSTEMCİSİNİ BAŞLAT (Kodun en başında) ---
+        // Bu, butona bastığında kütüphanenin hazır olmasını garantiler.
+        let supabaseClient = null;
+        try {
+            if (window.supabase) {
+                supabaseClient = window.supabase.createClient(
+                    'https://elpnyxhlhoyqmcqkkcsg.supabase.co',
+                    'sb_publishable_DDw6BF8q1YCn1KDo1FzxCg_94qrvzdr'
+                );
+                console.log("Supabase istemcisi başarıyla oluşturuldu.");
+            } else {
+                console.error("Supabase kütüphanesi yüklenemedi. CDN engellenmiş olabilir.");
+            }
+        } catch (e) {
+            console.error("Supabase başlatma hatası:", e);
+        }
+
         // --- SES MOTORU ---
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx;
@@ -437,7 +456,7 @@
 
         startSplash();
 
-        // --- SUPABASE AUTH MANTIĞI ---
+        // --- AUTH MANTIĞI ---
         let isLoginMode = true;
         const authScreen = document.getElementById('auth-screen');
         const authTitle = document.getElementById('authTitle');
@@ -471,9 +490,8 @@
         });
 
         authSubmitBtn.addEventListener('click', async () => {
-            // Supabase bağlantısı kontrolü
-            if (!window.supabase || !window.supabase.createClient) {
-                return showAuthError('Veritabanı kütüphanesi yüklenemedi. Lütfen sayfayı yenile.');
+            if (!supabaseClient) {
+                return showAuthError('Veritabanı kütüphanesi yüklenemedi. Lütfen sayfayı yenile veya farklı bir tarayıcı dene.');
             }
 
             const email = authEmail.value.trim();
@@ -489,8 +507,6 @@
             btnText.textContent = isLoginMode ? 'Giriş Yapılıyor...' : 'Kayıt Olunuyor...';
 
             try {
-                const supabaseClient = window.supabase.createClient('https://elpnyxhlhoyqmcqkkcsg.supabase.co', 'sb_publishable_DDw6BF8q1YCn1KDo1FzxCg_94qrvzdr');
-                
                 if (isLoginMode) {
                     const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
                     if (error) throw error;
@@ -535,14 +551,12 @@
         }
 
         async function checkAuth() {
-            // Supabase kütüphanesi yüklü değilse direkt auth ekranını göster
-            if (!window.supabase || !window.supabase.createClient) {
+            if (!supabaseClient) {
                 authScreen.style.display = 'flex';
                 return;
             }
 
             try {
-                const supabaseClient = window.supabase.createClient('https://elpnyxhlhoyqmcqkkcsg.supabase.co', 'sb_publishable_DDw6BF8q1YCn1KDo1FzxCg_94qrvzdr');
                 const { data: { session } } = await supabaseClient.auth.getSession();
                 
                 if (session) {
@@ -553,17 +567,13 @@
                 }
             } catch (error) {
                 console.error("Auth kontrol hatası:", error);
-                // Hata olsa bile auth ekranını göster ki kullanıcı takılı kalmasın
                 authScreen.style.display = 'flex';
             }
         }
 
         document.getElementById('userProfileBtn').addEventListener('click', async () => {
             if(confirm('Çıkış yapmak istediğinize emin misiniz?')) {
-                if (window.supabase && window.supabase.createClient) {
-                    const supabaseClient = window.supabase.createClient('https://elpnyxhlhoyqmcqkkcsg.supabase.co', 'sb_publishable_DDw6BF8q1YCn1KDo1FzxCg_94qrvzdr');
-                    await supabaseClient.auth.signOut();
-                }
+                if (supabaseClient) await supabaseClient.auth.signOut();
                 location.reload();
             }
         });
