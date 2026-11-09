@@ -522,7 +522,7 @@
             document.getElementById('downloadBtn').classList.add('hidden');
         }
 
-        document.getElementById('runBtn').onclick = async () => {
+                document.getElementById('runBtn').onclick = async () => {
             const cfg = queryConfig[activeQuery];
             let params = {};
             cfg.f.forEach(f => {
@@ -540,8 +540,23 @@
                 const data = await res.json();
                 
                 if(data.error) throw new Error(data.error);
-                let rows = data.data || (Array.isArray(data) ? data : [data]);
-                rows = rows.filter(r => Object.keys(r).length > 0 && !r.error);
+                
+                // --- KRİTİK DÜZELTME: Gelen veriyi güvenli bir şekilde diziye çevir ---
+                let rows = [];
+                if (data.data) {
+                    if (Array.isArray(data.data)) {
+                        rows = data.data;
+                    } else if (typeof data.data === 'object' && data.data !== null) {
+                        rows = [data.data]; // Tek obje ise diziye çevir
+                    }
+                } else if (Array.isArray(data)) {
+                    rows = data;
+                } else if (typeof data === 'object' && data !== null) {
+                    rows = [data];
+                }
+
+                // Boş objeleri ve hatalı kayıtları filtrele
+                rows = rows.filter(r => r && Object.keys(r).length > 0 && !r.error);
 
                 if(rows.length === 0) {
                     document.getElementById('resultSummary').innerText = 'Sonuç bulunamadı.';
@@ -560,7 +575,7 @@
                 
                 document.getElementById('tableBody').innerHTML = rows.map((r, i) => {
                     let tds = currentColumns.map(k => `<td class="p-3 text-sm text-gray-300 border-b border-gray-700">${r[k] || '-'}</td>`).join('');
-                    let copyBtn = `<td class="p-3 text-center border-b border-gray-700"><button onclick='copyRow(${JSON.stringify(r)})' class="text-blue-500 hover:text-white transition"><i class="ph ph-copy text-lg"></i></button></td>`;
+                    let copyBtn = `<td class="p-3 text-center border-b border-gray-700"><button onclick='copyRow(${JSON.stringify(r).replace(/'/g, "&#39;")})' class="text-blue-500 hover:text-white transition"><i class="ph ph-copy text-lg"></i></button></td>`;
                     return `<tr>${tds}${copyBtn}</tr>`;
                 }).join('');
 
