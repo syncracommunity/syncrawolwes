@@ -14,12 +14,19 @@
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
-    /* Tema değişkenleri */
-    :root { --bg: #0b0e14; --sidebar: #111520; --panel: #171c26; --border: #262d3d; --text: #e2e8f0; --muted: #94a3b8; --primary: #3b82f6; --success: #10b981; --danger: #ef4444; --warning: #f59e0b; }
+    /* --- TEMEL DEĞİŞKENLER --- */
+    :root { --bg: #0b0e14; --panel: #171c26; --border: #262d3d; --text: #e2e8f0; --muted: #94a3b8; --primary: #3b82f6; --danger: #ef4444; --success: #10b981; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; height: 100vh; display: flex; overflow: hidden; }
     
-    /* Splash */
+    /* --- ÖZEL SCROLLBAR (BEYAZ ÇUBUĞU DÜZELTİR) --- */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; transition: 0.2s; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+    * { scrollbar-width: thin; scrollbar-color: #334155 var(--bg); }
+
+    /* --- SPLASH --- */
     #splash-screen { position: fixed; inset: 0; background: #05070a; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease; cursor: pointer; }
     .splash-cmd-logo { font-size: 60px; color: var(--primary); text-shadow: 0 0 30px rgba(59,130,246,0.6); margin-bottom: 10px; }
     .splash-title { font-family: 'Space Grotesk', sans-serif; font-size: 2.5rem; font-weight: 700; color: #fff; }
@@ -27,7 +34,7 @@
     .splash-subtitle { font-family: 'Fira Code', monospace; font-size: 1rem; color: #475569; margin-top: 10px; }
     .splash-skip { position: absolute; bottom: 30px; font-size: 12px; color: #475569; }
 
-    /* Auth */
+    /* --- AUTH --- */
     #auth-screen { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: none; flex-direction: row; }
     .auth-left { flex: 1; background: linear-gradient(135deg, #05070a 0%, #0b101d 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; border-right: 1px solid var(--border); }
     .auth-right { width: 500px; background: var(--panel); display: flex; flex-direction: column; justify-content: center; padding: 50px; }
@@ -36,8 +43,8 @@
     .auth-btn { width: 100%; background: var(--primary); color: white; padding: 16px; border-radius: 10px; border: none; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.3s; }
     .auth-btn:hover { background: #2563eb; }
 
-    /* Sidebar */
-    .sidebar { width: 260px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; overflow-y: auto; }
+    /* --- SIDEBAR --- */
+    .sidebar { width: 260px; background: var(--panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; overflow-y: auto; }
     .brand { padding: 20px; font-size: 22px; font-weight: 800; display: flex; align-items: center; gap: 10px; color: var(--text); border-bottom: 1px solid var(--border); }
     .brand span { color: var(--primary); }
     .nav-section { padding: 20px 15px; flex: 1; }
@@ -45,18 +52,23 @@
     .nav-item:hover { background: #1f2533; color: var(--text); }
     .nav-item.active { background: rgba(59, 130, 246, 0.1); color: var(--primary); border-left: 3px solid var(--primary); }
 
-    /* Main */
+    /* --- MAIN & TOPBAR (DÜZELTİLDİ) --- */
     .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
     .topbar { height: 70px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; background: var(--bg); position: sticky; top: 0; z-index: 50; }
-    .content { padding: 30px; max-width: 1400px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 25px; }
     
-    /* Cards */
-    .dash-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 25px; }
-    .dash-icon { width: 50px; height: 50px; border-radius: 12px; display: grid; place-items: center; font-size: 24px; }
-    .badge { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+    /* Profil ve Rozet Hizalaması */
+    .user-profile { display: flex; align-items: center; gap: 8px; background: var(--panel); padding: 5px 12px 5px 5px; border-radius: 30px; border: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
+    .user-profile:hover { border-color: var(--primary); }
+    .user-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; background: var(--border); display: none; }
+    .user-avatar-icon { width: 28px; height: 28px; border-radius: 50%; background: rgba(59,130,246,0.1); display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 16px; }
+    .badge { padding: 3px 8px; border-radius: 6px; font-size: 9px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
     .badge-admin { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
     .badge-free { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+    .logout-btn { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--danger); background: rgba(239, 68, 68, 0.1); padding: 8px 14px; border-radius: 30px; border: 1px solid rgba(239, 68, 68, 0.2); cursor: pointer; transition: 0.2s; }
+    .logout-btn:hover { background: rgba(239, 68, 68, 0.2); }
 
+    .content { padding: 30px; max-width: 1400px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 25px; }
+    
     /* Tablo */
     table { width: 100%; border-collapse: collapse; text-align: left; }
     th { padding: 15px; font-size: 11px; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); }
@@ -78,7 +90,8 @@
         .menu-toggle { display: block; }
         .content { padding: 15px; }
         .topbar { padding: 0 15px; }
-        .user-profile span, .logout-btn span { display: none; }
+        .user-profile span { display: none; } /* Mobilde ismi gizle */
+        .logout-btn span { display: none; } /* Mobilde yazıyı gizle */
     }
 </style>
 </head>
@@ -153,13 +166,15 @@
                 <i class="ph ph-list menu-toggle" id="menuToggle"></i>
                 <span id="topbarTitle" class="font-semibold text-white">Dashboard</span>
             </div>
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-4">
+                <!-- Profil -->
                 <div class="user-profile" onclick="showPage('settings')">
                     <img src="" id="topAvatar" class="user-avatar">
-                    <i class="ph ph-user-circle text-blue-500" id="topAvatarIcon"></i>
-                    <span id="currentUsername" class="text-sm font-semibold">Kullanıcı</span>
+                    <div class="user-avatar-icon" id="topAvatarIcon">U</div>
+                    <span id="currentUsername" class="text-sm font-semibold text-white ml-1">Kullanıcı</span>
                     <span id="topBadge" class="badge badge-free">Free</span>
                 </div>
+                <!-- Çıkış -->
                 <div class="logout-btn" onclick="document.getElementById('logoutModal').classList.add('show')">
                     <i class="ph ph-sign-out"></i> <span>Çıkış</span>
                 </div>
@@ -174,25 +189,25 @@
                     <p class="text-sm text-gray-400 mt-2">Sistemdeki son durum ve istatistikler.</p>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
-                    <div class="dash-card flex gap-4 items-center">
-                        <div class="dash-icon bg-blue-500/10 text-blue-500"><i class="ph ph-chart-line-up"></i></div>
+                    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 flex gap-4 items-center">
+                        <div class="w-12 h-12 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center text-2xl"><i class="ph ph-chart-line-up"></i></div>
                         <div><h3 id="statTotalQueries" class="text-3xl font-bold text-white">0</h3><p class="text-xs text-gray-400">Toplam Sorgu</p></div>
                     </div>
-                    <div class="dash-card flex gap-4 items-center">
-                        <div class="dash-icon bg-green-500/10 text-green-500"><i class="ph ph-check-circle"></i></div>
+                    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 flex gap-4 items-center">
+                        <div class="w-12 h-12 rounded-lg bg-green-500/10 text-green-500 flex items-center justify-center text-2xl"><i class="ph ph-check-circle"></i></div>
                         <div><h3 id="statTodayQueries" class="text-3xl font-bold text-white">0</h3><p class="text-xs text-gray-400">Bugünkü Sorgu</p></div>
                     </div>
-                    <div class="dash-card flex gap-4 items-center">
-                        <div class="dash-icon bg-yellow-500/10 text-yellow-500"><i class="ph ph-database"></i></div>
+                    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 flex gap-4 items-center">
+                        <div class="w-12 h-12 rounded-lg bg-yellow-500/10 text-yellow-500 flex items-center justify-center text-2xl"><i class="ph ph-database"></i></div>
                         <div><h3 class="text-3xl font-bold text-white">8</h3><p class="text-xs text-gray-400">Aktif Modül</p></div>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="dash-card">
+                    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
                         <div class="border-b border-gray-700 pb-4 mb-4"><h3 class="font-semibold text-white">Son Sorgularım</h3></div>
                         <div id="historyList"><div class="text-center text-gray-500 py-4 text-sm">Geçmiş yok.</div></div>
                     </div>
-                    <div class="dash-card">
+                    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
                         <div class="border-b border-gray-700 pb-4 mb-4"><h3 class="font-semibold text-white">Son Giriş Yapanlar</h3></div>
                         <div id="recentLogins" class="flex flex-col gap-2"><div class="text-center text-gray-500 py-4 text-sm">Yükleniyor...</div></div>
                     </div>
@@ -201,17 +216,17 @@
 
             <!-- AYARLAR -->
             <div id="settingsView" style="display:none;">
-                <div class="dash-card max-w-xl">
+                <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 max-w-xl">
                     <div class="border-b border-gray-700 pb-4 mb-5"><h3 class="font-semibold text-white">Profil Bilgileri</h3></div>
                     <div class="mb-4"><label class="block text-xs text-gray-400 font-semibold mb-2">Görünen Ad</label><input type="text" id="settingsName" class="w-full bg-gray-900 border border-gray-700 text-white p-3 rounded-lg outline-none focus:border-blue-500"></div>
                     <div class="mb-4"><label class="block text-xs text-gray-400 font-semibold mb-2">Avatar URL</label><input type="text" id="settingsAvatar" placeholder="https://..." class="w-full bg-gray-900 border border-gray-700 text-white p-3 rounded-lg outline-none focus:border-blue-500"></div>
-                    <button class="auth-btn" id="saveProfileBtn">Kaydet</button>
+                    <button class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-500 transition" id="saveProfileBtn">Kaydet</button>
                 </div>
             </div>
 
             <!-- ADMIN -->
             <div id="adminView" style="display:none;">
-                <div class="dash-card">
+                <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
                     <div class="flex justify-between items-center border-b border-gray-700 pb-4 mb-4">
                         <h3 class="font-semibold text-white">Kullanıcı Yönetimi</h3>
                         <button onclick="loadAdminUsers()" class="text-blue-500 hover:text-white transition"><i class="ph ph-arrows-clockwise text-lg"></i> Yenile</button>
@@ -227,20 +242,20 @@
 
             <!-- SORGU -->
             <div id="queryView" style="display:none; flex-direction:column; gap:25px;">
-                <div class="dash-card">
+                <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
                     <h2 id="pageTitle" class="text-xl font-bold text-white mb-6">Sorgulama</h2>
                     <div id="dynamicForm" class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6"></div>
                     <div class="flex justify-end gap-3">
-                        <button class="bg-gray-800 border border-gray-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition" onclick="document.querySelectorAll('.form-group input').forEach(i=>i.value='')">Temizle</button>
+                        <button class="bg-gray-900 border border-gray-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition" onclick="document.querySelectorAll('.form-group input').forEach(i=>i.value='')">Temizle</button>
                         <button id="runBtn" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-500 transition flex items-center gap-2"><i class="ph ph-magnifying-glass"></i> Sorgula</button>
                     </div>
                 </div>
-                <div class="dash-card">
+                <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
                     <div class="flex justify-between items-center border-b border-gray-700 pb-4 mb-4">
                         <div><h3 class="font-semibold text-white">Sonuçlar</h3><span id="resultSummary" class="text-xs text-gray-400">Henüz sorgu yok.</span></div>
                         <div class="relative">
                             <button id="downloadBtn" class="hidden bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-500 transition flex items-center gap-2"><i class="ph ph-download-simple"></i> İndir</button>
-                            <div id="downloadDropdown" class="hidden absolute right-0 mt-2 w-40 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50">
+                            <div id="downloadDropdown" class="hidden absolute right-0 mt-2 w-40 bg-gray-900 border border-gray-700 rounded-lg shadow-xl z-50">
                                 <button onclick="downloadData('pdf')" class="w-full text-left px-4 py-3 text-sm text-white hover:bg-gray-700 transition flex items-center gap-2"><i class="ph ph-file-pdf text-red-500"></i> PDF İndir</button>
                                 <button onclick="downloadData('txt')" class="w-full text-left px-4 py-3 text-sm text-white hover:bg-gray-700 transition flex items-center gap-2"><i class="ph ph-file-text text-blue-500"></i> TXT İndir</button>
                             </div>
@@ -263,7 +278,7 @@
             <h3 class="text-xl font-bold text-white mb-2">Çıkış Yap?</h3>
             <p class="text-sm text-gray-400 mb-6">Oturumunuzu sonlandırmak üzeresiniz.</p>
             <div class="flex gap-3">
-                <button class="flex-1 bg-gray-800 border border-gray-700 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 transition" onclick="document.getElementById('logoutModal').classList.remove('show')">İptal</button>
+                <button class="flex-1 bg-gray-900 border border-gray-700 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 transition" onclick="document.getElementById('logoutModal').classList.remove('show')">İptal</button>
                 <button class="flex-1 bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-500 transition" id="confirmLogoutBtn">Çıkış Yap</button>
             </div>
         </div>
@@ -275,7 +290,7 @@
             <p id="pwdSub" class="text-xs text-gray-400 mb-4"></p>
             <input type="text" id="newPasswordInput" placeholder="Yeni şifre" class="w-full bg-gray-900 border border-gray-700 text-white p-3 rounded-lg outline-none focus:border-blue-500 mb-4">
             <div class="flex gap-3">
-                <button class="flex-1 bg-gray-800 border border-gray-700 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 transition" onclick="document.getElementById('pwdModal').classList.remove('show')">İptal</button>
+                <button class="flex-1 bg-gray-900 border border-gray-700 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 transition" onclick="document.getElementById('pwdModal').classList.remove('show')">İptal</button>
                 <button class="flex-1 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-500 transition" id="saveNewPwdBtn">Kaydet</button>
             </div>
         </div>
@@ -310,7 +325,7 @@
             if(splash) splash.style.display = 'none';
             checkAuth();
         };
-        setTimeout(window.skipSplash, 2000); // 2 saniye sonra otomatik kapan
+        setTimeout(window.skipSplash, 2000);
 
         // --- AUTH ---
         let isLoginMode = true;
@@ -540,9 +555,7 @@
                 currentResults = rows;
                 currentColumns = Object.keys(rows[0]);
 
-                // Tablo çizimi
                 let html = '<tr>' + currentColumns.map(k => `<th class="text-left p-3 text-xs text-gray-400 uppercase border-b border-gray-700">${k}</th>`).join('') + '<th class="text-center p-3 text-xs text-gray-400 uppercase border-b border-gray-700">İşlem</th></tr>';
-                html = '<tr>' + currentColumns.map(k => `<th class="text-left p-3 text-xs text-gray-400 uppercase border-b border-gray-700">${k}</th>`).join('') + '<th class="text-center p-3 text-xs text-gray-400 uppercase border-b border-gray-700">İşlem</th></tr>';
                 document.getElementById('tableHead').innerHTML = html;
                 
                 document.getElementById('tableBody').innerHTML = rows.map((r, i) => {
@@ -576,19 +589,15 @@
             if (!currentResults || currentResults.length === 0) return;
             const fileName = `syncra_sorgu_${Date.now()}`;
             
-            if (format === 'csv') {
-                let csv = currentColumns.join(',') + '\n';
-                currentResults.forEach(r => csv += currentColumns.map(c => `"${(r[c]||'').toString().replace(/"/g,'""')}"`).join(',') + '\n');
-                downloadFile(fileName + '.csv', csv);
-            }
-            else if (format === 'txt') {
+            if (format === 'txt') {
                 let txt = '';
                 currentResults.forEach((r, i) => {
                     txt += `[Kayıt ${i+1}]\n`;
                     currentColumns.forEach(c => { if(r[c] && r[c] !== 'YOK') txt += `${c}: ${r[c]}\n`; });
                     txt += '\n';
                 });
-                downloadFile(fileName + '.txt', txt);
+                const blob = new Blob([txt], { type: 'text/plain;charset=utf-8;' });
+                const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `${fileName}.txt`; link.click();
             }
             else if (format === 'pdf') {
                 const { jsPDF } = window.jspdf;
@@ -607,11 +616,6 @@
             }
             document.getElementById('downloadDropdown').classList.add('hidden');
         };
-
-        function downloadFile(name, content) {
-            const blob = new Blob([content], { type: 'text/plain;charset=utf-8;' });
-            const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = name; link.click();
-        }
 
         // Dropdown Toggle
         document.getElementById('downloadBtn').onclick = (e) => {
@@ -652,7 +656,7 @@
 
         function loadHistory() {
             const h = JSON.parse(localStorage.getItem(`syncra_hist_${currentUser.id}`) || '[]');
-            document.getElementById('historyList').innerHTML = h.length ? h.map(i => `<div class="bg-gray-800/50 p-3 rounded-lg mb-2 flex justify-between text-xs"><span>${i.title}</span><span class="text-gray-500">${i.time}</span></div>`).join('') : '<div class="text-center text-gray-500 py-4 text-sm">Geçmiş yok.</div>';
+            document.getElementById('historyList').innerHTML = h.length ? h.map(i => `<div class="bg-gray-900/50 p-3 rounded-lg mb-2 flex justify-between text-xs"><span>${i.title}</span><span class="text-gray-500">${i.time}</span></div>`).join('') : '<div class="text-center text-gray-500 py-4 text-sm">Geçmiş yok.</div>';
         }
 
         // --- SON GİRİŞLER ---
@@ -663,7 +667,7 @@
                 if(error || !data) return list.innerHTML = '<div class="text-center text-gray-500 py-4 text-sm">Son giriş bilgisi mevcut değil.</div>';
                 
                 list.innerHTML = data.map(u => `
-                    <div class="flex items-center gap-3 bg-gray-800/50 p-3 rounded-lg">
+                    <div class="flex items-center gap-3 bg-gray-900/50 p-3 rounded-lg">
                         <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-xs">
                             ${u.avatar_url ? `<img src="${u.avatar_url}" class="w-full h-full rounded-full object-cover">` : (u.username ? u.username[0].toUpperCase() : '?')}
                         </div>
