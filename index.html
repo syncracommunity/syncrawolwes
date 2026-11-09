@@ -13,19 +13,10 @@
 
 <style>
     :root { 
-        --bg: #0b0e14; 
-        --sidebar: #111520; 
-        --panel: #171c26; 
-        --panel-hover: #1f2533;
-        --border: #262d3d; 
-        --text: #e2e8f0; 
-        --muted: #94a3b8; 
-        --primary: #3b82f6;
-        --primary-hover: #2563eb;
-        --danger: #ef4444;
-        --success: #10b981;
+        --bg: #0b0e14; --sidebar: #111520; --panel: #171c26; --panel-hover: #1f2533;
+        --border: #262d3d; --text: #e2e8f0; --muted: #94a3b8; --primary: #3b82f6;
+        --primary-hover: #2563eb; --danger: #ef4444; --success: #10b981;
     }
-    
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background-color: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; height: 100vh; display: flex; overflow: hidden; position: relative; }
     
@@ -34,7 +25,6 @@
     .sidebar { width: 260px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; overflow-y: auto; transition: transform 0.3s ease; }
     .brand { padding: 20px; font-size: 22px; font-weight: 800; display: flex; align-items: center; gap: 10px; color: #fff; border-bottom: 1px solid var(--border); letter-spacing: -1px;}
     .brand span { color: var(--primary); }
-    
     .nav-section { padding: 20px 15px; flex: 1; }
     .nav-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 600; margin-bottom: 10px; padding-left: 10px; }
     .nav-item { padding: 12px 15px; color: var(--muted); cursor: pointer; font-size: 14px; font-weight: 500; border-radius: 8px; transition: 0.2s; display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
@@ -42,7 +32,6 @@
     .nav-item:hover { background: var(--panel-hover); color: #fff; }
     .nav-item.active { background: rgba(59, 130, 246, 0.1); color: var(--primary); border-left: 3px solid var(--primary); border-radius: 0 8px 8px 0; margin-left: -15px; padding-left: 27px;}
     .nav-item.active i { color: var(--primary); }
-
     .dev-credit { padding: 20px; text-align: center; font-size: 12px; color: var(--muted); border-top: 1px solid var(--border); }
     .dev-credit b { color: var(--primary); font-weight: 600; }
 
@@ -52,7 +41,6 @@
     .topbar-right { display: flex; align-items: center; gap: 20px; color: var(--muted); font-size: 20px; }
     .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--panel); border: 1px solid var(--border); display: grid; place-items: center; overflow: hidden; }
     .avatar img { width: 100%; height: 100%; object-fit: cover; }
-
     .menu-toggle { display: none; cursor: pointer; font-size: 24px; color: var(--text); }
 
     .content { padding: 30px; max-width: 1400px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 25px; }
@@ -129,9 +117,7 @@
     <canvas id="snow-canvas"></canvas>
 
     <div class="sidebar" id="sidebar">
-        <div class="brand">
-            <i class="ph ph-shield-check" style="color:var(--primary)"></i> SYNCRA<span>PANEL</span>
-        </div>
+        <div class="brand"><i class="ph ph-shield-check" style="color:var(--primary)"></i> SYNCRA<span>PANEL</span></div>
         <div class="nav-section">
             <div class="nav-title">Sorgu Çözümleri</div>
             <div class="nav-item" data-page="tc"><i class="ph ph-identification-card"></i> TC Sorgu</div>
@@ -204,41 +190,22 @@
         // --- KAR YAĞIŞI ---
         const canvas = document.getElementById('snow-canvas');
         const ctx = canvas.getContext('2d');
-        let width = window.innerWidth;
-        let height = window.innerHeight;
+        let width = window.innerWidth, height = window.innerHeight;
         canvas.width = width; canvas.height = height;
-        window.addEventListener('resize', () => {
-            width = window.innerWidth; height = window.innerHeight;
-            canvas.width = width; canvas.height = height;
-        });
+        window.addEventListener('resize', () => { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; });
         let flakes = [];
-        const flakeCount = 100;
-        for (let i = 0; i < flakeCount; i++) {
-            flakes.push({ x: Math.random() * width, y: Math.random() * height, r: Math.random() * 2 + 1, d: Math.random() + 1, opacity: Math.random() * 0.5 + 0.3 });
-        }
+        for (let i = 0; i < 100; i++) flakes.push({ x: Math.random() * width, y: Math.random() * height, r: Math.random() * 2 + 1, d: Math.random() + 1, opacity: Math.random() * 0.5 + 0.3 });
         function drawSnow() {
-            ctx.clearRect(0, 0, width, height);
-            ctx.fillStyle = "white";
-            ctx.beginPath();
-            for (let i = 0; i < flakeCount; i++) {
-                let f = flakes[i];
-                ctx.globalAlpha = f.opacity;
-                ctx.moveTo(f.x, f.y);
-                ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, true);
-            }
-            ctx.fill();
-            updateSnow();
+            ctx.clearRect(0, 0, width, height); ctx.fillStyle = "white"; ctx.beginPath();
+            for (let i = 0; i < flakes.length; i++) { let f = flakes[i]; ctx.globalAlpha = f.opacity; ctx.moveTo(f.x, f.y); ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, true); }
+            ctx.fill(); updateSnow();
         }
         let angle = 0;
         function updateSnow() {
             angle += 0.01;
-            for (let i = 0; i < flakeCount; i++) {
-                let f = flakes[i];
-                f.x += Math.sin(angle) * 0.5;
-                f.y += Math.cos(angle) * 0.5 + f.d;
-                if (f.y > height + 5 || f.x > width + 5 || f.x < -5) {
-                    flakes[i] = { x: Math.random() * width, y: -10, r: f.r, d: f.d, opacity: f.opacity };
-                }
+            for (let i = 0; i < flakes.length; i++) {
+                let f = flakes[i]; f.x += Math.sin(angle) * 0.5; f.y += Math.cos(angle) * 0.5 + f.d;
+                if (f.y > height + 5 || f.x > width + 5 || f.x < -5) flakes[i] = { x: Math.random() * width, y: -10, r: f.r, d: f.d, opacity: f.opacity };
             }
         }
         setInterval(drawSnow, 30);
@@ -280,10 +247,7 @@
             'aile': { title: 'Aile Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'aile.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card', maxlength: 11 }] },
             'sulale': { title: 'Sülale Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'sulale.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card', maxlength: 11 }] },
             'tcgsm': { title: 'TC → GSM Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'tcgsm.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card', maxlength: 11 }] },
-            'gsmtc': { 
-                title: 'GSM → TC Sorgulama', desc: '10 haneli telefon numarası giriniz.', endpoint: 'gsmtc.php',
-                inputs: [{ id: 'gsm', label: 'Telefon No', placeholder: '5XX XXX XX XX', icon: 'ph-device-mobile', maxlength: 10 }], extraParams: { auth: 'fire' } 
-            },
+            'gsmtc': { title: 'GSM → TC Sorgulama', desc: '10 haneli telefon numarası giriniz.', endpoint: 'gsmtc.php', inputs: [{ id: 'gsm', label: 'Telefon No', placeholder: '5XX XXX XX XX', icon: 'ph-device-mobile', maxlength: 10 }], extraParams: { auth: 'fire' } },
             'eokul': { title: 'E-Okul Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'eokul.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card', maxlength: 11 }] },
             'adres': { title: 'Adres Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'adres.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card', maxlength: 11 }] },
             'tapu': { title: 'Tapu Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'tapu.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card', maxlength: 11 }] }
@@ -333,10 +297,7 @@
             resetResults();
         });
 
-        downloadBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            downloadDropdown.classList.toggle('show');
-        });
+        downloadBtn.addEventListener('click', (e) => { e.stopPropagation(); downloadDropdown.classList.toggle('show'); });
         document.addEventListener('click', () => downloadDropdown.classList.remove('show'));
 
         runBtn.addEventListener('click', async () => {
@@ -380,20 +341,21 @@
 
                 if (!response.ok || data.error) throw new Error(data.error || 'Sunucu hatası döndü.');
 
-                // VERİ YAPISINI ESNEK BİR ŞEKİLDE AYIKLA
-                let resultData = null;
+                // --- GELİŞMİŞ VERİ AYIKLAMA MANTIĞI ---
+                let resultData = [];
 
-                // 1. Durum: Standart "data" dizisi (Çoğu API böyle döner)
-                if (data.data && Array.isArray(data.data)) {
-                    resultData = data.data;
+                // data objesini kontrol et
+                if (data.data) {
+                    if (Array.isArray(data.data)) {
+                        // Eğer data bir dizi ise direkt al (Örn: Aile, Sülale, Tapu)
+                        resultData = data.data;
+                    } else if (typeof data.data === 'object') {
+                        // Eğer data bir obje ise (Adres sorgusu gibi), onu tek elemanlı diziye çevir
+                        resultData = [data.data]; 
+                    }
                 } 
-                // 2. Durum: Direkt dizi dönmüşse
-                else if (Array.isArray(data)) {
-                    resultData = data;
-                } 
-                // 3. Durum: "Status": true veya "status": "success" gibi tek bir obje dönmüşse
-                else if (data.Status === true || data.status === 'success' || data.success === true) {
-                    // Eğer içinde başka bir dizi varsa (örn: data.sonuclar)
+                // Eğer data yoksa ama obje içinde dizi varsa (fallback)
+                else {
                     let foundArray = false;
                     for (const key in data) {
                         if (Array.isArray(data[key]) && data[key].length > 0) {
@@ -402,32 +364,24 @@
                             break;
                         }
                     }
-                    if (!foundArray) resultData = [data]; // Dizi yoksa objenin kendisini göster
-                } 
-                // 4. Durum: Bilinmeyen bir JSON objesi (Adres sorgusu bazen böyle dönebilir)
-                else {
-                    // İçinde dizi var mı diye tarama yap
-                    let foundArray = false;
-                    for (const key in data) {
-                        if (Array.isArray(data[key])) {
-                            resultData = data[key];
-                            foundArray = true;
-                            break;
-                        }
+                    if (!foundArray) {
+                        // Hiçbir dizi bulunamadıysa ve tek bir başarılı yanıtsa objeyi kendisini dizi yap
+                        resultData = [data];
                     }
-                    if (!foundArray) resultData = [data]; // Dizi yoksa ham objeyi göster
                 }
+
+                // Eğer en baştan API hata döndüyse (status: false gibi)
+                if (data.status === false || data.Status === false) {
+                     throw new Error(data.message || data.error || 'API isteği reddetti.');
+                }
+
+                // Diziyi temizle (Boş objeleri çıkar)
+                resultData = resultData.filter(item => Object.keys(item).length > 0 && !item.error);
 
                 if (!resultData || resultData.length === 0) {
                     tableBody.innerHTML = '<tr><td colspan="10" class="empty-state">Sonuç bulunamadı. Girdiğiniz bilgileri kontrol edin.</td></tr>';
                     resultSummary.textContent = 'Sonuç bulunamadı.';
                     return;
-                }
-
-                // Eğer API'den dönen obje boşsa (örneğin {"AdSoyad": "..."} gibi tek obje)
-                // ve bu obje içinde sadece hata mesajı varsa onu yakala
-                if (resultData.length === 1 && resultData[0].error) {
-                     throw new Error(resultData[0].error);
                 }
 
                 renderTable(resultData);
@@ -482,8 +436,7 @@
                     csvContent += rowData.join(',') + '\n';
                 });
                 const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob); link.download = `${fileName}.csv`; link.click();
+                const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `${fileName}.csv`; link.click();
             } 
             else if (format === 'txt') {
                 let txtContent = '';
@@ -498,22 +451,18 @@
                     txtContent += '\n';
                 });
                 const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8;' });
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob); link.download = `${fileName}.txt`; link.click();
+                const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `${fileName}.txt`; link.click();
             }
             else if (format === 'pdf') {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF('l', 'pt', 'a4');
                 doc.setFontSize(18); doc.setTextColor(59, 130, 246); doc.text("Syncra Sorgu Raporu", 40, 40);
                 doc.setFontSize(10); doc.setTextColor(100); doc.text(`Tarih: ${new Date().toLocaleString('tr-TR')}`, 40, 55);
-
                 const tableColumn = currentColumns;
-                const tableRows = currentResults.map(row => 
-                    currentColumns.map(col => {
-                        let val = row[col];
-                        return (val === undefined || val === null || val === 'YOK' || val === 'Bulunamadı') ? '-' : val.toString();
-                    })
-                );
+                const tableRows = currentResults.map(row => currentColumns.map(col => {
+                    let val = row[col];
+                    return (val === undefined || val === null || val === 'YOK' || val === 'Bulunamadı') ? '-' : val.toString();
+                }));
                 doc.autoTable({
                     head: [tableColumn], body: tableRows, startY: 70, theme: 'grid',
                     styles: { font: 'helvetica', fontSize: 8, cellPadding: 4, textColor: 50 },
