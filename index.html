@@ -12,7 +12,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 
 <style>
-    /* --- TEMA DEĞİŞKENLERİ (VARSAYILAN: SİYAH) --- */
     :root { 
         --bg: #0b0e14; --sidebar: #111520; --panel: #171c26; --panel-hover: #1f2533;
         --border: #262d3d; --text: #e2e8f0; --muted: #94a3b8; --primary: #3b82f6;
@@ -20,17 +19,15 @@
         --snow-color: white;
     }
     
-    /* --- BEYAZ TEMA DEĞİŞKENLERİ --- */
     [data-theme="light"] {
         --bg: #f8fafc; --sidebar: #ffffff; --panel: #ffffff; --panel-hover: #f1f5f9;
         --border: #e2e8f0; --text: #0f172a; --muted: #64748b; --primary: #2563eb;
         --primary-hover: #1d4ed8; --danger: #dc2626; --success: #059669;
-        --snow-color: #cbd5e1; /* Açık temada kar taneleri hafif gri olsun */
+        --snow-color: #cbd5e1;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
-    /* --- TÜM SAYFA İÇİN ÖZEL SCROLLBAR --- */
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: var(--bg); border-radius: 10px; }
     ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; transition: 0.2s; }
@@ -58,9 +55,11 @@
     .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; z-index: 1; }
     .topbar { height: 70px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; background: var(--bg); position: sticky; top: 0; z-index: 50; transition: background-color 0.3s; }
     .topbar-left { display: flex; align-items: center; gap: 15px; font-weight: 600; font-size: 16px; color: var(--text);}
-    .topbar-right { display: flex; align-items: center; gap: 20px; color: var(--muted); font-size: 20px; }
+    .topbar-right { display: flex; align-items: center; gap: 15px; color: var(--muted); font-size: 20px; }
     
-    /* Tema Değiştirme Butonu */
+    /* İstatistik Badge */
+    .stat-badge { font-size: 12px; font-weight: 600; color: var(--primary); background: rgba(59,130,246,0.1); padding: 6px 12px; border-radius: 20px; display: flex; align-items: center; gap: 6px; }
+
     .theme-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--panel); border: 1px solid var(--border); display: grid; place-items: center; cursor: pointer; color: var(--text); transition: 0.2s; }
     .theme-btn:hover { background: var(--panel-hover); transform: scale(1.05); }
 
@@ -97,9 +96,10 @@
     .results-header h3 { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 5px;}
     .results-header p { font-size: 12px; color: var(--muted); }
     
-    .download-group { position: relative; }
+    .download-group { display: flex; gap: 10px; }
     .btn-download { background: rgba(16, 185, 129, 0.1); color: var(--success); }
     .btn-download:hover { background: rgba(16, 185, 129, 0.2); }
+    
     .download-dropdown { position: absolute; top: 100%; right: 0; margin-top: 5px; background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; display: none; flex-direction: column; z-index: 10; width: 150px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
     .download-dropdown.show { display: flex; }
     .download-dropdown button { width: 100%; text-align: left; padding: 12px 15px; border-radius: 0; background: transparent; color: var(--text); font-weight: 400; justify-content: flex-start; }
@@ -107,11 +107,24 @@
 
     .table-container { width: 100%; overflow-x: auto; max-height: 500px; overflow-y: auto; }
     table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
-    th { padding: 15px 30px; font-size: 11px; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); font-weight: 600; background: var(--bg); position: sticky; top: 0; z-index: 2;}
+    th { padding: 15px 30px; font-size: 11px; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); font-weight: 600; background: var(--bg); position: sticky; top: 0; z-index: 2; cursor: pointer; transition: 0.2s;}
+    th:hover { color: var(--primary); }
+    th i { margin-left: 5px; font-size: 10px; opacity: 0.5; }
     td { padding: 15px 30px; font-size: 13px; border-bottom: 1px solid var(--border); color: var(--text); }
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: var(--panel-hover); }
+    
+    /* Kopyalama Butonu */
+    .copy-btn { background: transparent; border: none; color: var(--muted); cursor: pointer; padding: 5px; border-radius: 5px; font-size: 16px; transition: 0.2s; }
+    .copy-btn:hover { color: var(--primary); background: rgba(59,130,246,0.1); }
+
     .empty-state { padding: 50px; text-align: center; color: var(--muted); font-size: 14px; }
+    
+    /* Skeleton Loader */
+    .skeleton-row { display: flex; gap: 20px; padding: 15px 30px; border-bottom: 1px solid var(--border); }
+    .skeleton-cell { height: 16px; background: linear-gradient(90deg, var(--border) 25%, var(--panel-hover) 50%, var(--border) 75%); background-size: 200% 100%; border-radius: 4px; animation: shimmer 1.5s infinite; flex: 1;}
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    
     .spin { animation: spin 1s linear infinite; }
     @keyframes spin { 100% { transform: rotate(360deg); } }
 
@@ -123,13 +136,14 @@
         .form-grid { grid-template-columns: 1fr; }
         .search-panel { padding: 20px; }
         .results-header { flex-direction: column; align-items: flex-start; gap: 15px; }
-        .download-group { width: 100%; }
+        .download-group { width: 100%; flex-direction: column; }
         .btn-download { width: 100%; justify-content: center; }
         .download-dropdown { width: 100%; }
         .button-group { flex-direction: column-reverse; }
         .button-group button { width: 100%; }
         .topbar { padding: 0 15px; }
         th, td { padding: 12px 15px; }
+        .stat-badge { display: none; } /* Mobilde yer kaplamasın */
     }
 </style>
 </head>
@@ -159,7 +173,7 @@
                 <span id="topbarTitle">Ad Soyad Sorgu</span>
             </div>
             <div class="topbar-right">
-                <!-- Tema Değiştirme Butonu -->
+                <div class="stat-badge" id="queryCounter"><i class="ph ph-chart-line-up"></i> Bugün: 0</div>
                 <div class="theme-btn" id="themeToggle" title="Temayı Değiştir">
                     <i class="ph ph-moon" id="themeIcon"></i>
                 </div>
@@ -186,11 +200,14 @@
                         <p id="resultSummary">Henüz sorgulama yapılmadı.</p>
                     </div>
                     <div class="download-group">
-                        <button class="btn-download" id="downloadBtn"><i class="ph ph-download-simple"></i> İndir <i class="ph ph-caret-down"></i></button>
-                        <div class="download-dropdown" id="downloadDropdown">
-                            <button onclick="downloadData('pdf')"><i class="ph ph-file-pdf"></i> PDF İndir</button>
-                            <button onclick="downloadData('txt')"><i class="ph ph-file-text"></i> TXT İndir</button>
-                            <button onclick="downloadData('csv')"><i class="ph ph-file-csv"></i> CSV İndir</button>
+                        <button class="btn-download" id="copyAllBtn" style="display:none; background: rgba(59, 130, 246, 0.1); color: var(--primary);"><i class="ph ph-copy"></i> Hepsini Kopyala</button>
+                        <div style="position:relative;">
+                            <button class="btn-download" id="downloadBtn"><i class="ph ph-download-simple"></i> İndir <i class="ph ph-caret-down"></i></button>
+                            <div class="download-dropdown" id="downloadDropdown">
+                                <button onclick="downloadData('pdf')"><i class="ph ph-file-pdf"></i> PDF İndir</button>
+                                <button onclick="downloadData('txt')"><i class="ph ph-file-text"></i> TXT İndir</button>
+                                <button onclick="downloadData('csv')"><i class="ph ph-file-csv"></i> CSV İndir</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -212,7 +229,6 @@
         const themeIcon = document.getElementById('themeIcon');
         const htmlElement = document.documentElement;
 
-        // Sayfa yüklendiğinde hafızadaki temayı kontrol et
         const savedTheme = localStorage.getItem('syncra-theme') || 'dark';
         if (savedTheme === 'light') {
             htmlElement.setAttribute('data-theme', 'light');
@@ -224,17 +240,24 @@
 
         themeToggle.addEventListener('click', () => {
             if (htmlElement.getAttribute('data-theme') === 'light') {
-                // Karanlığa geç
                 htmlElement.removeAttribute('data-theme');
                 localStorage.setItem('syncra-theme', 'dark');
                 themeIcon.classList.replace('ph-sun', 'ph-moon');
             } else {
-                // Aydınlığa geç
                 htmlElement.setAttribute('data-theme', 'light');
                 localStorage.setItem('syncra-theme', 'light');
                 themeIcon.classList.replace('ph-moon', 'ph-sun');
             }
         });
+
+        // --- İSTATİSTİK SAYACI ---
+        let queryCount = parseInt(localStorage.getItem('syncra-query-count') || '0');
+        const queryCounter = document.getElementById('queryCounter');
+        function updateQueryCounter() {
+            queryCounter.innerHTML = `<i class="ph ph-chart-line-up"></i> Bugün: ${queryCount}`;
+            localStorage.setItem('syncra-query-count', queryCount);
+        }
+        updateQueryCounter();
 
         // --- KAR YAĞIŞI ---
         const canvas = document.getElementById('snow-canvas');
@@ -248,7 +271,6 @@
         
         function drawSnow() {
             ctx.clearRect(0, 0, width, height); 
-            // Kar rengini temaya göre ayarla
             const isLight = document.documentElement.getAttribute('data-theme') === 'light';
             ctx.fillStyle = isLight ? "#94a3b8" : "white"; 
             ctx.beginPath();
@@ -292,12 +314,14 @@
         const clearBtn = document.getElementById('clearBtn');
         const downloadBtn = document.getElementById('downloadBtn');
         const downloadDropdown = document.getElementById('downloadDropdown');
+        const copyAllBtn = document.getElementById('copyAllBtn');
 
         let currentPage = 'adsoyad';
         let currentResults = null;
         let currentColumns = [];
+        let sortColumn = null;
+        let sortAsc = true;
 
-        // Tapu kaldırıldı, listede yok
         const pageConfig = {
             'tc': { title: 'TC Kimlik Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'tc.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card', maxlength: 11 }] },
             'adsoyad': { 
@@ -350,10 +374,12 @@
 
         function resetResults() {
             currentResults = null; currentColumns = [];
+            sortColumn = null; sortAsc = true;
             tableHead.innerHTML = '';
             tableBody.innerHTML = '<tr><td colspan="10" class="empty-state">Henüz bir sorgulama yapılmadı.</td></tr>';
             resultSummary.textContent = 'Henüz sorgulama yapılmadı.';
             downloadBtn.style.display = 'none';
+            copyAllBtn.style.display = 'none';
         }
 
         clearBtn.addEventListener('click', () => {
@@ -364,6 +390,28 @@
         downloadBtn.addEventListener('click', (e) => { e.stopPropagation(); downloadDropdown.classList.toggle('show'); });
         document.addEventListener('click', () => downloadDropdown.classList.remove('show'));
 
+        // Hepsini Kopyala
+        copyAllBtn.addEventListener('click', () => {
+            if (!currentResults) return;
+            let text = "";
+            currentResults.forEach((row, i) => {
+                text += `[Kayıt ${i + 1}]\n`;
+                currentColumns.forEach(col => {
+                    let val = row[col];
+                    if (val !== undefined && val !== null && val !== '' && val !== 'YOK' && val !== 'Bulunamadı') {
+                        text += `${col}: ${val}\n`;
+                    }
+                });
+                text += '\n';
+            });
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = copyAllBtn.innerHTML;
+                copyAllBtn.innerHTML = '<i class="ph ph-check"></i> Kopyalandı!';
+                setTimeout(() => copyAllBtn.innerHTML = originalText, 2000);
+            });
+        });
+
+        // Sorgula Butonu
         runBtn.addEventListener('click', async () => {
             const config = pageConfig[currentPage];
             let params = {};
@@ -384,11 +432,22 @@
             if (Object.keys(params).length === 0) return alert('Lütfen en az bir alan doldurun.');
             if (config.extraParams) Object.assign(params, config.extraParams);
 
+            // UI Güncelle: Butonu kilitle ve iskelet yükleyiciyi göster
             runBtn.disabled = true;
             runBtn.innerHTML = '<i class="ph ph-spinner-gap spin"></i> Sorgulanıyor...';
-            tableBody.innerHTML = '<tr><td colspan="10" class="empty-state"><i class="ph ph-spinner-gap spin" style="font-size:24px; margin-bottom:10px;"></i><br>Veriler getiriliyor...</td></tr>';
-            resultSummary.textContent = 'Sorgulanıyor...';
+            resultSummary.textContent = 'Veriler getiriliyor...';
             downloadBtn.style.display = 'none';
+            copyAllBtn.style.display = 'none';
+            
+            // Skeleton Loader Oluştur (Tablo yapısına uygun 5 satır)
+            tableHead.innerHTML = '<tr><th>Bekleniyor...</th></tr>';
+            let skeletonHTML = '';
+            for(let i=0; i<5; i++) {
+                skeletonHTML += `<tr>
+                    <td><div class="skeleton-cell" style="width: 80%;"></div></td>
+                </tr>`;
+            }
+            tableBody.innerHTML = skeletonHTML;
 
             try {
                 const queryString = new URLSearchParams({ endpoint: config.endpoint, ...params }).toString();
@@ -406,13 +465,9 @@
                 if (!response.ok || data.error) throw new Error(data.error || 'Sunucu hatası döndü.');
 
                 let resultData = [];
-
                 if (data.data) {
-                    if (Array.isArray(data.data)) {
-                        resultData = data.data;
-                    } else if (typeof data.data === 'object') {
-                        resultData = [data.data]; 
-                    }
+                    if (Array.isArray(data.data)) resultData = data.data;
+                    else if (typeof data.data === 'object') resultData = [data.data]; 
                 } else {
                     let foundArray = false;
                     for (const key in data) {
@@ -431,18 +486,46 @@
 
                 resultData = resultData.filter(item => Object.keys(item).length > 0 && !item.error);
 
+                // BOŞ VERİ KONTROLÜ VE AKILLI MESAJ
                 if (!resultData || resultData.length === 0) {
-                    tableBody.innerHTML = '<tr><td colspan="10" class="empty-state">Sonuç bulunamadı. Girdiğiniz bilgileri kontrol edin.</td></tr>';
-                    resultSummary.textContent = 'Sonuç bulunamadı.';
+                    tableHead.innerHTML = '';
+                    tableBody.innerHTML = `<tr><td colspan="10" class="empty-state">
+                        <i class="ph ph-magnifying-glass" style="font-size:32px; color:var(--warning); margin-bottom:10px;"></i><br>
+                        Aradığınız kriterlere uygun <b>kayıt bulunamadı.</b><br>
+                        <span style="font-size:12px; color:var(--muted); margin-top:5px; display:block;">İpucu: Ad Soyad sorgularında İl/İlçe bilgisini boş bırakarak tekrar deneyin.</span>
+                    </td></tr>`;
+                    resultSummary.textContent = '0 kayıt bulundu.';
                     return;
                 }
 
-                renderTable(resultData);
+                // Başarılıysa sayacı artır
+                queryCount++;
+                updateQueryCounter();
+
+                // Tabloyu çiz
+                currentResults = resultData;
+                // Sütunları bul
+                const allKeys = new Set();
+                resultData.forEach(row => {
+                    Object.keys(row).forEach(key => {
+                        if (row[key] !== null && row[key] !== undefined && row[key] !== '' && row[key] !== 'Bulunamadı' && row[key] !== 'YOK') allKeys.add(key);
+                    });
+                });
+                currentColumns = Array.from(allKeys);
+                
+                renderTable(); // Sıralama için ayrı fonksiyon
                 downloadBtn.style.display = 'flex';
+                copyAllBtn.style.display = 'flex';
                 resultSummary.textContent = `Özet: ${resultData.length} kayıt bulundu.`;
 
             } catch (error) {
-                tableBody.innerHTML = `<tr><td colspan="10" class="empty-state" style="color:var(--danger)">Hata: ${error.message}</td></tr>`;
+                tableHead.innerHTML = '';
+                tableBody.innerHTML = `<tr><td colspan="10" class="empty-state" style="color:var(--danger)">
+                    <i class="ph ph-warning-circle" style="font-size:32px; margin-bottom:10px;"></i><br>
+                    <b>Sorgulama Başarısız!</b><br>
+                    <span style="font-size:12px; margin-top:5px; display:block;">${error.message}</span>
+                    <span style="font-size:11px; color:var(--muted); margin-top:10px; display:block;">Lütfen internet bağlantınızı kontrol edin veya daha sonra tekrar deneyin.</span>
+                </td></tr>`;
                 resultSummary.textContent = 'Hata oluştu.';
             } finally {
                 runBtn.disabled = false;
@@ -450,20 +533,39 @@
             }
         });
 
-        function renderTable(data) {
-            currentResults = data;
-            const allKeys = new Set();
-            data.forEach(row => {
-                Object.keys(row).forEach(key => {
-                    if (row[key] !== null && row[key] !== undefined && row[key] !== '' && row[key] !== 'Bulunamadı' && row[key] !== 'YOK') {
-                        allKeys.add(key);
-                    }
+        // Tabloyu Çiz (Sıralama Destekli)
+        function renderTable() {
+            if (!currentResults) return;
+
+            // Sıralama uygula
+            let sortedData = [...currentResults];
+            if (sortColumn) {
+                sortedData.sort((a, b) => {
+                    let valA = a[sortColumn] || '';
+                    let valB = b[sortColumn] || '';
+                    if (typeof valA === 'string') valA = valA.toLowerCase();
+                    if (typeof valB === 'string') valB = valB.toLowerCase();
+                    
+                    if (valA < valB) return sortAsc ? -1 : 1;
+                    if (valA > valB) return sortAsc ? 1 : -1;
+                    return 0;
                 });
-            });
-            currentColumns = Array.from(allKeys);
-            tableHead.innerHTML = '<tr>' + currentColumns.map(col => `<th>${col}</th>`).join('') + '</tr>';
+            }
+
+            // Başlıkları Çiz
+            tableHead.innerHTML = '<tr>' + currentColumns.map(col => {
+                let icon = '';
+                if (sortColumn === col) {
+                    icon = sortAsc ? '<i class="ph ph-arrow-up"></i>' : '<i class="ph ph-arrow-down"></i>';
+                } else {
+                    icon = '<i class="ph ph-arrows-down-up" style="opacity:0.3;"></i>';
+                }
+                return `<th onclick="handleSort('${col}')">${col} ${icon}</th>`;
+            }).join('') + '<th style="text-align:right;">İşlem</th></tr>';
+
+            // Satırları Çiz
             let html = '';
-            data.forEach(row => {
+            sortedData.forEach(row => {
                 html += '<tr>';
                 currentColumns.forEach(col => {
                     let val = row[col];
@@ -473,11 +575,42 @@
                         html += `<td>${val}</td>`;
                     }
                 });
+                // Kopyalama Butonu
+                html += `<td style="text-align:right;">
+                            <button class="copy-btn" title="Satırı Kopyala" onclick="copyRow(${JSON.stringify(row).replace(/"/g, '&quot;')})">
+                                <i class="ph ph-copy"></i>
+                            </button>
+                          </td>`;
                 html += '</tr>';
             });
             tableBody.innerHTML = html;
         }
 
+        // Sıralama Fonksiyonu
+        function handleSort(column) {
+            if (sortColumn === column) {
+                sortAsc = !sortAsc;
+            } else {
+                sortColumn = column;
+                sortAsc = true;
+            }
+            renderTable();
+        }
+
+        // Satır Kopyalama Fonksiyonu
+        function copyRow(rowData) {
+            let text = "";
+            for (const [key, value] of Object.entries(rowData)) {
+                if (value !== null && value !== undefined && value !== '' && value !== 'YOK' && value !== 'Bulunamadı') {
+                    text += `${key}: ${value}\n`;
+                }
+            }
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Kayıt panoya kopyalandı!');
+            });
+        }
+
+        // İndirme Fonksiyonları
         function downloadData(format) {
             if (!currentResults || currentResults.length === 0) return alert('İndirilecek veri yok.');
             const fileName = `syncra_sorgu_${Date.now()}`;
