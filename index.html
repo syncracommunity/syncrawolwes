@@ -8,7 +8,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
-<!-- PDF ve CSV için kütüphaneler -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 
@@ -30,47 +29,33 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background-color: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; height: 100vh; display: flex; overflow: hidden; position: relative; }
     
-    /* --- KAR YAĞIŞI EFEKTİ --- */
     #snow-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; opacity: 0.6; }
 
-    /* --- SOL MENÜ --- */
-    .sidebar { 
-        width: 260px; background: var(--sidebar); border-right: 1px solid var(--border); 
-        display: flex; flex-direction: column; z-index: 100; overflow-y: auto; transition: transform 0.3s ease;
-    }
+    .sidebar { width: 260px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; overflow-y: auto; transition: transform 0.3s ease; }
     .brand { padding: 20px; font-size: 22px; font-weight: 800; display: flex; align-items: center; gap: 10px; color: #fff; border-bottom: 1px solid var(--border); letter-spacing: -1px;}
     .brand span { color: var(--primary); }
     
     .nav-section { padding: 20px 15px; flex: 1; }
     .nav-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 600; margin-bottom: 10px; padding-left: 10px; }
-    .nav-item { 
-        padding: 12px 15px; color: var(--muted); cursor: pointer; font-size: 14px; font-weight: 500;
-        border-radius: 8px; transition: 0.2s; display: flex; align-items: center; gap: 12px; margin-bottom: 4px;
-    }
+    .nav-item { padding: 12px 15px; color: var(--muted); cursor: pointer; font-size: 14px; font-weight: 500; border-radius: 8px; transition: 0.2s; display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
     .nav-item i { font-size: 18px; }
     .nav-item:hover { background: var(--panel-hover); color: #fff; }
     .nav-item.active { background: rgba(59, 130, 246, 0.1); color: var(--primary); border-left: 3px solid var(--primary); border-radius: 0 8px 8px 0; margin-left: -15px; padding-left: 27px;}
     .nav-item.active i { color: var(--primary); }
 
-    /* Developer Yazısı */
     .dev-credit { padding: 20px; text-align: center; font-size: 12px; color: var(--muted); border-top: 1px solid var(--border); }
     .dev-credit b { color: var(--primary); font-weight: 600; }
 
-    /* --- ANA İÇERİK --- */
     .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; z-index: 1; }
-    
     .topbar { height: 70px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; background: var(--bg); position: sticky; top: 0; z-index: 50; }
     .topbar-left { display: flex; align-items: center; gap: 15px; font-weight: 600; font-size: 16px; color: #fff;}
     .topbar-right { display: flex; align-items: center; gap: 20px; color: var(--muted); font-size: 20px; }
     .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--panel); border: 1px solid var(--border); display: grid; place-items: center; overflow: hidden; }
     .avatar img { width: 100%; height: 100%; object-fit: cover; }
 
-    /* Hamburger Menü (Mobil) */
     .menu-toggle { display: none; cursor: pointer; font-size: 24px; color: var(--text); }
 
     .content { padding: 30px; max-width: 1400px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 25px; }
-
-    /* Arama Paneli */
     .search-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
     .search-header { margin-bottom: 25px; }
     .search-header h2 { font-size: 20px; font-weight: 600; color: #fff; margin-bottom: 5px; }
@@ -81,37 +66,21 @@
     .form-group label { font-size: 12px; color: var(--muted); font-weight: 500; }
     .form-group label span { color: var(--muted); font-size: 11px; font-weight: 400;}
     
-    /* GELİŞMİŞ INPUT TASARIMI */
     .input-wrapper { position: relative; display: flex; align-items: center; }
     .input-wrapper i { position: absolute; left: 15px; color: var(--muted); font-size: 18px; transition: 0.2s; pointer-events: none; }
-    .input-wrapper input { 
-        width: 100%;
-        background: var(--bg); 
-        border: 1px solid var(--border); 
-        color: var(--text); 
-        padding: 14px 16px 14px 45px; 
-        border-radius: 10px; 
-        font-size: 14px; 
-        outline: none; 
-        transition: all 0.3s ease; 
-    }
+    .input-wrapper input { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 14px 16px 14px 45px; border-radius: 10px; font-size: 14px; outline: none; transition: all 0.3s ease; }
     .input-wrapper input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15); background: #0f131a; }
     .input-wrapper input:focus + i { color: var(--primary); transform: scale(1.1); }
     .input-wrapper input::placeholder { color: #475569; }
     
     .button-group { display: flex; justify-content: flex-end; gap: 15px; }
-    button { 
-        border: none; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-weight: 600; 
-        transition: 0.2s; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px;
-    }
+    button { border: none; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-weight: 600; transition: 0.2s; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; }
     .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 15px rgba(59,130,246,0.3); }
     .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
     .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none;}
-    
     .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
     .btn-danger:hover { background: rgba(239, 68, 68, 0.2); }
 
-    /* Sonuç Alanı */
     .results-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
     .results-header { padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
     .results-header h3 { font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 5px;}
@@ -120,9 +89,7 @@
     .download-group { position: relative; }
     .btn-download { background: rgba(16, 185, 129, 0.1); color: var(--success); }
     .btn-download:hover { background: rgba(16, 185, 129, 0.2); }
-    .download-dropdown { 
-        position: absolute; top: 100%; right: 0; margin-top: 5px; background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; display: none; flex-direction: column; z-index: 10; width: 150px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-    }
+    .download-dropdown { position: absolute; top: 100%; right: 0; margin-top: 5px; background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; display: none; flex-direction: column; z-index: 10; width: 150px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
     .download-dropdown.show { display: flex; }
     .download-dropdown button { width: 100%; text-align: left; padding: 12px 15px; border-radius: 0; background: transparent; color: var(--text); font-weight: 400; justify-content: flex-start; }
     .download-dropdown button:hover { background: var(--panel-hover); }
@@ -136,22 +103,13 @@
     td { padding: 15px 30px; font-size: 13px; border-bottom: 1px solid var(--border); color: #cbd5e1; }
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: var(--panel-hover); }
-    
     .empty-state { padding: 50px; text-align: center; color: var(--muted); font-size: 14px; }
-    
-    /* Spinner */
     .spin { animation: spin 1s linear infinite; }
     @keyframes spin { 100% { transform: rotate(360deg); } }
 
-    /* --- MOBİL UYUMLULUK (RESPONSIVE) --- */
     @media (max-width: 900px) {
-        .sidebar { 
-            position: fixed; left: 0; top: 0; height: 100vh; 
-            transform: translateX(-100%); /* Varsayılan olarak gizli */
-            box-shadow: 10px 0 30px rgba(0,0,0,0.5);
-        }
+        .sidebar { position: fixed; left: 0; top: 0; height: 100vh; transform: translateX(-100%); box-shadow: 10px 0 30px rgba(0,0,0,0.5); }
         .sidebar.open { transform: translateX(0); }
-        
         .menu-toggle { display: block; }
         .content { padding: 15px; }
         .form-grid { grid-template-columns: 1fr; }
@@ -168,16 +126,12 @@
 </style>
 </head>
 <body>
-
-    <!-- Kar Yağışı Canvas -->
     <canvas id="snow-canvas"></canvas>
 
-    <!-- SOL MENÜ -->
     <div class="sidebar" id="sidebar">
         <div class="brand">
             <i class="ph ph-shield-check" style="color:var(--primary)"></i> SYNCRA<span>PANEL</span>
         </div>
-        
         <div class="nav-section">
             <div class="nav-title">Sorgu Çözümleri</div>
             <div class="nav-item" data-page="tc"><i class="ph ph-identification-card"></i> TC Sorgu</div>
@@ -190,14 +144,9 @@
             <div class="nav-item" data-page="adres"><i class="ph ph-map-pin"></i> Adres Sorgu</div>
             <div class="nav-item" data-page="tapu"><i class="ph ph-house-line"></i> Tapu Sorgu</div>
         </div>
-
-        <!-- Developer Yazısı -->
-        <div class="dev-credit">
-            Developed by <b>onur_baris65</b>
-        </div>
+        <div class="dev-credit">Developed by <b>onur_baris65</b></div>
     </div>
 
-    <!-- ANA İÇERİK -->
     <div class="main">
         <div class="topbar">
             <div class="topbar-left">
@@ -212,24 +161,18 @@
         </div>
 
         <div class="content">
-            <!-- Arama Formu -->
             <div class="search-panel">
                 <div class="search-header">
                     <h2 id="pageTitle">Ad Soyad Sorgulama</h2>
                     <p id="pageDesc">Ad ve soyad zorunludur. İl / ilçe isteğe bağlıdır.</p>
                 </div>
-                
-                <div id="dynamicForm" class="form-grid">
-                    <!-- Form JS ile doldurulacak -->
-                </div>
-
+                <div id="dynamicForm" class="form-grid"></div>
                 <div class="button-group">
                     <button class="btn-danger" id="clearBtn"><i class="ph ph-x"></i> Temizle</button>
                     <button class="btn-primary" id="runBtn"><i class="ph ph-magnifying-glass"></i> Sorgula</button>
                 </div>
             </div>
 
-            <!-- Sonuçlar -->
             <div class="results-panel">
                 <div class="results-header">
                     <div>
@@ -245,12 +188,9 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="table-container">
                     <table id="resultTable">
-                        <thead id="tableHead">
-                            <!-- JS ile doldurulacak -->
-                        </thead>
+                        <thead id="tableHead"></thead>
                         <tbody id="tableBody">
                             <tr><td colspan="10" class="empty-state">Henüz bir sorgulama yapılmadı.</td></tr>
                         </tbody>
@@ -261,32 +201,21 @@
     </div>
 
     <script>
-        // --- KAR YAĞIŞI MANTIĞI ---
+        // --- KAR YAĞIŞI ---
         const canvas = document.getElementById('snow-canvas');
         const ctx = canvas.getContext('2d');
         let width = window.innerWidth;
         let height = window.innerHeight;
-        canvas.width = width;
-        canvas.height = height;
-
+        canvas.width = width; canvas.height = height;
         window.addEventListener('resize', () => {
             width = window.innerWidth; height = window.innerHeight;
             canvas.width = width; canvas.height = height;
         });
-
         let flakes = [];
-        const flakeCount = 100; // Kar tanesi sayısı
-
+        const flakeCount = 100;
         for (let i = 0; i < flakeCount; i++) {
-            flakes.push({
-                x: Math.random() * width,
-                y: Math.random() * height,
-                r: Math.random() * 2 + 1, // Yarıçap
-                d: Math.random() + 1, // Yoğunluk/Hız
-                opacity: Math.random() * 0.5 + 0.3
-            });
+            flakes.push({ x: Math.random() * width, y: Math.random() * height, r: Math.random() * 2 + 1, d: Math.random() + 1, opacity: Math.random() * 0.5 + 0.3 });
         }
-
         function drawSnow() {
             ctx.clearRect(0, 0, width, height);
             ctx.fillStyle = "white";
@@ -300,23 +229,15 @@
             ctx.fill();
             updateSnow();
         }
-
         let angle = 0;
         function updateSnow() {
             angle += 0.01;
             for (let i = 0; i < flakeCount; i++) {
                 let f = flakes[i];
-                // Rüzgar efekti (sinüs dalgası ile sağa sola savrulma)
                 f.x += Math.sin(angle) * 0.5;
-                f.y += Math.cos(angle) * 0.5 + f.d; // Aşağı düşüş
-
-                // Ekranın altına ulaşınca yukarıdan tekrar başlat
+                f.y += Math.cos(angle) * 0.5 + f.d;
                 if (f.y > height + 5 || f.x > width + 5 || f.x < -5) {
-                    if (i % 3 > 0) { // Çoğunlukla üstten gelsin
-                        flakes[i] = { x: Math.random() * width, y: -10, r: f.r, d: f.d, opacity: f.opacity };
-                    } else {
-                        flakes[i] = { x: -10, y: Math.random() * height, r: f.r, d: f.d, opacity: f.opacity };
-                    }
+                    flakes[i] = { x: Math.random() * width, y: -10, r: f.r, d: f.d, opacity: f.opacity };
                 }
             }
         }
@@ -325,10 +246,8 @@
         // --- MOBİL MENÜ ---
         const menuToggle = document.getElementById('menuToggle');
         const sidebar = document.getElementById('sidebar');
-        menuToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('open');
-        });
-        
+        menuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+
         // --- SORGU MANTIĞI ---
         const menuItems = document.querySelectorAll('.nav-item[data-page]');
         const pageTitle = document.getElementById('pageTitle');
@@ -347,12 +266,8 @@
         let currentResults = null;
         let currentColumns = [];
 
-        // Her sayfa için input ikonları ve tipleri
         const pageConfig = {
-            'tc': { 
-                title: 'TC Kimlik Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'tc.php',
-                inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card', maxlength: 11 }]
-            },
+            'tc': { title: 'TC Kimlik Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'tc.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card', maxlength: 11 }] },
             'adsoyad': { 
                 title: 'Ad Soyad Sorgulama', desc: 'Ad ve soyad zorunludur. İl / ilçe isteğe bağlıdır.', endpoint: 'adsoyad.php',
                 inputs: [
@@ -362,59 +277,33 @@
                     { id: 'ilce', label: 'İlçe <span>(opsiyonel)</span>', placeholder: 'İlçe', icon: 'ph-map-pin-line' }
                 ]
             },
-            'aile': { 
-                title: 'Aile Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'aile.php',
-                inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card', maxlength: 11 }]
-            },
-            'sulale': { 
-                title: 'Sülale Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'sulale.php',
-                inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card', maxlength: 11 }]
-            },
-            'tcgsm': { 
-                title: 'TC → GSM Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'tcgsm.php',
-                inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card', maxlength: 11 }]
-            },
+            'aile': { title: 'Aile Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'aile.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card', maxlength: 11 }] },
+            'sulale': { title: 'Sülale Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'sulale.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card', maxlength: 11 }] },
+            'tcgsm': { title: 'TC → GSM Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'tcgsm.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card', maxlength: 11 }] },
             'gsmtc': { 
                 title: 'GSM → TC Sorgulama', desc: '10 haneli telefon numarası giriniz.', endpoint: 'gsmtc.php',
-                inputs: [{ id: 'gsm', label: 'Telefon No', placeholder: '5XX XXX XX XX', icon: 'ph-device-mobile', maxlength: 10 }],
-                extraParams: { auth: 'fire' }
+                inputs: [{ id: 'gsm', label: 'Telefon No', placeholder: '5XX XXX XX XX', icon: 'ph-device-mobile', maxlength: 10 }], extraParams: { auth: 'fire' } 
             },
-            'eokul': { 
-                title: 'E-Okul Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'eokul.php',
-                inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card', maxlength: 11 }]
-            },
-            'adres': { 
-                title: 'Adres Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'adres.php',
-                inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card', maxlength: 11 }]
-            },
-            'tapu': { 
-                title: 'Tapu Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'tapu.php',
-                inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card', maxlength: 11 }]
-            }
+            'eokul': { title: 'E-Okul Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'eokul.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card', maxlength: 11 }] },
+            'adres': { title: 'Adres Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'adres.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card', maxlength: 11 }] },
+            'tapu': { title: 'Tapu Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'tapu.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card', maxlength: 11 }] }
         };
 
-        // Menü Tıklama
         menuItems.forEach(item => {
             item.addEventListener('click', () => {
                 menuItems.forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
                 currentPage = item.dataset.page;
                 updateUI(currentPage);
-                
-                // Mobilde menüyü kapat
                 if (window.innerWidth <= 900) sidebar.classList.remove('open');
             });
         });
 
-        // Formu Güncelle
         function updateUI(page) {
             const config = pageConfig[page];
-            
             pageTitle.textContent = config.title;
             pageDesc.textContent = config.desc;
             topbarTitle.textContent = config.title;
-            
-            // Formu temizle
             dynamicForm.innerHTML = '';
             config.inputs.forEach(input => {
                 const div = document.createElement('div');
@@ -428,41 +317,33 @@
                 `;
                 dynamicForm.appendChild(div);
             });
-
-            // Sonuçları sıfırla
             resetResults();
         }
 
-        // Sonuçları Temizle
         function resetResults() {
-            currentResults = null;
-            currentColumns = [];
+            currentResults = null; currentColumns = [];
             tableHead.innerHTML = '';
             tableBody.innerHTML = '<tr><td colspan="10" class="empty-state">Henüz bir sorgulama yapılmadı.</td></tr>';
             resultSummary.textContent = 'Henüz sorgulama yapılmadı.';
             downloadBtn.style.display = 'none';
         }
 
-        // Temizle Butonu
         clearBtn.addEventListener('click', () => {
             document.querySelectorAll('.form-group input').forEach(inp => inp.value = '');
             resetResults();
         });
 
-        // İndir Menüsü
         downloadBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             downloadDropdown.classList.toggle('show');
         });
         document.addEventListener('click', () => downloadDropdown.classList.remove('show'));
 
-        // Sorgula Butonu
         runBtn.addEventListener('click', async () => {
             const config = pageConfig[currentPage];
             let params = {};
             let hasError = false;
 
-            // Parametreleri topla
             config.inputs.forEach(input => {
                 const val = document.getElementById(`input_${input.id}`).value.trim();
                 if (input.label.includes('zorunlu') && !val) {
@@ -476,10 +357,8 @@
 
             if (hasError) return alert('Lütfen zorunlu alanları doldurun.');
             if (Object.keys(params).length === 0) return alert('Lütfen en az bir alan doldurun.');
-
             if (config.extraParams) Object.assign(params, config.extraParams);
 
-            // UI Güncelle
             runBtn.disabled = true;
             runBtn.innerHTML = '<i class="ph ph-spinner-gap spin"></i> Sorgulanıyor...';
             tableBody.innerHTML = '<tr><td colspan="10" class="empty-state"><i class="ph ph-spinner-gap spin" style="font-size:24px; margin-bottom:10px;"></i><br>Veriler getiriliyor...</td></tr>';
@@ -501,22 +380,54 @@
 
                 if (!response.ok || data.error) throw new Error(data.error || 'Sunucu hatası döndü.');
 
-                // Veriyi ayıkla
+                // VERİ YAPISINI ESNEK BİR ŞEKİLDE AYIKLA
                 let resultData = null;
+
+                // 1. Durum: Standart "data" dizisi (Çoğu API böyle döner)
                 if (data.data && Array.isArray(data.data)) {
                     resultData = data.data;
-                } else if (Array.isArray(data)) {
+                } 
+                // 2. Durum: Direkt dizi dönmüşse
+                else if (Array.isArray(data)) {
                     resultData = data;
-                } else if (data.Status === true || data.status === 'success') {
-                    resultData = [data];
-                } else {
-                    resultData = [data];
+                } 
+                // 3. Durum: "Status": true veya "status": "success" gibi tek bir obje dönmüşse
+                else if (data.Status === true || data.status === 'success' || data.success === true) {
+                    // Eğer içinde başka bir dizi varsa (örn: data.sonuclar)
+                    let foundArray = false;
+                    for (const key in data) {
+                        if (Array.isArray(data[key]) && data[key].length > 0) {
+                            resultData = data[key];
+                            foundArray = true;
+                            break;
+                        }
+                    }
+                    if (!foundArray) resultData = [data]; // Dizi yoksa objenin kendisini göster
+                } 
+                // 4. Durum: Bilinmeyen bir JSON objesi (Adres sorgusu bazen böyle dönebilir)
+                else {
+                    // İçinde dizi var mı diye tarama yap
+                    let foundArray = false;
+                    for (const key in data) {
+                        if (Array.isArray(data[key])) {
+                            resultData = data[key];
+                            foundArray = true;
+                            break;
+                        }
+                    }
+                    if (!foundArray) resultData = [data]; // Dizi yoksa ham objeyi göster
                 }
 
                 if (!resultData || resultData.length === 0) {
-                    tableBody.innerHTML = '<tr><td colspan="10" class="empty-state">Sonuç bulunamadı. Lütfen bilgilerinizi kontrol edin.</td></tr>';
+                    tableBody.innerHTML = '<tr><td colspan="10" class="empty-state">Sonuç bulunamadı. Girdiğiniz bilgileri kontrol edin.</td></tr>';
                     resultSummary.textContent = 'Sonuç bulunamadı.';
                     return;
+                }
+
+                // Eğer API'den dönen obje boşsa (örneğin {"AdSoyad": "..."} gibi tek obje)
+                // ve bu obje içinde sadece hata mesajı varsa onu yakala
+                if (resultData.length === 1 && resultData[0].error) {
+                     throw new Error(resultData[0].error);
                 }
 
                 renderTable(resultData);
@@ -532,7 +443,6 @@
             }
         });
 
-        // Tabloyu Ekrana Çiz
         function renderTable(data) {
             currentResults = data;
             const allKeys = new Set();
@@ -544,9 +454,7 @@
                 });
             });
             currentColumns = Array.from(allKeys);
-
             tableHead.innerHTML = '<tr>' + currentColumns.map(col => `<th>${col}</th>`).join('') + '</tr>';
-
             let html = '';
             data.forEach(row => {
                 html += '<tr>';
@@ -563,7 +471,6 @@
             tableBody.innerHTML = html;
         }
 
-        // İndirme Fonksiyonları
         function downloadData(format) {
             if (!currentResults || currentResults.length === 0) return alert('İndirilecek veri yok.');
             const fileName = `syncra_sorgu_${Date.now()}`;
@@ -576,9 +483,7 @@
                 });
                 const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
                 const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = `${fileName}.csv`;
-                link.click();
+                link.href = URL.createObjectURL(blob); link.download = `${fileName}.csv`; link.click();
             } 
             else if (format === 'txt') {
                 let txtContent = '';
@@ -594,20 +499,13 @@
                 });
                 const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8;' });
                 const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = `${fileName}.txt`;
-                link.click();
+                link.href = URL.createObjectURL(blob); link.download = `${fileName}.txt`; link.click();
             }
             else if (format === 'pdf') {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF('l', 'pt', 'a4');
-                
-                doc.setFontSize(18);
-                doc.setTextColor(59, 130, 246);
-                doc.text("Syncra Sorgu Raporu", 40, 40);
-                doc.setFontSize(10);
-                doc.setTextColor(100);
-                doc.text(`Tarih: ${new Date().toLocaleString('tr-TR')}`, 40, 55);
+                doc.setFontSize(18); doc.setTextColor(59, 130, 246); doc.text("Syncra Sorgu Raporu", 40, 40);
+                doc.setFontSize(10); doc.setTextColor(100); doc.text(`Tarih: ${new Date().toLocaleString('tr-TR')}`, 40, 55);
 
                 const tableColumn = currentColumns;
                 const tableRows = currentResults.map(row => 
@@ -616,7 +514,6 @@
                         return (val === undefined || val === null || val === 'YOK' || val === 'Bulunamadı') ? '-' : val.toString();
                     })
                 );
-
                 doc.autoTable({
                     head: [tableColumn], body: tableRows, startY: 70, theme: 'grid',
                     styles: { font: 'helvetica', fontSize: 8, cellPadding: 4, textColor: 50 },
@@ -629,7 +526,6 @@
             downloadDropdown.classList.remove('show');
         }
 
-        // Sayfa Yüklendiğinde
         updateUI('adsoyad');
     </script>
 </body>
