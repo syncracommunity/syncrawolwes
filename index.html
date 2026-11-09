@@ -12,41 +12,64 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 
 <style>
+    /* --- TEMA DEĞİŞKENLERİ (VARSAYILAN: SİYAH) --- */
     :root { 
         --bg: #0b0e14; --sidebar: #111520; --panel: #171c26; --panel-hover: #1f2533;
         --border: #262d3d; --text: #e2e8f0; --muted: #94a3b8; --primary: #3b82f6;
         --primary-hover: #2563eb; --danger: #ef4444; --success: #10b981;
+        --snow-color: white;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background-color: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; height: 100vh; display: flex; overflow: hidden; position: relative; }
     
-    #snow-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; opacity: 0.6; }
+    /* --- BEYAZ TEMA DEĞİŞKENLERİ --- */
+    [data-theme="light"] {
+        --bg: #f8fafc; --sidebar: #ffffff; --panel: #ffffff; --panel-hover: #f1f5f9;
+        --border: #e2e8f0; --text: #0f172a; --muted: #64748b; --primary: #2563eb;
+        --primary-hover: #1d4ed8; --danger: #dc2626; --success: #059669;
+        --snow-color: #cbd5e1; /* Açık temada kar taneleri hafif gri olsun */
+    }
 
-    .sidebar { width: 260px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; overflow-y: auto; transition: transform 0.3s ease; }
-    .brand { padding: 20px; font-size: 22px; font-weight: 800; display: flex; align-items: center; gap: 10px; color: #fff; border-bottom: 1px solid var(--border); letter-spacing: -1px;}
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    /* --- TÜM SAYFA İÇİN ÖZEL SCROLLBAR --- */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; transition: 0.2s; }
+    [data-theme="light"] ::-webkit-scrollbar-thumb { background: #cbd5e1; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+    * { scrollbar-width: thin; scrollbar-color: #334155 var(--bg); }
+
+    body { background-color: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; height: 100vh; display: flex; overflow: hidden; position: relative; transition: background-color 0.3s, color 0.3s; }
+    
+    #snow-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; opacity: 0.6; transition: 0.3s; }
+
+    .sidebar { width: 260px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; overflow-y: auto; transition: transform 0.3s ease, background-color 0.3s; }
+    .brand { padding: 20px; font-size: 22px; font-weight: 800; display: flex; align-items: center; gap: 10px; color: var(--text); border-bottom: 1px solid var(--border); letter-spacing: -1px;}
     .brand span { color: var(--primary); }
     .nav-section { padding: 20px 15px; flex: 1; }
     .nav-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 600; margin-bottom: 10px; padding-left: 10px; }
     .nav-item { padding: 12px 15px; color: var(--muted); cursor: pointer; font-size: 14px; font-weight: 500; border-radius: 8px; transition: 0.2s; display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
     .nav-item i { font-size: 18px; }
-    .nav-item:hover { background: var(--panel-hover); color: #fff; }
+    .nav-item:hover { background: var(--panel-hover); color: var(--text); }
     .nav-item.active { background: rgba(59, 130, 246, 0.1); color: var(--primary); border-left: 3px solid var(--primary); border-radius: 0 8px 8px 0; margin-left: -15px; padding-left: 27px;}
     .nav-item.active i { color: var(--primary); }
     .dev-credit { padding: 20px; text-align: center; font-size: 12px; color: var(--muted); border-top: 1px solid var(--border); }
     .dev-credit b { color: var(--primary); font-weight: 600; }
 
     .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; z-index: 1; }
-    .topbar { height: 70px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; background: var(--bg); position: sticky; top: 0; z-index: 50; }
-    .topbar-left { display: flex; align-items: center; gap: 15px; font-weight: 600; font-size: 16px; color: #fff;}
+    .topbar { height: 70px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; background: var(--bg); position: sticky; top: 0; z-index: 50; transition: background-color 0.3s; }
+    .topbar-left { display: flex; align-items: center; gap: 15px; font-weight: 600; font-size: 16px; color: var(--text);}
     .topbar-right { display: flex; align-items: center; gap: 20px; color: var(--muted); font-size: 20px; }
-    .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--panel); border: 1px solid var(--border); display: grid; place-items: center; overflow: hidden; }
-    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+    
+    /* Tema Değiştirme Butonu */
+    .theme-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--panel); border: 1px solid var(--border); display: grid; place-items: center; cursor: pointer; color: var(--text); transition: 0.2s; }
+    .theme-btn:hover { background: var(--panel-hover); transform: scale(1.05); }
+
     .menu-toggle { display: none; cursor: pointer; font-size: 24px; color: var(--text); }
 
     .content { padding: 30px; max-width: 1400px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 25px; }
-    .search-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+    .search-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: background-color 0.3s; }
     .search-header { margin-bottom: 25px; }
-    .search-header h2 { font-size: 20px; font-weight: 600; color: #fff; margin-bottom: 5px; }
+    .search-header h2 { font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 5px; }
     .search-header p { font-size: 13px; color: var(--muted); }
     
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
@@ -57,9 +80,9 @@
     .input-wrapper { position: relative; display: flex; align-items: center; }
     .input-wrapper i { position: absolute; left: 15px; color: var(--muted); font-size: 18px; transition: 0.2s; pointer-events: none; }
     .input-wrapper input { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 14px 16px 14px 45px; border-radius: 10px; font-size: 14px; outline: none; transition: all 0.3s ease; }
-    .input-wrapper input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15); background: #0f131a; }
+    .input-wrapper input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15); background: var(--sidebar); }
     .input-wrapper input:focus + i { color: var(--primary); transform: scale(1.1); }
-    .input-wrapper input::placeholder { color: #475569; }
+    .input-wrapper input::placeholder { color: var(--muted); opacity: 0.7; }
     
     .button-group { display: flex; justify-content: flex-end; gap: 15px; }
     button { border: none; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-weight: 600; transition: 0.2s; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; }
@@ -69,26 +92,23 @@
     .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
     .btn-danger:hover { background: rgba(239, 68, 68, 0.2); }
 
-    .results-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .results-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; transition: background-color 0.3s; }
     .results-header { padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
-    .results-header h3 { font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 5px;}
+    .results-header h3 { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 5px;}
     .results-header p { font-size: 12px; color: var(--muted); }
     
     .download-group { position: relative; }
     .btn-download { background: rgba(16, 185, 129, 0.1); color: var(--success); }
     .btn-download:hover { background: rgba(16, 185, 129, 0.2); }
-    .download-dropdown { position: absolute; top: 100%; right: 0; margin-top: 5px; background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; display: none; flex-direction: column; z-index: 10; width: 150px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+    .download-dropdown { position: absolute; top: 100%; right: 0; margin-top: 5px; background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; display: none; flex-direction: column; z-index: 10; width: 150px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
     .download-dropdown.show { display: flex; }
     .download-dropdown button { width: 100%; text-align: left; padding: 12px 15px; border-radius: 0; background: transparent; color: var(--text); font-weight: 400; justify-content: flex-start; }
     .download-dropdown button:hover { background: var(--panel-hover); }
 
     .table-container { width: 100%; overflow-x: auto; max-height: 500px; overflow-y: auto; }
-    .table-container::-webkit-scrollbar { width: 8px; height: 8px; }
-    .table-container::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-    
     table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
     th { padding: 15px 30px; font-size: 11px; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); font-weight: 600; background: var(--bg); position: sticky; top: 0; z-index: 2;}
-    td { padding: 15px 30px; font-size: 13px; border-bottom: 1px solid var(--border); color: #cbd5e1; }
+    td { padding: 15px 30px; font-size: 13px; border-bottom: 1px solid var(--border); color: var(--text); }
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: var(--panel-hover); }
     .empty-state { padding: 50px; text-align: center; color: var(--muted); font-size: 14px; }
@@ -96,7 +116,7 @@
     @keyframes spin { 100% { transform: rotate(360deg); } }
 
     @media (max-width: 900px) {
-        .sidebar { position: fixed; left: 0; top: 0; height: 100vh; transform: translateX(-100%); box-shadow: 10px 0 30px rgba(0,0,0,0.5); }
+        .sidebar { position: fixed; left: 0; top: 0; height: 100vh; transform: translateX(-100%); box-shadow: 10px 0 30px rgba(0,0,0,0.1); }
         .sidebar.open { transform: translateX(0); }
         .menu-toggle { display: block; }
         .content { padding: 15px; }
@@ -128,7 +148,6 @@
             <div class="nav-item" data-page="gsmtc"><i class="ph ph-phone-call"></i> GSM → TC</div>
             <div class="nav-item" data-page="eokul"><i class="ph ph-graduation-cap"></i> E-Okul Sorgu</div>
             <div class="nav-item" data-page="adres"><i class="ph ph-map-pin"></i> Adres Sorgu</div>
-            <div class="nav-item" data-page="tapu"><i class="ph ph-house-line"></i> Tapu Sorgu</div>
         </div>
         <div class="dev-credit">Developed by <b>onur_baris65</b></div>
     </div>
@@ -140,9 +159,10 @@
                 <span id="topbarTitle">Ad Soyad Sorgu</span>
             </div>
             <div class="topbar-right">
-                <i class="ph ph-sun" style="cursor:pointer;"></i>
-                <i class="ph ph-bell" style="cursor:pointer;"></i>
-                <div class="avatar"><img src="https://ui-avatars.com/api/?name=Admin&background=3b82f6&color=fff" alt="User"></div>
+                <!-- Tema Değiştirme Butonu -->
+                <div class="theme-btn" id="themeToggle" title="Temayı Değiştir">
+                    <i class="ph ph-moon" id="themeIcon"></i>
+                </div>
             </div>
         </div>
 
@@ -187,24 +207,68 @@
     </div>
 
     <script>
+        // --- TEMA MANTIĞI ---
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const htmlElement = document.documentElement;
+
+        // Sayfa yüklendiğinde hafızadaki temayı kontrol et
+        const savedTheme = localStorage.getItem('syncra-theme') || 'dark';
+        if (savedTheme === 'light') {
+            htmlElement.setAttribute('data-theme', 'light');
+            themeIcon.classList.replace('ph-moon', 'ph-sun');
+        } else {
+            htmlElement.removeAttribute('data-theme');
+            themeIcon.classList.replace('ph-sun', 'ph-moon');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            if (htmlElement.getAttribute('data-theme') === 'light') {
+                // Karanlığa geç
+                htmlElement.removeAttribute('data-theme');
+                localStorage.setItem('syncra-theme', 'dark');
+                themeIcon.classList.replace('ph-sun', 'ph-moon');
+            } else {
+                // Aydınlığa geç
+                htmlElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('syncra-theme', 'light');
+                themeIcon.classList.replace('ph-moon', 'ph-sun');
+            }
+        });
+
         // --- KAR YAĞIŞI ---
         const canvas = document.getElementById('snow-canvas');
         const ctx = canvas.getContext('2d');
         let width = window.innerWidth, height = window.innerHeight;
         canvas.width = width; canvas.height = height;
         window.addEventListener('resize', () => { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; });
+        
         let flakes = [];
         for (let i = 0; i < 100; i++) flakes.push({ x: Math.random() * width, y: Math.random() * height, r: Math.random() * 2 + 1, d: Math.random() + 1, opacity: Math.random() * 0.5 + 0.3 });
+        
         function drawSnow() {
-            ctx.clearRect(0, 0, width, height); ctx.fillStyle = "white"; ctx.beginPath();
-            for (let i = 0; i < flakes.length; i++) { let f = flakes[i]; ctx.globalAlpha = f.opacity; ctx.moveTo(f.x, f.y); ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, true); }
-            ctx.fill(); updateSnow();
+            ctx.clearRect(0, 0, width, height); 
+            // Kar rengini temaya göre ayarla
+            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+            ctx.fillStyle = isLight ? "#94a3b8" : "white"; 
+            ctx.beginPath();
+            for (let i = 0; i < flakes.length; i++) { 
+                let f = flakes[i]; 
+                ctx.globalAlpha = f.opacity; 
+                ctx.moveTo(f.x, f.y); 
+                ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, true); 
+            }
+            ctx.fill(); 
+            updateSnow();
         }
+        
         let angle = 0;
         function updateSnow() {
             angle += 0.01;
             for (let i = 0; i < flakes.length; i++) {
-                let f = flakes[i]; f.x += Math.sin(angle) * 0.5; f.y += Math.cos(angle) * 0.5 + f.d;
+                let f = flakes[i]; 
+                f.x += Math.sin(angle) * 0.5; 
+                f.y += Math.cos(angle) * 0.5 + f.d;
                 if (f.y > height + 5 || f.x > width + 5 || f.x < -5) flakes[i] = { x: Math.random() * width, y: -10, r: f.r, d: f.d, opacity: f.opacity };
             }
         }
@@ -233,6 +297,7 @@
         let currentResults = null;
         let currentColumns = [];
 
+        // Tapu kaldırıldı, listede yok
         const pageConfig = {
             'tc': { title: 'TC Kimlik Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'tc.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card', maxlength: 11 }] },
             'adsoyad': { 
@@ -249,8 +314,7 @@
             'tcgsm': { title: 'TC → GSM Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'tcgsm.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card', maxlength: 11 }] },
             'gsmtc': { title: 'GSM → TC Sorgulama', desc: '10 haneli telefon numarası giriniz.', endpoint: 'gsmtc.php', inputs: [{ id: 'gsm', label: 'Telefon No', placeholder: '5XX XXX XX XX', icon: 'ph-device-mobile', maxlength: 10 }], extraParams: { auth: 'fire' } },
             'eokul': { title: 'E-Okul Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'eokul.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card', maxlength: 11 }] },
-            'adres': { title: 'Adres Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'adres.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card', maxlength: 11 }] },
-            'tapu': { title: 'Tapu Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'tapu.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card', maxlength: 11 }] }
+            'adres': { title: 'Adres Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'adres.php', inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', icon: 'ph-identification-card', maxlength: 11 }] }
         };
 
         menuItems.forEach(item => {
@@ -341,21 +405,15 @@
 
                 if (!response.ok || data.error) throw new Error(data.error || 'Sunucu hatası döndü.');
 
-                // --- GELİŞMİŞ VERİ AYIKLAMA MANTIĞI ---
                 let resultData = [];
 
-                // data objesini kontrol et
                 if (data.data) {
                     if (Array.isArray(data.data)) {
-                        // Eğer data bir dizi ise direkt al (Örn: Aile, Sülale, Tapu)
                         resultData = data.data;
                     } else if (typeof data.data === 'object') {
-                        // Eğer data bir obje ise (Adres sorgusu gibi), onu tek elemanlı diziye çevir
                         resultData = [data.data]; 
                     }
-                } 
-                // Eğer data yoksa ama obje içinde dizi varsa (fallback)
-                else {
+                } else {
                     let foundArray = false;
                     for (const key in data) {
                         if (Array.isArray(data[key]) && data[key].length > 0) {
@@ -364,18 +422,13 @@
                             break;
                         }
                     }
-                    if (!foundArray) {
-                        // Hiçbir dizi bulunamadıysa ve tek bir başarılı yanıtsa objeyi kendisini dizi yap
-                        resultData = [data];
-                    }
+                    if (!foundArray) resultData = [data];
                 }
 
-                // Eğer en baştan API hata döndüyse (status: false gibi)
                 if (data.status === false || data.Status === false) {
                      throw new Error(data.message || data.error || 'API isteği reddetti.');
                 }
 
-                // Diziyi temizle (Boş objeleri çıkar)
                 resultData = resultData.filter(item => Object.keys(item).length > 0 && !item.error);
 
                 if (!resultData || resultData.length === 0) {
