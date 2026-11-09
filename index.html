@@ -28,7 +28,6 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
-    /* --- SCROLLBAR --- */
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: var(--bg); border-radius: 10px; }
     ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; transition: 0.2s; }
@@ -37,46 +36,28 @@
     * { scrollbar-width: thin; scrollbar-color: #334155 var(--bg); }
 
     body { background-color: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; height: 100vh; display: flex; overflow: hidden; position: relative; transition: background-color 0.3s, color 0.3s; }
-    
     #snow-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; opacity: 0.6; transition: 0.3s; }
 
     /* --- SPLASH EKRANI --- */
-    #splash-screen {
-        position: fixed; inset: 0; background: #05070a; z-index: 9999;
-        display: flex; flex-direction: column; justify-content: center; align-items: center;
-        transition: opacity 1s ease, visibility 1s ease;
-    }
-    .splash-title {
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 4rem; font-weight: 700; color: #fff; letter-spacing: 2px;
-        display: flex; gap: 5px; position: relative;
-        text-shadow: 0 0 20px rgba(59,130,246,0.5);
-    }
-    .splash-title span {
-        display: inline-block;
-        animation: dropIn 0.5s ease forwards;
-        opacity: 0; transform: translateY(-50px);
-    }
-    @keyframes dropIn {
-        to { opacity: 1; transform: translateY(0); }
-    }
-    
-    /* Harflerin Kırılma Animasyonu */
-    .splash-title.crack span {
-        animation: crackAnim 0.6s ease forwards;
-    }
-    @keyframes crackAnim {
-        0% { transform: scale(1); opacity: 1; filter: blur(0); }
-        50% { transform: scale(1.1); opacity: 1; filter: blur(1px); color: #3b82f6;}
-        100% { transform: translate(var(--x), var(--y)) rotate(var(--r)); opacity: 0; filter: blur(5px); }
-    }
-
-    .splash-subtitle {
-        margin-top: 20px; font-size: 1.2rem; color: var(--primary); opacity: 0;
-        animation: fadeIn 1s ease forwards; animation-delay: 1.5s;
-        font-family: 'Space Grotesk', sans-serif; letter-spacing: 4px;
-    }
+    #splash-screen { position: fixed; inset: 0; background: #05070a; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 1s ease, visibility 1s ease; }
+    .splash-title { font-family: 'Space Grotesk', sans-serif; font-size: 4rem; font-weight: 700; color: #fff; letter-spacing: 2px; display: flex; gap: 5px; position: relative; text-shadow: 0 0 20px rgba(59,130,246,0.5); }
+    .splash-title span { display: inline-block; animation: dropIn 0.5s ease forwards; opacity: 0; transform: translateY(-50px); }
+    @keyframes dropIn { to { opacity: 1; transform: translateY(0); } }
+    .splash-title.crack span { animation: crackAnim 0.6s ease forwards; }
+    @keyframes crackAnim { 0% { transform: scale(1); opacity: 1; filter: blur(0); } 50% { transform: scale(1.1); opacity: 1; filter: blur(1px); color: #3b82f6;} 100% { transform: translate(var(--x), var(--y)) rotate(var(--r)); opacity: 0; filter: blur(5px); } }
+    .splash-subtitle { margin-top: 20px; font-size: 1.2rem; color: var(--primary); opacity: 0; animation: fadeIn 1s ease forwards; animation-delay: 1.5s; font-family: 'Space Grotesk', sans-serif; letter-spacing: 4px; }
     @keyframes fadeIn { to { opacity: 1; } }
+
+    /* --- LOGIN EKRANI --- */
+    #auth-screen { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s ease; }
+    .auth-box { background: var(--panel); border: 1px solid var(--border); padding: 40px; border-radius: 16px; width: 100%; max-width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: center; }
+    .auth-box h2 { font-size: 24px; margin-bottom: 10px; color: var(--text); }
+    .auth-box p { font-size: 13px; color: var(--muted); margin-bottom: 25px; }
+    .auth-input { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 14px; border-radius: 8px; margin-bottom: 15px; outline: none; transition: 0.2s; }
+    .auth-input:focus { border-color: var(--primary); }
+    .auth-btn { width: 100%; background: var(--primary); color: white; padding: 14px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; transition: 0.2s; margin-bottom: 15px; }
+    .auth-btn:hover { background: var(--primary-hover); }
+    .auth-switch { font-size: 12px; color: var(--muted); cursor: pointer; text-decoration: underline; }
 
     /* --- SOL MENÜ --- */
     .sidebar { width: 260px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; overflow-y: auto; transition: transform 0.3s ease, background-color 0.3s; }
@@ -97,10 +78,10 @@
     .topbar { height: 70px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; background: var(--bg); position: sticky; top: 0; z-index: 50; transition: background-color 0.3s; }
     .topbar-left { display: flex; align-items: center; gap: 15px; font-weight: 600; font-size: 16px; color: var(--text);}
     .topbar-right { display: flex; align-items: center; gap: 15px; color: var(--muted); font-size: 20px; }
-    
+    .user-profile { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--text); background: var(--panel); padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); cursor: pointer; }
+    .user-profile i { color: var(--primary); font-size: 16px; }
     .theme-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--panel); border: 1px solid var(--border); display: grid; place-items: center; cursor: pointer; color: var(--text); transition: 0.2s; }
     .theme-btn:hover { background: var(--panel-hover); transform: scale(1.05); }
-
     .menu-toggle { display: none; cursor: pointer; font-size: 24px; color: var(--text); }
 
     .content { padding: 30px; max-width: 1400px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 25px; }
@@ -119,6 +100,19 @@
     .welcome-panel { background: linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(59,130,246,0.0) 100%); border: 1px solid rgba(59,130,246,0.2); border-radius: 12px; padding: 30px; }
     .welcome-panel h2 { font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
     .welcome-panel p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+    /* --- SORGU GEÇMİŞİ VE LOGLAR --- */
+    .history-list { display: flex; flex-direction: column; gap: 10px; }
+    .history-item { background: var(--bg); border: 1px solid var(--border); padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; }
+    .history-item:hover { border-color: var(--primary); }
+    .history-info h4 { font-size: 14px; color: var(--text); margin-bottom: 4px; }
+    .history-info p { font-size: 12px; color: var(--muted); }
+    .history-time { font-size: 11px; color: var(--muted); background: var(--panel); padding: 4px 8px; border-radius: 4px; }
+
+    .terminal { background: #05070a; border: 1px solid var(--border); border-radius: 8px; padding: 15px; font-family: 'Courier New', monospace; font-size: 12px; height: 200px; overflow-y: auto; color: #10b981; }
+    .terminal-line { margin-bottom: 5px; }
+    .terminal-line::before { content: '> '; color: #64748b; }
+    .terminal-line.error { color: #ef4444; }
 
     /* --- SORGU EKRANI --- */
     .search-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: background-color 0.3s; }
@@ -145,6 +139,8 @@
     .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none;}
     .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
     .btn-danger:hover { background: rgba(239, 68, 68, 0.2); }
+    .btn-share { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+    .btn-share:hover { background: rgba(245, 158, 11, 0.2); }
 
     /* --- SONUÇ PANELİ --- */
     .results-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; transition: background-color 0.3s; }
@@ -175,7 +171,6 @@
 
     .empty-state { padding: 50px; text-align: center; color: var(--muted); font-size: 14px; }
     
-    /* --- SKELETON YÜKLEYİCİ --- */
     .skeleton-cell { height: 16px; background: linear-gradient(90deg, var(--border) 25%, var(--panel-hover) 50%, var(--border) 75%); background-size: 200% 100%; border-radius: 4px; animation: shimmer 1.5s infinite; margin: 5px 0;}
     @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
     
@@ -209,12 +204,26 @@
         <div class="splash-title" id="splashTitle">
             <span>O</span><span>N</span><span>U</span><span>R</span> &nbsp; <span>B</span><span>A</span><span>R</span><span>I</span><span>Ş</span>
         </div>
-        <div class="splash-subtitle">ONUR SYSTEM</div>
+        <div class="splash-subtitle">SYNCRA CLOUD SYSTEM</div>
+    </div>
+
+    <!-- GİRİŞ EKRANI -->
+    <div id="auth-screen" style="display:none;">
+        <div class="auth-box">
+            <h2 id="authTitle">Giriş Yap</h2>
+            <p id="authDesc">Devam etmek için kullanıcı adı ve şifrenizi girin.</p>
+            
+            <input type="text" id="authUsername" class="auth-input" placeholder="Kullanıcı Adı">
+            <input type="password" id="authPassword" class="auth-input" placeholder="Şifre">
+            
+            <button class="auth-btn" id="authSubmitBtn">Giriş Yap</button>
+            <div class="auth-switch" id="authSwitch">Hesabın yok mu? Kayıt Ol</div>
+        </div>
     </div>
 
     <!-- SOL MENÜ -->
-    <div class="sidebar" id="sidebar">
-        <div class="brand"><i class="ph ph-shield-check" style="color:var(--primary)"></i> SORGU<span>PANEL</span></div>
+    <div class="sidebar" id="sidebar" style="display:none;">
+        <div class="brand"><i class="ph ph-shield-check" style="color:var(--primary)"></i> SYNCRA<span>PANEL</span></div>
         <div class="nav-section">
             <div class="nav-title">Genel</div>
             <div class="nav-item active" data-page="dashboard"><i class="ph ph-squares-four"></i> Dashboard</div>
@@ -229,17 +238,20 @@
             <div class="nav-item" data-page="eokul"><i class="ph ph-graduation-cap"></i> E-Okul Sorgu</div>
             <div class="nav-item" data-page="adres"><i class="ph ph-map-pin"></i> Adres Sorgu</div>
         </div>
-        <div class="dev-credit">Developed by <b>onur</b></div>
+        <div class="dev-credit">Developed by <b>onur_baris65</b></div>
     </div>
 
     <!-- ANA İÇERİK -->
-    <div class="main">
+    <div class="main" id="main-content" style="display:none;">
         <div class="topbar">
             <div class="topbar-left">
                 <i class="ph ph-list menu-toggle" id="menuToggle"></i>
                 <span id="topbarTitle">Dashboard</span>
             </div>
             <div class="topbar-right">
+                <div class="user-profile" id="userProfileBtn">
+                    <i class="ph ph-user-circle"></i> <span id="currentUsername">Kullanıcı</span>
+                </div>
                 <div class="theme-btn" id="themeToggle" title="Temayı Değiştir">
                     <i class="ph ph-moon" id="themeIcon"></i>
                 </div>
@@ -250,11 +262,11 @@
             <!-- DASHBOARD EKRANI -->
             <div id="dashboardView">
                 <div class="welcome-panel" style="margin-bottom: 25px;">
-                    <h2>Hoş Geldin, Operatör.</h2>
-                    <p>Syncra Cloud sistemine başarıyla bağlandın. Sol taraftaki menüden yapmak istediğin sorgu türünü seçerek başlayabilirsin. Tüm verilerin güvenli ve hızlı bir şekilde çekilir.</p>
+                    <h2>Hoş Geldin, <span id="welcomeName">Operatör</span>.</h2>
+                    <p>Syncra Cloud sistemine başarıyla bağlandın. Sol taraftaki menüden yapmak istediğin sorgu türünü seçerek başlayabilirsin.</p>
                 </div>
 
-                <div class="dashboard-grid">
+                <div class="dashboard-grid" style="margin-bottom: 25px;">
                     <div class="dash-card">
                         <div class="dash-icon blue"><i class="ph ph-chart-line-up"></i></div>
                         <div>
@@ -274,6 +286,33 @@
                         <div>
                             <h3>8</h3>
                             <p>Aktif Sorgu Modülü</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Son Sorgular & Canlı Loglar -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
+                    <div class="panel">
+                        <div style="padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+                            <h3 style="font-size: 16px; font-weight: 600; color: var(--text);">Son Sorgularım</h3>
+                            <button style="background:none; border:none; color:var(--danger); font-size:12px; cursor:pointer;" onclick="clearHistory()">Temizle</button>
+                        </div>
+                        <div style="padding: 20px;">
+                            <div class="history-list" id="historyList">
+                                <div class="empty-state" style="padding: 20px;">Henüz sorgu geçmişiniz yok.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div style="padding: 20px; border-bottom: 1px solid var(--border);">
+                            <h3 style="font-size: 16px; font-weight: 600; color: var(--text);">Canlı Sistem Logları</h3>
+                        </div>
+                        <div style="padding: 20px;">
+                            <div class="terminal" id="terminalLogs">
+                                <div class="terminal-line">Sistem başlatıldı...</div>
+                                <div class="terminal-line">API bağlantısı kuruldu.</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -300,6 +339,7 @@
                             <p id="resultSummary">Henüz sorgulama yapılmadı.</p>
                         </div>
                         <div class="download-group">
+                            <button class="btn-share" id="shareBtn" style="display:none;"><i class="ph ph-share-network"></i> Paylaş</button>
                             <button class="btn-download" id="copyAllBtn" style="display:none; background: rgba(59, 130, 246, 0.1); color: var(--primary);"><i class="ph ph-copy"></i> Hepsini Kopyala</button>
                             <div style="position:relative;">
                                 <button class="btn-download" id="downloadBtn" style="display:none;"><i class="ph ph-download-simple"></i> İndir <i class="ph ph-caret-down"></i></button>
@@ -325,148 +365,238 @@
     </div>
 
     <script>
-        // --- SES MOTORU (Web Audio API) ---
-        // Harici mp3 dosyasına gerek kalmadan tarayıcıda ses üretir.
+        // --- SES MOTORU ---
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx;
-
-        function initAudio() {
-            if (!audioCtx) audioCtx = new AudioContext();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-        }
-
-        // Tıklama Sesi
+        function initAudio() { if (!audioCtx) audioCtx = new AudioContext(); if (audioCtx.state === 'suspended') audioCtx.resume(); }
         function playClickSound() {
             initAudio();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.1);
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.1);
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.type = 'sine'; osc.frequency.setValueAtTime(600, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.1);
         }
-
-        // Hoş Geldiniz Sesi (Melodi)
         function playWelcomeSound() {
             initAudio();
-            const notes = [440, 554.37, 659.25, 880]; // A, C#, E, A
+            const notes = [440, 554.37, 659.25, 880];
             notes.forEach((freq, index) => {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'triangle';
-                osc.frequency.value = freq;
+                const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                osc.type = 'triangle'; osc.frequency.value = freq;
                 gain.gain.setValueAtTime(0, audioCtx.currentTime + index * 0.15);
                 gain.gain.linearRampToValueAtTime(0.1, audioCtx.currentTime + index * 0.15 + 0.05);
                 gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + index * 0.15 + 0.5);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start(audioCtx.currentTime + index * 0.15);
-                osc.stop(audioCtx.currentTime + index * 0.15 + 0.5);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(audioCtx.currentTime + index * 0.15); osc.stop(audioCtx.currentTime + index * 0.15 + 0.5);
             });
         }
-
-        // Harf Kırılma Sesi
         function playCrackSound() {
             initAudio();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.3);
-            gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.3);
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.3);
+            gain.gain.setValueAtTime(0.15, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+            osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.3);
         }
+        document.body.addEventListener('click', initAudio, { once: true });
+        document.querySelectorAll('button, .nav-item, .theme-btn, .auth-switch').forEach(btn => { btn.addEventListener('click', playClickSound); });
 
-        // --- SPLASH EKRANI MANTIĞI ---
+        // --- SPLASH MANTIĞI ---
         const splashScreen = document.getElementById('splash-screen');
         const splashTitle = document.getElementById('splashTitle');
         const titleSpans = splashTitle.querySelectorAll('span');
-
-        // Harflere rastgele kırılma yönü ata
         titleSpans.forEach(span => {
             span.style.setProperty('--x', (Math.random() * 200 - 100) + 'px');
             span.style.setProperty('--y', (Math.random() * 200 - 100) + 'px');
             span.style.setProperty('--r', (Math.random() * 180 - 90) + 'deg');
-            // Harflerin tek tek düşme animasyonu için gecikme
             span.style.animationDelay = (Math.random() * 0.5) + 's';
         });
-
-        // Splash Ekranını başlat
+        setTimeout(() => { splashTitle.classList.add('crack'); playCrackSound(); }, 1500);
         setTimeout(() => {
-            // 1. Kırılma animasyonunu başlat ve ses çal
-            splashTitle.classList.add('crack');
-            playCrackSound();
-        }, 1500); // 1.5 saniye sonra kırılsın
-
-        setTimeout(() => {
-            // 2. Ekranı karart ve Hoş Geldiniz sesini çal
-            splashScreen.style.opacity = '0';
-            splashScreen.style.visibility = 'hidden';
+            splashScreen.style.opacity = '0'; splashScreen.style.visibility = 'hidden';
             playWelcomeSound();
-        }, 2200); // 2.2 saniye sonra ekran kaybolsun
+            checkAuth(); // Splash bittikten sonra giriş kontrolü yap
+        }, 2200);
 
-        // Kullanıcı ilk tıklamasında ses motorunu başlat (Tarayıcı politikası gereği)
-        document.body.addEventListener('click', initAudio, { once: true });
+        // --- HESAP SİSTEMİ ---
+        let isLoginMode = true;
+        const authScreen = document.getElementById('auth-screen');
+        const authTitle = document.getElementById('authTitle');
+        const authDesc = document.getElementById('authDesc');
+        const authSubmitBtn = document.getElementById('authSubmitBtn');
+        const authSwitch = document.getElementById('authSwitch');
+        const authUsername = document.getElementById('authUsername');
+        const authPassword = document.getElementById('authPassword');
+        
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('main-content');
+        const currentUsernameSpan = document.getElementById('currentUsername');
+        const welcomeNameSpan = document.getElementById('welcomeName');
 
-        // Tüm butonlara tıklama sesi ekle
-        document.querySelectorAll('button, .nav-item, .theme-btn').forEach(btn => {
-            btn.addEventListener('click', playClickSound);
+        authSwitch.addEventListener('click', () => {
+            isLoginMode = !isLoginMode;
+            if (isLoginMode) {
+                authTitle.textContent = 'Giriş Yap'; authDesc.textContent = 'Devam etmek için kullanıcı adı ve şifrenizi girin.';
+                authSubmitBtn.textContent = 'Giriş Yap'; authSwitch.textContent = 'Hesabın yok mu? Kayıt Ol';
+            } else {
+                authTitle.textContent = 'Kayıt Ol'; authDesc.textContent = 'Yeni bir hesap oluşturun.';
+                authSubmitBtn.textContent = 'Kayıt Ol'; authSwitch.textContent = 'Zaten hesabın var mı? Giriş Yap';
+            }
         });
+
+        authSubmitBtn.addEventListener('click', () => {
+            const user = authUsername.value.trim();
+            const pass = authPassword.value.trim();
+            if (!user || !pass) return alert('Kullanıcı adı ve şifre boş bırakılamaz.');
+
+            let users = JSON.parse(localStorage.getItem('syncra-users') || '{}');
+
+            if (isLoginMode) {
+                if (users[user] && users[user] === pass) {
+                    localStorage.setItem('syncra-current-user', user);
+                    loginSuccess(user);
+                } else { alert('Hatalı kullanıcı adı veya şifre!'); }
+            } else {
+                if (users[user]) { alert('Bu kullanıcı adı zaten alınmış.'); }
+                else {
+                    users[user] = pass;
+                    localStorage.setItem('syncra-users', JSON.stringify(users));
+                    localStorage.setItem('syncra-current-user', user);
+                    loginSuccess(user);
+                }
+            }
+        });
+
+        function loginSuccess(username) {
+            authScreen.style.display = 'none';
+            sidebar.style.display = 'flex';
+            mainContent.style.display = 'flex';
+            currentUsernameSpan.textContent = username;
+            welcomeNameSpan.textContent = username;
+            loadUserStats(username);
+            loadHistory(username);
+            logToTerminal(`Kullanıcı girişi başarılı: ${username}`);
+        }
+
+        function checkAuth() {
+            const currentUser = localStorage.getItem('syncra-current-user');
+            if (currentUser) {
+                loginSuccess(currentUser);
+            } else {
+                authScreen.style.display = 'flex';
+            }
+        }
+
+        // Çıkış Yap (Profil butonuna basınca)
+        document.getElementById('userProfileBtn').addEventListener('click', () => {
+            if(confirm('Çıkış yapmak istediğinize emin misiniz?')) {
+                localStorage.removeItem('syncra-current-user');
+                location.reload();
+            }
+        });
+
+        // --- KULLANICI BAZLI İSTATİSTİK VE GEÇMİŞ ---
+        let currentUser = '';
+        let totalQueries = 0;
+        let todayQueries = 0;
+
+        function loadUserStats(username) {
+            currentUser = username;
+            const todayDate = new Date().toDateString();
+            const savedDate = localStorage.getItem(`syncra-${username}-date`);
+            
+            totalQueries = parseInt(localStorage.getItem(`syncra-${username}-total`) || '0');
+            todayQueries = parseInt(localStorage.getItem(`syncra-${username}-today`) || '0');
+
+            if (savedDate !== todayDate) {
+                todayQueries = 0;
+                localStorage.setItem(`syncra-${username}-date`, todayDate);
+            }
+            updateStatsUI();
+        }
+
+        function updateStatsUI() {
+            document.getElementById('statTotalQueries').textContent = totalQueries;
+            document.getElementById('statTodayQueries').textContent = todayQueries;
+            localStorage.setItem(`syncra-${currentUser}-total`, totalQueries);
+            localStorage.setItem(`syncra-${currentUser}-today`, todayQueries);
+        }
+
+        // --- SORGU GEÇMİŞİ ---
+        function loadHistory(username) {
+            const history = JSON.parse(localStorage.getItem(`syncra-${username}-history`) || '[]');
+            const list = document.getElementById('historyList');
+            if (history.length === 0) {
+                list.innerHTML = '<div class="empty-state" style="padding: 20px;">Henüz sorgu geçmişiniz yok.</div>';
+                return;
+            }
+            list.innerHTML = history.map((item, index) => `
+                <div class="history-item" onclick="reRunHistory('${item.page}', '${item.params}', '${item.endpoint}')">
+                    <div class="history-info">
+                        <h4>${item.title}</h4>
+                        <p>${item.queryText}</p>
+                    </div>
+                    <div class="history-time">${item.time}</div>
+                </div>
+            `).join('');
+        }
+
+        function addHistory(page, params, queryText, title, endpoint) {
+            let history = JSON.parse(localStorage.getItem(`syncra-${currentUser}-history`) || '[]');
+            const now = new Date();
+            const timeStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+            
+            history.unshift({ page, params, queryText, title, endpoint, time: timeStr });
+            if (history.length > 5) history = history.slice(0, 5); // Son 5 sorguyu tut
+            
+            localStorage.setItem(`syncra-${currentUser}-history`, JSON.stringify(history));
+            loadHistory(currentUser);
+        }
+
+        function clearHistory() {
+            localStorage.removeItem(`syncra-${currentUser}-history`);
+            loadHistory(currentUser);
+        }
+
+        function reRunHistory(page, paramsStr, endpoint) {
+            // Sayfayı değiştir ve parametreleri doldur
+            const params = JSON.parse(paramsStr.replace(/'/g, '"'));
+            document.querySelector(`.nav-item[data-page="${page}"]`).click();
+            
+            // Küçük bir gecikmeyle inputları doldur ve sorgula
+            setTimeout(() => {
+                for (const [key, val] of Object.entries(params)) {
+                    const input = document.getElementById(`input_${key}`);
+                    if (input) input.value = val;
+                }
+                document.getElementById('runBtn').click();
+            }, 100);
+        }
+
+        // --- CANLI SİSTEM LOGLARI ---
+        function logToTerminal(message, isError = false) {
+            const terminal = document.getElementById('terminalLogs');
+            const now = new Date();
+            const timeStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
+            
+            const line = document.createElement('div');
+            line.className = `terminal-line ${isError ? 'error' : ''}`;
+            line.textContent = `[${timeStr}] ${message}`;
+            terminal.appendChild(line);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
 
         // --- TEMA MANTIĞI ---
         const themeToggle = document.getElementById('themeToggle');
         const themeIcon = document.getElementById('themeIcon');
         const htmlElement = document.documentElement;
-
         const savedTheme = localStorage.getItem('syncra-theme') || 'dark';
-        if (savedTheme === 'light') {
-            htmlElement.setAttribute('data-theme', 'light');
-            themeIcon.classList.replace('ph-moon', 'ph-sun');
-        } else {
-            htmlElement.removeAttribute('data-theme');
-            themeIcon.classList.replace('ph-sun', 'ph-moon');
-        }
-
+        if (savedTheme === 'light') { htmlElement.setAttribute('data-theme', 'light'); themeIcon.classList.replace('ph-moon', 'ph-sun'); }
         themeToggle.addEventListener('click', () => {
             if (htmlElement.getAttribute('data-theme') === 'light') {
-                htmlElement.removeAttribute('data-theme');
-                localStorage.setItem('syncra-theme', 'dark');
-                themeIcon.classList.replace('ph-sun', 'ph-moon');
+                htmlElement.removeAttribute('data-theme'); localStorage.setItem('syncra-theme', 'dark'); themeIcon.classList.replace('ph-sun', 'ph-moon');
             } else {
-                htmlElement.setAttribute('data-theme', 'light');
-                localStorage.setItem('syncra-theme', 'light');
-                themeIcon.classList.replace('ph-moon', 'ph-sun');
+                htmlElement.setAttribute('data-theme', 'light'); localStorage.setItem('syncra-theme', 'light'); themeIcon.classList.replace('ph-moon', 'ph-sun');
             }
         });
-
-        // --- İSTATİSTİK SAYACI (Tarih Bazlı) ---
-        const todayDate = new Date().toDateString(); // Örn: "Mon Nov 06 2023"
-        let savedDate = localStorage.getItem('syncra-stats-date');
-        let totalQueries = parseInt(localStorage.getItem('syncra-total-queries') || '0');
-        let todayQueries = parseInt(localStorage.getItem('syncra-today-queries') || '0');
-
-        // Eğer gün değiştiyse bugünkü sorguyu sıfırla
-        if (savedDate !== todayDate) {
-            todayQueries = 0;
-            localStorage.setItem('syncra-stats-date', todayDate);
-        }
-
-        function updateStats() {
-            document.getElementById('statTotalQueries').textContent = totalQueries;
-            document.getElementById('statTodayQueries').textContent = todayQueries;
-            localStorage.setItem('syncra-total-queries', totalQueries);
-            localStorage.setItem('syncra-today-queries', todayQueries);
-        }
-        updateStats();
 
         // --- KAR YAĞIŞI ---
         const canvas = document.getElementById('snow-canvas');
@@ -474,48 +604,33 @@
         let width = window.innerWidth, height = window.innerHeight;
         canvas.width = width; canvas.height = height;
         window.addEventListener('resize', () => { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; });
-        
         let flakes = [];
         for (let i = 0; i < 100; i++) flakes.push({ x: Math.random() * width, y: Math.random() * height, r: Math.random() * 2 + 1, d: Math.random() + 1, opacity: Math.random() * 0.5 + 0.3 });
-        
         function drawSnow() {
             ctx.clearRect(0, 0, width, height); 
             const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-            ctx.fillStyle = isLight ? "#94a3b8" : "white"; 
-            ctx.beginPath();
-            for (let i = 0; i < flakes.length; i++) { 
-                let f = flakes[i]; 
-                ctx.globalAlpha = f.opacity; 
-                ctx.moveTo(f.x, f.y); 
-                ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, true); 
-            }
-            ctx.fill(); 
-            updateSnow();
+            ctx.fillStyle = isLight ? "#94a3b8" : "white"; ctx.beginPath();
+            for (let i = 0; i < flakes.length; i++) { let f = flakes[i]; ctx.globalAlpha = f.opacity; ctx.moveTo(f.x, f.y); ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, true); }
+            ctx.fill(); updateSnow();
         }
-        
         let angle = 0;
         function updateSnow() {
             angle += 0.01;
             for (let i = 0; i < flakes.length; i++) {
-                let f = flakes[i]; 
-                f.x += Math.sin(angle) * 0.5; 
-                f.y += Math.cos(angle) * 0.5 + f.d;
+                let f = flakes[i]; f.x += Math.sin(angle) * 0.5; f.y += Math.cos(angle) * 0.5 + f.d;
                 if (f.y > height + 5 || f.x > width + 5 || f.x < -5) flakes[i] = { x: Math.random() * width, y: -10, r: f.r, d: f.d, opacity: f.opacity };
             }
         }
         setInterval(drawSnow, 30);
 
         // --- MOBİL MENÜ ---
-        const menuToggle = document.getElementById('menuToggle');
-        const sidebar = document.getElementById('sidebar');
-        menuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+        document.getElementById('menuToggle').addEventListener('click', () => document.getElementById('sidebar').classList.toggle('open'));
 
         // --- SORGU MANTIĞI ---
         const menuItems = document.querySelectorAll('.nav-item[data-page]');
         const topbarTitle = document.getElementById('topbarTitle');
         const dashboardView = document.getElementById('dashboardView');
         const queryView = document.getElementById('queryView');
-        
         const pageTitle = document.getElementById('pageTitle');
         const pageDesc = document.getElementById('pageDesc');
         const dynamicForm = document.getElementById('dynamicForm');
@@ -527,6 +642,7 @@
         const downloadBtn = document.getElementById('downloadBtn');
         const downloadDropdown = document.getElementById('downloadDropdown');
         const copyAllBtn = document.getElementById('copyAllBtn');
+        const shareBtn = document.getElementById('shareBtn');
 
         let currentPage = 'dashboard';
         let currentResults = null;
@@ -569,8 +685,7 @@
                     queryView.style.display = 'flex';
                     updateUI(currentPage);
                 }
-                
-                if (window.innerWidth <= 900) sidebar.classList.remove('open');
+                if (window.innerWidth <= 900) document.getElementById('sidebar').classList.remove('open');
             });
         });
 
@@ -602,6 +717,7 @@
             resultSummary.textContent = 'Henüz sorgulama yapılmadı.';
             downloadBtn.style.display = 'none';
             copyAllBtn.style.display = 'none';
+            shareBtn.style.display = 'none';
         }
 
         clearBtn.addEventListener('click', () => {
@@ -611,6 +727,48 @@
 
         downloadBtn.addEventListener('click', (e) => { e.stopPropagation(); downloadDropdown.classList.toggle('show'); });
         document.addEventListener('click', () => downloadDropdown.classList.remove('show'));
+
+        // PAYLAŞ BUTONU
+        shareBtn.addEventListener('click', () => {
+            if (!currentResults) return;
+            const params = new URLSearchParams();
+            params.set('page', currentPage);
+            
+            // Mevcut input değerlerini topla
+            pageConfig[currentPage].inputs.forEach(input => {
+                const val = document.getElementById(`input_${input.id}`).value.trim();
+                if(val) params.set(input.id, val);
+            });
+            
+            // URL oluştur
+            const shareUrl = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                const originalText = shareBtn.innerHTML;
+                shareBtn.innerHTML = '<i class="ph ph-check"></i> Link Kopyalandı!';
+                setTimeout(() => shareBtn.innerHTML = originalText, 2000);
+                logToTerminal(`Paylaşım linki oluşturuldu.`);
+            });
+        });
+
+        // Sayfa yüklendiğinde URL'de parametre var mı diye kontrol et (Paylaşılan linke tıklanınca)
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const page = urlParams.get('page');
+                if (page && pageConfig[page] && localStorage.getItem('syncra-current-user')) {
+                    logToTerminal(`Paylaşılan link algılandı, otomatik yükleniyor...`);
+                    document.querySelector(`.nav-item[data-page="${page}"]`).click();
+                    setTimeout(() => {
+                        pageConfig[page].inputs.forEach(input => {
+                            if(urlParams.has(input.id)) {
+                                document.getElementById(`input_${input.id}`).value = urlParams.get(input.id);
+                            }
+                        });
+                        document.getElementById('runBtn').click();
+                    }, 100);
+                }
+            }, 2500); // Splash ve auth kontrolünden sonra çalışsın
+        });
 
         copyAllBtn.addEventListener('click', () => {
             if (!currentResults) return;
@@ -636,6 +794,7 @@
             const config = pageConfig[currentPage];
             let params = {};
             let hasError = false;
+            let queryTextArr = [];
 
             config.inputs.forEach(input => {
                 const val = document.getElementById(`input_${input.id}`).value.trim();
@@ -645,7 +804,10 @@
                 } else {
                     document.getElementById(`input_${input.id}`).parentElement.style.borderColor = 'var(--border)';
                 }
-                if (val) params[input.id] = val;
+                if (val) {
+                    params[input.id] = val;
+                    queryTextArr.push(val);
+                }
             });
 
             if (hasError) return alert('Lütfen zorunlu alanları doldurun.');
@@ -658,6 +820,7 @@
             resultSummary.textContent = 'Veriler getiriliyor...';
             downloadBtn.style.display = 'none';
             copyAllBtn.style.display = 'none';
+            shareBtn.style.display = 'none';
             
             // Skeleton Loader
             tableHead.innerHTML = '<tr><th style="width: 20%;">Yükleniyor...</th><th style="width: 60%;"></th><th style="width: 20%;"></th></tr>';
@@ -670,6 +833,8 @@
                 </tr>`;
             }
             tableBody.innerHTML = skeletonHTML;
+            
+            logToTerminal(`${config.title} isteği başlatıldı: ${queryTextArr.join(' - ')}`);
 
             try {
                 const queryString = new URLSearchParams({ endpoint: config.endpoint, ...params }).toString();
@@ -716,13 +881,17 @@
                         <span style="font-size:12px; color:var(--muted); margin-top:5px; display:block;">İpucu: Ad Soyad sorgularında İl/İlçe bilgisini boş bırakarak tekrar deneyin.</span>
                     </td></tr>`;
                     resultSummary.textContent = '0 kayıt bulundu.';
+                    logToTerminal(`Sorgu tamamlandı, sonuç bulunamadı.`, true);
                     return;
                 }
 
                 // İstatistikleri güncelle
                 totalQueries++;
                 todayQueries++;
-                updateStats();
+                updateStatsUI();
+
+                // Geçmişe ekle
+                addHistory(currentPage, JSON.stringify(params), queryTextArr.join(' - '), config.title, config.endpoint);
 
                 // Tabloyu çiz
                 currentResults = resultData;
@@ -737,7 +906,9 @@
                 renderTable(); 
                 downloadBtn.style.display = 'flex';
                 copyAllBtn.style.display = 'flex';
+                shareBtn.style.display = 'flex';
                 resultSummary.textContent = `Özet: ${resultData.length} kayıt bulundu.`;
+                logToTerminal(`Sorgu başarılı. ${resultData.length} kayıt getirildi.`);
 
             } catch (error) {
                 tableHead.innerHTML = '';
@@ -748,6 +919,7 @@
                     <span style="font-size:11px; color:var(--muted); margin-top:10px; display:block;">Lütfen internet bağlantınızı kontrol edin veya daha sonra tekrar deneyin.</span>
                 </td></tr>`;
                 resultSummary.textContent = 'Hata oluştu.';
+                logToTerminal(`Sorgu hatası: ${error.message}`, true);
             } finally {
                 runBtn.disabled = false;
                 runBtn.innerHTML = '<i class="ph ph-magnifying-glass"></i> Sorgula';
@@ -801,12 +973,7 @@
         }
 
         function handleSort(column) {
-            if (sortColumn === column) {
-                sortAsc = !sortAsc;
-            } else {
-                sortColumn = column;
-                sortAsc = true;
-            }
+            if (sortColumn === column) { sortAsc = !sortAsc; } else { sortColumn = column; sortAsc = true; }
             renderTable();
         }
 
@@ -870,6 +1037,7 @@
                 doc.save(`${fileName}.pdf`);
             }
             downloadDropdown.classList.remove('show');
+            logToTerminal(`${format.toUpperCase()} formatında indirme başlatıldı.`);
         }
     </script>
 </body>
