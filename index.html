@@ -8,17 +8,21 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
+<!-- PDF ve CSV için harici kütüphaneler -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
 <style>
     :root { 
-        --bg: #0f111a; 
-        --sidebar: #141724; 
-        --panel: #1a1d2d; 
-        --panel-hover: #202436;
-        --border: #2a2e42; 
-        --text: #ffffff; 
-        --muted: #8b92a5; 
+        --bg: #0b0e14; 
+        --sidebar: #111520; 
+        --panel: #171c26; 
+        --panel-hover: #1f2533;
+        --border: #262d3d; 
+        --text: #e2e8f0; 
+        --muted: #94a3b8; 
         --primary: #3b82f6;
-        --primary-glow: rgba(59, 130, 246, 0.2);
+        --primary-hover: #2563eb;
         --danger: #ef4444;
         --success: #10b981;
         --warning: #f59e0b;
@@ -29,86 +33,68 @@
     
     /* --- SOL MENÜ --- */
     .sidebar { width: 260px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 10; overflow-y: auto; }
-    .brand { padding: 25px 20px; font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); }
-    .brand-icon { width: 28px; height: 28px; background: var(--primary); border-radius: 8px; display: grid; place-items: center; font-size: 16px; }
+    .brand { padding: 20px; font-size: 22px; font-weight: 800; display: flex; align-items: center; gap: 10px; color: #fff; border-bottom: 1px solid var(--border); letter-spacing: -1px;}
+    .brand span { color: var(--primary); }
     
-    .nav-section { padding: 15px 15px; }
+    .nav-section { padding: 20px 15px; }
     .nav-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 600; margin-bottom: 10px; padding-left: 10px; }
     .nav-item { 
-        padding: 10px 15px; 
+        padding: 12px 15px; 
         color: var(--muted); 
         cursor: pointer; 
-        font-size: 13px; 
+        font-size: 14px; 
         font-weight: 500;
         border-radius: 8px; 
         transition: 0.2s; 
         display: flex; 
         align-items: center; 
         gap: 12px;
-        margin-bottom: 2px;
+        margin-bottom: 4px;
     }
     .nav-item i { font-size: 18px; }
     .nav-item:hover { background: var(--panel-hover); color: #fff; }
-    .nav-item.active { background: var(--primary); color: #fff; box-shadow: 0 4px 15px var(--primary-glow); }
-    .nav-item.active i { color: #fff; }
+    .nav-item.active { background: rgba(59, 130, 246, 0.1); color: var(--primary); border-left: 3px solid var(--primary); border-radius: 0 8px 8px 0; margin-left: -15px; padding-left: 27px;}
+    .nav-item.active i { color: var(--primary); }
 
     /* --- ANA İÇERİK --- */
     .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
     
     .topbar { height: 70px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; background: var(--bg); position: sticky; top: 0; z-index: 5; }
-    .topbar-left { display: flex; align-items: center; gap: 15px; font-weight: 600; font-size: 16px; }
+    .topbar-left { display: flex; align-items: center; gap: 15px; font-weight: 600; font-size: 16px; color: #fff;}
     .topbar-right { display: flex; align-items: center; gap: 20px; color: var(--muted); font-size: 20px; }
     .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--panel); border: 1px solid var(--border); display: grid; place-items: center; overflow: hidden; }
     .avatar img { width: 100%; height: 100%; object-fit: cover; }
 
-    .content { padding: 30px; max-width: 1600px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 25px; }
+    .content { padding: 30px; max-width: 1400px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 25px; }
 
-    .page-header { display: flex; flex-direction: column; gap: 5px; }
-    .page-header h1 { font-size: 24px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
-    .page-header h1::before { content: ''; display: block; width: 4px; height: 24px; background: var(--primary); border-radius: 2px; }
-    .page-header p { color: var(--muted); font-size: 13px; padding-left: 14px; }
-
-    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
-    .stat-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; align-items: center; gap: 15px; position: relative; overflow: hidden; }
-    .stat-icon { width: 45px; height: 45px; border-radius: 10px; display: grid; place-items: center; font-size: 22px; }
-    .stat-icon.blue { background: rgba(59, 130, 246, 0.1); color: var(--primary); }
-    .stat-icon.green { background: rgba(16, 185, 129, 0.1); color: var(--success); }
-    .stat-icon.red { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
-    .stat-icon.yellow { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
-    .stat-info h3 { font-size: 24px; font-weight: 700; margin: 0; }
-    .stat-info p { font-size: 12px; color: var(--muted); margin: 2px 0 0 0; }
-    .stat-badge { position: absolute; bottom: 15px; right: 15px; font-size: 10px; padding: 4px 8px; border-radius: 20px; font-weight: 600; display: flex; align-items: center; gap: 4px; }
-    .stat-badge.active { background: rgba(16, 185, 129, 0.1); color: var(--success); }
-    .stat-badge.premium { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
-    .stat-badge.restricted { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
-
-    .middle-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+    /* Arama Paneli */
+    .search-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 30px; }
+    .search-header { margin-bottom: 25px; }
+    .search-header h2 { font-size: 20px; font-weight: 600; color: #fff; margin-bottom: 5px; }
+    .search-header p { font-size: 13px; color: var(--muted); }
     
-    .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-    .panel-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-    .panel-header h2 { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; margin: 0; }
-    .panel-body { padding: 20px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-group label { font-size: 12px; color: var(--muted); font-weight: 500; }
+    .form-group label span { color: var(--muted); font-size: 11px; font-weight: 400;}
     
-    .query-form { display: flex; flex-direction: column; gap: 15px; }
-    .input-group { display: flex; gap: 12px; }
     input { 
-        flex: 1; 
         background: var(--bg); 
         border: 1px solid var(--border); 
         color: var(--text); 
-        padding: 14px 18px; 
+        padding: 14px 16px; 
         border-radius: 8px; 
         font-size: 14px; 
         outline: none; 
         transition: 0.2s; 
     }
-    input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
+    input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+    input::placeholder { color: #475569; }
     
+    .button-group { display: flex; justify-content: flex-end; gap: 15px; }
     button { 
-        background: var(--primary); 
-        color: #fff; 
         border: none; 
-        padding: 14px 24px; 
+        padding: 12px 24px; 
         border-radius: 8px; 
         cursor: pointer; 
         font-weight: 600; 
@@ -119,40 +105,44 @@
         justify-content: center;
         gap: 8px;
     }
-    button:hover { background: #2563eb; box-shadow: 0 4px 15px var(--primary-glow); }
-    button:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none;}
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+    
+    .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+    .btn-danger:hover { background: rgba(239, 68, 68, 0.2); }
 
-    .result-box { 
-        margin-top: 20px;
-        background: var(--bg); 
-        border: 1px solid var(--border); 
-        border-radius: 8px; 
-        padding: 15px; 
-        min-height: 150px;
-        max-height: 400px;
-        overflow-y: auto; 
-        font-family: 'Courier New', monospace; 
-        font-size: 13px; 
-        line-height: 1.6; 
-        color: #a1a8c0; 
+    /* Sonuç Alanı */
+    .results-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .results-header { padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+    .results-header h3 { font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 5px;}
+    .results-header p { font-size: 12px; color: var(--muted); }
+    
+    .download-group { position: relative; }
+    .btn-download { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+    .btn-download:hover { background: rgba(16, 185, 129, 0.2); }
+    .download-dropdown { 
+        position: absolute; top: 100%; right: 0; margin-top: 5px; background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; display: none; flex-direction: column; z-index: 10; width: 150px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     }
-    .result-box::-webkit-scrollbar { width: 6px; }
-    .result-box::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-    .success { color: var(--success); }
-    .error { color: var(--danger); }
-    .loading { color: var(--warning); }
-    .data-key { color: var(--muted); }
-    .data-val { color: var(--text); font-weight: 500; }
-    .highlight { color: var(--primary); font-weight: 600; }
+    .download-dropdown.show { display: flex; }
+    .download-dropdown button { width: 100%; text-align: left; padding: 12px 15px; border-radius: 0; background: transparent; color: var(--text); font-weight: 400; justify-content: flex-start; }
+    .download-dropdown button:hover { background: var(--panel-hover); }
 
-    .table-container { width: 100%; overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; text-align: left; }
-    th { padding: 12px 20px; font-size: 11px; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); font-weight: 600; }
-    td { padding: 15px 20px; font-size: 13px; border-bottom: 1px solid var(--border); color: #ddd; }
+    .table-container { width: 100%; overflow-x: auto; max-height: 500px; overflow-y: auto; }
+    .table-container::-webkit-scrollbar { width: 8px; height: 8px; }
+    .table-container::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    
+    table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
+    th { padding: 15px 30px; font-size: 11px; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); font-weight: 600; background: var(--bg); position: sticky; top: 0; }
+    td { padding: 15px 30px; font-size: 13px; border-bottom: 1px solid var(--border); color: #cbd5e1; }
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: var(--panel-hover); }
-    .tag { font-size: 10px; padding: 3px 8px; border-radius: 4px; background: rgba(59, 130, 246, 0.1); color: var(--primary); font-weight: 600; }
-
+    
+    .empty-state { padding: 50px; text-align: center; color: var(--muted); font-size: 14px; }
+    
+    /* Spinner */
+    .spin { animation: spin 1s linear infinite; }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
@@ -160,20 +150,13 @@
     <!-- SOL MENÜ -->
     <div class="sidebar">
         <div class="brand">
-            <div class="brand-icon"><i class="ph ph-shield-check"></i></div>
-            Syncra
+            <i class="ph ph-shield-check" style="color:var(--primary)"></i> SYNCRA<span>PANEL</span>
         </div>
         
         <div class="nav-section">
-            <div class="nav-title">Panel</div>
-            <div class="nav-item" onclick="window.location.reload()"><i class="ph ph-squares-four"></i> Ana Menü</div>
-        </div>
-
-        <div class="nav-section">
             <div class="nav-title">Sorgu Çözümleri</div>
-            <div class="nav-item active" data-page="tc"><i class="ph ph-identification-card"></i> TC Sorgu</div>
-            <div class="nav-item" data-page="tcpro"><i class="ph ph-identification-badge"></i> TC Pro Sorgu</div>
-            <div class="nav-item" data-page="adsoyad"><i class="ph ph-user"></i> Ad Soyad Sorgu</div>
+            <div class="nav-item" data-page="tc"><i class="ph ph-identification-card"></i> TC Sorgu</div>
+            <div class="nav-item active" data-page="adsoyad"><i class="ph ph-user"></i> Ad Soyad Sorgu</div>
             <div class="nav-item" data-page="aile"><i class="ph ph-users"></i> Aile Sorgu</div>
             <div class="nav-item" data-page="sulale"><i class="ph ph-tree-structure"></i> Sülale Sorgu</div>
             <div class="nav-item" data-page="tcgsm"><i class="ph ph-device-mobile"></i> TC → GSM</div>
@@ -188,99 +171,60 @@
     <div class="main">
         <div class="topbar">
             <div class="topbar-left">
-                <i class="ph ph-list" style="cursor:pointer; font-size:20px; color:var(--muted);"></i>
-                <span id="topbarTitle">TC Sorgu</span>
+                <i class="ph ph-list" style="cursor:pointer; font-size:20px; color:var(--muted); margin-right:10px;"></i>
+                <span id="topbarTitle">Ad Soyad Sorgu</span>
             </div>
             <div class="topbar-right">
-                <i class="ph ph-moon" style="cursor:pointer;"></i>
+                <i class="ph ph-sun" style="cursor:pointer;"></i>
                 <i class="ph ph-bell" style="cursor:pointer;"></i>
                 <div class="avatar"><img src="https://ui-avatars.com/api/?name=Admin&background=3b82f6&color=fff" alt="User"></div>
             </div>
         </div>
 
         <div class="content">
-            <div class="page-header">
-                <h1 id="pageTitle">TC Sorgu</h1>
-                <p id="pageDesc">Piyasanın En Kaliteli Sorgu Paneli</p>
-            </div>
+            <!-- Arama Formu -->
+            <div class="search-panel">
+                <div class="search-header">
+                    <h2 id="pageTitle">Ad Soyad Sorgulama</h2>
+                    <p id="pageDesc">Ad ve soyad zorunludur. İl / ilçe isteğe bağlıdır.</p>
+                </div>
+                
+                <div id="dynamicForm" class="form-grid">
+                    <!-- Form JS ile doldurulacak -->
+                </div>
 
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon blue"><i class="ph ph-users"></i></div>
-                    <div class="stat-info"><h3>289.690</h3><p>Toplam Kullanıcılar</p></div>
-                    <div class="stat-badge active"><i class="ph ph-check-circle"></i> Aktif</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon yellow"><i class="ph ph-crown"></i></div>
-                    <div class="stat-info"><h3>3.642</h3><p>Toplam Vip Üye</p></div>
-                    <div class="stat-badge premium"><i class="ph ph-star"></i> Premium</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon red"><i class="ph ph-prohibit"></i></div>
-                    <div class="stat-info"><h3>134</h3><p>Yasaklı Kullanıcı</p></div>
-                    <div class="stat-badge restricted"><i class="ph ph-warning-circle"></i> Kısıtlı</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon blue"><i class="ph ph-magnifying-glass"></i></div>
-                    <div class="stat-info"><h3>4.159.490</h3><p>Toplam Sorgu</p></div>
-                    <div class="stat-badge active"><i class="ph ph-activity"></i> Aktif</div>
+                <div class="button-group">
+                    <button class="btn-danger" id="clearBtn"><i class="ph ph-x"></i> Temizle</button>
+                    <button class="btn-primary" id="runBtn"><i class="ph ph-magnifying-glass"></i> Sorgula</button>
                 </div>
             </div>
 
-            <div class="middle-grid">
-                <div class="panel">
-                    <div class="panel-header">
-                        <h2><i class="ph ph-terminal-window" style="color:var(--primary)"></i> <span id="panelTitle">Sorgulama Motoru</span></h2>
-                        <span style="font-size:12px; color:var(--muted);">Sistem Aktif 🟢</span>
+            <!-- Sonuçlar -->
+            <div class="results-panel">
+                <div class="results-header">
+                    <div>
+                        <h3>Sonuçlar</h3>
+                        <p id="resultSummary">Henüz sorgulama yapılmadı.</p>
                     </div>
-                    <div class="panel-body">
-                        <div class="query-form">
-                            <div class="input-group" id="inputArea">
-                                <input type="text" id="queryInput" placeholder="11 haneli TC Kimlik No" maxlength="11">
-                            </div>
-                            <div class="input-group">
-                                <button id="runBtn" style="width: 100%;"><i class="ph ph-magnifying-glass"></i> Sorgula</button>
-                            </div>
-                        </div>
-                        <div class="result-box" id="resultBox">
-<span class="highlight">> Sistem hazır.</span> Lütfen gerekli bilgileri girip sorgulama yapın...
+                    <div class="download-group">
+                        <button class="btn-download" id="downloadBtn"><i class="ph ph-download-simple"></i> İndir <i class="ph ph-caret-down"></i></button>
+                        <div class="download-dropdown" id="downloadDropdown">
+                            <button onclick="downloadData('pdf')"><i class="ph ph-file-pdf"></i> PDF İndir</button>
+                            <button onclick="downloadData('txt')"><i class="ph ph-file-text"></i> TXT İndir</button>
+                            <button onclick="downloadData('csv')"><i class="ph ph-file-csv"></i> CSV İndir</button>
                         </div>
                     </div>
                 </div>
 
-                <div class="panel">
-                    <div class="panel-header">
-                        <h2><i class="ph ph-bell-ringing" style="color:var(--warning)"></i> Duyurular</h2>
-                        <i class="ph ph-dots-three-vertical" style="color:var(--muted); cursor:pointer;"></i>
-                    </div>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Başlık</th>
-                                    <th>İçerik</th>
-                                    <th>Tarih</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><span class="tag">YENİ</span> Sistem Güncellemesi</td>
-                                    <td>Sorgu API'leri yenilendi.</td>
-                                    <td>Bugün 12:45</td>
-                                </tr>
-                                <tr>
-                                    <td><span class="tag">BİLGİ</span> Vesika</td>
-                                    <td>Vesika sorgusu aktif edildi.</td>
-                                    <td>Dün 18:30</td>
-                                </tr>
-                                <tr>
-                                    <td><span class="tag">SİSTEM</span> Bakım Modu</td>
-                                    <td>Gece 03:00'da bakım yapılacak.</td>
-                                    <td>2 gün önce</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="table-container">
+                    <table id="resultTable">
+                        <thead id="tableHead">
+                            <!-- JS ile doldurulacak -->
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr><td colspan="10" class="empty-state">Henüz bir sorgulama yapılmadı.</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -291,26 +235,66 @@
         const pageTitle = document.getElementById('pageTitle');
         const pageDesc = document.getElementById('pageDesc');
         const topbarTitle = document.getElementById('topbarTitle');
-        const panelTitle = document.getElementById('panelTitle');
-        const inputArea = document.getElementById('inputArea');
-        const resultBox = document.getElementById('resultBox');
+        const dynamicForm = document.getElementById('dynamicForm');
+        const resultTable = document.getElementById('resultTable');
+        const tableHead = document.getElementById('tableHead');
+        const tableBody = document.getElementById('tableBody');
+        const resultSummary = document.getElementById('resultSummary');
         const runBtn = document.getElementById('runBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const downloadDropdown = document.getElementById('downloadDropdown');
 
-        let currentPage = 'tc';
+        let currentPage = 'adsoyad';
+        let currentResults = null;
+        let currentColumns = [];
 
         const pageConfig = {
-            'tc': { title: 'TC Sorgu', desc: 'Piyasanın En Kaliteli Sorgu Paneli', endpoint: 'tc.php', type: 'tc' },
-            'tcpro': { title: 'TC Pro Sorgu', desc: 'Detaylı TC Kimlik Sorgulama', endpoint: 'tcpro.php', type: 'tc' },
-            'adsoyad': { title: 'Ad Soyad Sorgu', desc: 'İsim ve soyisim ile veritabanı araması.', endpoint: 'adsoyad.php', type: 'adsoyad' },
-            'aile': { title: 'Aile Sorgu', desc: 'Kişinin aile bireylerini listeler.', endpoint: 'aile.php', type: 'tc' },
-            'sulale': { title: 'Sülale Sorgu', desc: 'Kişinin geniş aile ağacını listeler.', endpoint: 'sulale.php', type: 'tc' },
-            'tcgsm': { title: 'TC → GSM', desc: 'TC Kimlik Numarası ile telefon bilgisi.', endpoint: 'tcgsm.php', type: 'tc' },
-            'gsmtc': { title: 'GSM → TC', desc: 'Telefon numarası ile TC ve isim bilgisi.', endpoint: 'gsmtc.php', type: 'gsm' },
-            'eokul': { title: 'E-Okul Sorgu', desc: 'Öğrenci okul ve kayıt bilgileri.', endpoint: 'eokul.php', type: 'tc' },
-            'adres': { title: 'Adres Sorgu', desc: 'TC Kimlik Numarası ile adres bilgileri.', endpoint: 'adres.php', type: 'tc' },
-            'tapu': { title: 'Tapu Sorgu', desc: 'Tapu ve gayrimenkul kayıtları.', endpoint: 'tapu.php', type: 'tc' },
+            'tc': { 
+                title: 'TC Kimlik Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'tc.php',
+                inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', type: 'text', maxlength: 11 }]
+            },
+            'adsoyad': { 
+                title: 'Ad Soyad Sorgulama', desc: 'Ad ve soyad zorunludur. İl / ilçe isteğe bağlıdır.', endpoint: 'adsoyad.php',
+                inputs: [
+                    { id: 'ad', label: 'Ad <span>(zorunlu)</span>', placeholder: 'Adınız', type: 'text' },
+                    { id: 'soyad', label: 'Soyad <span>(zorunlu)</span>', placeholder: 'Soyadınız', type: 'text' },
+                    { id: 'il', label: 'İl <span>(opsiyonel)</span>', placeholder: 'İl', type: 'text' },
+                    { id: 'ilce', label: 'İlçe <span>(opsiyonel)</span>', placeholder: 'İlçe', type: 'text' }
+                ]
+            },
+            'aile': { 
+                title: 'Aile Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'aile.php',
+                inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', type: 'text', maxlength: 11 }]
+            },
+            'sulale': { 
+                title: 'Sülale Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'sulale.php',
+                inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', type: 'text', maxlength: 11 }]
+            },
+            'tcgsm': { 
+                title: 'TC → GSM Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'tcgsm.php',
+                inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', type: 'text', maxlength: 11 }]
+            },
+            'gsmtc': { 
+                title: 'GSM → TC Sorgulama', desc: '10 haneli telefon numarası giriniz.', endpoint: 'gsmtc.php',
+                inputs: [{ id: 'gsm', label: 'Telefon No', placeholder: '5XX XXX XX XX', type: 'text', maxlength: 10 }],
+                extraParams: { auth: 'fire' }
+            },
+            'eokul': { 
+                title: 'E-Okul Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'eokul.php',
+                inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', type: 'text', maxlength: 11 }]
+            },
+            'adres': { 
+                title: 'Adres Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'adres.php',
+                inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', type: 'text', maxlength: 11 }]
+            },
+            'tapu': { 
+                title: 'Tapu Sorgulama', desc: '11 haneli TC Kimlik Numarası giriniz.', endpoint: 'tapu.php',
+                inputs: [{ id: 'tc', label: 'TC Kimlik No', placeholder: '11 haneli TC', type: 'text', maxlength: 11 }]
+            }
         };
 
+        // Menü Tıklama
         menuItems.forEach(item => {
             item.addEventListener('click', () => {
                 menuItems.forEach(i => i.classList.remove('active'));
@@ -320,54 +304,89 @@
             });
         });
 
+        // Formu Güncelle
         function updateUI(page) {
             const config = pageConfig[page];
             
             pageTitle.textContent = config.title;
             pageDesc.textContent = config.desc;
             topbarTitle.textContent = config.title;
-            panelTitle.textContent = config.title + ' Motoru';
             
-            resultBox.innerHTML = '<span class="highlight">> Sistem hazır.</span> Lütfen gerekli bilgileri girip sorgulama yapın...';
-
-            if (config.type === 'adsoyad') {
-                inputArea.innerHTML = `
-                    <input type="text" id="inputAd" placeholder="Ad" style="margin-right: 10px;">
-                    <input type="text" id="inputSoyad" placeholder="Soyad">
+            // Formu temizle
+            dynamicForm.innerHTML = '';
+            config.inputs.forEach(input => {
+                const div = document.createElement('div');
+                div.className = 'form-group';
+                div.innerHTML = `
+                    <label>${input.label}</label>
+                    <input type="text" id="input_${input.id}" placeholder="${input.placeholder}" ${input.maxlength ? `maxlength="${input.maxlength}"` : ''}>
                 `;
-            } else if (config.type === 'gsm') {
-                inputArea.innerHTML = `<input type="text" id="queryInput" placeholder="10 haneli Telefon No (5XX XXX XX XX)" maxlength="10">`;
-            } else {
-                inputArea.innerHTML = `<input type="text" id="queryInput" placeholder="11 haneli TC Kimlik No" maxlength="11">`;
-            }
+                dynamicForm.appendChild(div);
+            });
+
+            // Sonuçları sıfırla
+            resetResults();
         }
 
+        // Sonuçları Temizle
+        function resetResults() {
+            currentResults = null;
+            currentColumns = [];
+            tableHead.innerHTML = '';
+            tableBody.innerHTML = '<tr><td colspan="10" class="empty-state">Henüz bir sorgulama yapılmadı.</td></tr>';
+            resultSummary.textContent = 'Henüz sorgulama yapılmadı.';
+            downloadBtn.style.display = 'none';
+        }
+
+        // Temizle Butonu
+        clearBtn.addEventListener('click', () => {
+            document.querySelectorAll('.form-group input').forEach(inp => inp.value = '');
+            resetResults();
+        });
+
+        // İndir Menüsü
+        downloadBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            downloadDropdown.classList.toggle('show');
+        });
+        document.addEventListener('click', () => downloadDropdown.classList.remove('show'));
+
+        // Sorgula Butonu
         runBtn.addEventListener('click', async () => {
             const config = pageConfig[currentPage];
             let params = {};
-            let endpoint = config.endpoint;
+            let hasError = false;
 
-            if (config.type === 'adsoyad') {
-                const ad = document.getElementById('inputAd').value.trim();
-                const soyad = document.getElementById('inputSoyad').value.trim();
-                if (!ad || !soyad) return alert('Lütfen ad ve soyad girin.');
-                params = { ad, soyad };
-            } else {
-                const val = document.getElementById('queryInput').value.trim();
-                if (!val) return alert('Lütfen gerekli alanı doldurun.');
-                if (config.type === 'gsm') {
-                    params = { gsm: val, auth: 'fire' };
+            // Parametreleri topla
+            config.inputs.forEach(input => {
+                const val = document.getElementById(`input_${input.id}`).value.trim();
+                // Eğer zorunlu alan (label'da zorunlu yazıyorsa) ve boşsa hata ver
+                if (input.label.includes('zorunlu') && !val) {
+                    hasError = true;
+                    document.getElementById(`input_${input.id}`).style.borderColor = 'var(--danger)';
                 } else {
-                    params = { tc: val };
+                    document.getElementById(`input_${input.id}`).style.borderColor = 'var(--border)';
                 }
+                if (val) params[input.id] = val;
+            });
+
+            if (hasError) return alert('Lütfen zorunlu alanları doldurun.');
+            if (Object.keys(params).length === 0) return alert('Lütfen en az bir alan doldurun.');
+
+            // Ekstra parametreler (GSM auth gibi)
+            if (config.extraParams) {
+                Object.assign(params, config.extraParams);
             }
 
+            // UI Güncelle
             runBtn.disabled = true;
-            runBtn.innerHTML = '<i class="ph ph-spinner-gap" style="animation: spin 1s linear infinite;"></i> Sorgulanıyor...';
-            resultBox.innerHTML = '<span class="loading">> API isteği gönderiliyor, lütfen bekleyin...</span>';
+            runBtn.innerHTML = '<i class="ph ph-spinner-gap spin"></i> Sorgulanıyor...';
+            tableBody.innerHTML = '<tr><td colspan="10" class="empty-state"><i class="ph ph-spinner-gap spin" style="font-size:24px; margin-bottom:10px;"></i><br>Veriler getiriliyor, lütfen bekleyin...</td></tr>';
+            resultSummary.textContent = 'Sorgulanıyor...';
+            downloadBtn.style.display = 'none';
 
             try {
-                const queryString = new URLSearchParams({ endpoint, ...params }).toString();
+                const queryString = new URLSearchParams({ endpoint: config.endpoint, ...params }).toString();
                 const response = await fetch(`/api/proxy?${queryString}`);
                 
                 const rawText = await response.text();
@@ -376,54 +395,162 @@
                 try {
                     data = JSON.parse(rawText);
                 } catch (e) {
-                    throw new Error(`API'den geçersiz yanıt geldi. Ham Veri: "${rawText.substring(0, 150)}..."`);
+                    throw new Error(`API'den geçersiz yanıt geldi.`);
                 }
 
                 if (!response.ok || data.error) {
                     throw new Error(data.error || 'Sunucu hatası döndü.');
                 }
 
-                // API'nin döndürdüğü veri yapısını kontrol et
-                // Bazıları data array döner, bazıları direkt array döner.
+                // Veriyi ayıkla (Bazı API'ler data, bazıları direkt array döner)
                 let resultData = null;
                 if (data.data && Array.isArray(data.data)) {
                     resultData = data.data;
                 } else if (Array.isArray(data)) {
                     resultData = data;
                 } else if (data.Status === true || data.status === 'success') {
-                    // Eğer data diye bir şey yoksa ama status true ise, tüm objeyi göster
-                    resultData = [data];
+                    resultData = [data]; // Eğer tek bir obje dönüyorsa onu diziye çevir
                 } else {
-                     // Tanımlanamayan bir yapıysa ham JSON'u göster
-                     resultData = [data];
+                    resultData = [data];
                 }
 
                 if (!resultData || resultData.length === 0) {
-                    resultBox.innerHTML = '<span class="error">> Sonuç bulunamadı. Girdiğiniz bilgileri kontrol edin.</span>';
-                } else {
-                    let output = '<span class="success">> Sorgu Başarılı! (' + resultData.length + ' kayıt bulundu)</span>\n\n';
-                    resultData.forEach((row, index) => {
-                        output += `<span class="highlight">[Kayıt ${index + 1}]</span>\n`;
-                        for (const [key, value] of Object.entries(row)) {
-                            if (value !== null && value !== undefined && value !== '' && value !== 'Bulunamadı' && value !== 'YOK') {
-                                output += `  <span class="data-key">${key.padEnd(15)}</span>: <span class="data-val">${value}</span>\n`;
-                            }
-                        }
-                        output += '\n';
-                    });
-                    resultBox.innerHTML = output;
+                    tableBody.innerHTML = '<tr><td colspan="10" class="empty-state">Sonuç bulunamadı. Lütfen bilgilerinizi kontrol edin.</td></tr>';
+                    resultSummary.textContent = 'Sonuç bulunamadı.';
+                    return;
                 }
+
+                // Tabloyu Çiz
+                renderTable(resultData);
+                
+                // İndirme butonunu göster
+                downloadBtn.style.display = 'flex';
+                resultSummary.textContent = `Özet: ${resultData.length} kayıt bulundu.`;
+
             } catch (error) {
-                resultBox.innerHTML = `<span class="error">> Hata: ${error.message}</span>`;
+                tableBody.innerHTML = `<tr><td colspan="10" class="empty-state" style="color:var(--danger)">Hata: ${error.message}</td></tr>`;
+                resultSummary.textContent = 'Hata oluştu.';
             } finally {
                 runBtn.disabled = false;
                 runBtn.innerHTML = '<i class="ph ph-magnifying-glass"></i> Sorgula';
             }
         });
 
-        const style = document.createElement('style');
-        style.innerHTML = '@keyframes spin { 100% { transform: rotate(360deg); } }';
-        document.head.appendChild(style);
+        // Tabloyu Ekrana Çiz
+        function renderTable(data) {
+            currentResults = data;
+            
+            // Tüm anahtarları topla (Sütun başlıkları için)
+            const allKeys = new Set();
+            data.forEach(row => {
+                Object.keys(row).forEach(key => {
+                    if (row[key] !== null && row[key] !== undefined && row[key] !== '' && row[key] !== 'Bulunamadı' && row[key] !== 'YOK') {
+                        allKeys.add(key);
+                    }
+                });
+            });
+            currentColumns = Array.from(allKeys);
+
+            // Tablo Başlığı
+            tableHead.innerHTML = '<tr>' + currentColumns.map(col => `<th>${col}</th>`).join('') + '</tr>';
+
+            // Tablo Gövdesi
+            let html = '';
+            data.forEach(row => {
+                html += '<tr>';
+                currentColumns.forEach(col => {
+                    let val = row[col];
+                    if (val === undefined || val === null || val === '' || val === 'YOK' || val === 'Bulunamadı') {
+                        html += `<td style="color:var(--muted)">-</td>`;
+                    } else {
+                        html += `<td>${val}</td>`;
+                    }
+                });
+                html += '</tr>';
+            });
+            tableBody.innerHTML = html;
+        }
+
+        // İndirme Fonksiyonları
+        function downloadData(format) {
+            if (!currentResults || currentResults.length === 0) return alert('İndirilecek veri yok.');
+            
+            const fileName = `syncra_sorgu_${Date.now()}`;
+
+            if (format === 'csv') {
+                // CSV formatı
+                let csvContent = currentColumns.join(',') + '\n';
+                currentResults.forEach(row => {
+                    let rowData = currentColumns.map(col => `"${(row[col] || '').toString().replace(/"/g, '""')}"`);
+                    csvContent += rowData.join(',') + '\n';
+                });
+                const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' }); // \uFEFF Türkçe karakterler için
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `${fileName}.csv`;
+                link.click();
+            } 
+            else if (format === 'txt') {
+                // TXT formatı
+                let txtContent = '';
+                currentResults.forEach((row, i) => {
+                    txtContent += `[Kayıt ${i + 1}]\n`;
+                    currentColumns.forEach(col => {
+                        let val = row[col];
+                        if (val !== undefined && val !== null && val !== '' && val !== 'YOK' && val !== 'Bulunamadı') {
+                            txtContent += `${col.padEnd(20)}: ${val}\n`;
+                        }
+                    });
+                    txtContent += '\n';
+                });
+                const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `${fileName}.txt`;
+                link.click();
+            }
+            else if (format === 'pdf') {
+                // PDF formatı (jsPDF ve AutoTable kullanarak)
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('l', 'pt', 'a4'); // Yatay sayfa
+                
+                // Başlık
+                doc.setFontSize(18);
+                doc.setTextColor(59, 130, 246);
+                doc.text("Syncra Sorgu Raporu", 40, 40);
+                doc.setFontSize(10);
+                doc.setTextColor(100);
+                doc.text(`Tarih: ${new Date().toLocaleString('tr-TR')}`, 40, 55);
+
+                // Tablo verisini hazırla
+                const tableColumn = currentColumns;
+                const tableRows = currentResults.map(row => 
+                    currentColumns.map(col => {
+                        let val = row[col];
+                        return (val === undefined || val === null || val === 'YOK' || val === 'Bulunamadı') ? '-' : val.toString();
+                    })
+                );
+
+                doc.autoTable({
+                    head: [tableColumn],
+                    body: tableRows,
+                    startY: 70,
+                    theme: 'grid',
+                    styles: { font: 'helvetica', fontSize: 8, cellPadding: 4, textColor: 50 },
+                    headStyles: { fillColor: [23, 28, 38], textColor: [255, 255, 255], fontStyle: 'bold' },
+                    alternateRowStyles: { fillColor: [245, 247, 250] },
+                    margin: { top: 70, right: 40, bottom: 40, left: 40 }
+                });
+
+                doc.save(`${fileName}.pdf`);
+            }
+
+            downloadDropdown.classList.remove('show');
+        }
+
+        // Sayfa Yüklendiğinde İlk Formu Aç
+        updateUI('adsoyad');
+
     </script>
 </body>
 </html>
