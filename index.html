@@ -75,6 +75,11 @@ button,input,select{font:inherit}button{cursor:pointer}.ambient{position:fixed;i
 <div id="toastHost"></div>
 
 <script>
+// --- URL TEMİZLİĞİ ---
+if (window.location.search === '?' || window.location.search === '') {
+    window.history.replaceState({}, document.title, window.location.pathname);
+}
+
 // --- SUPABASE BAĞLANTISI ---
 const SUPABASE_URL = 'https://elpnyxhlhoyqmcqkkcsg.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_DDw6BF8q1YCn1KDo1FzxCg_94qrvzdr';
@@ -129,13 +134,12 @@ $('#authForm').onsubmit=async e=>{
             }
             
             toast('Kayıt Başarılı! Giriş yapılıyor...');
-            // Kayıt sonrası oturum açmışsa içeri al
             setTimeout(() => checkSession(), 1500);
             
         } else {
             const { data, error } = await supabase.auth.signInWithPassword({ email, password });
             if (error) throw error;
-            checkSession(); // Başarılıysa oturum kontrolü yapıp içeri al
+            checkSession();
         }
     } catch(err) {
         toast(err.message || 'Bir hata oluştu.');
@@ -147,23 +151,34 @@ $('#authForm').onsubmit=async e=>{
 
 // --- OTURUM KONTROLÜ & GİRİŞ ---
 async function checkSession() {
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (session) {
-        // Kullanıcının profil bilgilerini çek
-        const { data: profile } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
+    try {
+        const { data: { session }, error } = await supabase.auth.getSession();
         
-        if (profile) {
-            current = profile;
-            if(current.username.toLowerCase() === 'wolwes') current.role = 'admin';
-            enterApp();
+        if (error) throw error;
+
+        if (session) {
+            // Profil bilgilerini çek
+            const { data: profile, error: pErr } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
+            
+            if (pErr) console.warn("Profil çekilemedi:", pErr.message);
+
+            if (profile) {
+                current = profile;
+                if(current.username.toLowerCase() === 'wolwes') current.role = 'admin';
+                enterApp();
+            } else {
+                current = { username: session.user.email.split('@')[0], email: session.user.email, role: 'free' };
+                enterApp();
+            }
         } else {
-            // Profil yoksa (nadiren olur), temel bilgilerle gir
-            current = { username: session.user.email.split('@')[0], email: session.user.email, role: 'free' };
-            enterApp();
+            // Oturum yok -> Auth ekranı
+            $('#auth').style.display='grid';
+            $('#app').style.display='none';
+            setMode('login');
         }
-    } else {
-        // Oturum yoksa auth ekranında kal
+    } catch (err) {
+        console.error("Oturum Hatası:", err);
+        // Hata olsa bile login ekranını göster
         $('#auth').style.display='grid';
         $('#app').style.display='none';
         setMode('login');
@@ -286,7 +301,7 @@ $('#runQuery').onclick = async () => {
             window.lastRows = rows;
             renderRows(rows);
             
-            // İstatistikleri güncelle (LocalStorage)
+            // İstatistikleri güncelle
             let total = parseInt(localStorage.getItem(`syncra_${current.username}_total`) || '0') + 1;
             let today = parseInt(localStorage.getItem(`syncra_${current.username}_today`) || '0') + 1;
             localStorage.setItem(`syncra_${current.username}_total`, total);
@@ -414,6 +429,10 @@ $('#logout').onclick = async () => {
 // --- BAŞLANGIÇ ---
 if(localStorage.getItem('sc_theme')) setTheme(localStorage.getItem('sc_theme'));
 setMode('login');
-checkSession(); // Sayfa açılır açılmaz oturum var mı diye bak
+
+// Önce auth ekranını göster, sonra oturum kontrolü yap
+$('#auth').style.display = 'grid';
+$('#app').style.display = 'none';
+checkSession();
 </script>
 </body></html>
