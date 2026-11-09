@@ -10,7 +10,6 @@
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-<!-- Supabase Kütüphanesi -->
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
 <style>
@@ -44,51 +43,38 @@
     #splash-screen { position: fixed; inset: 0; background: #05070a; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.8s ease, visibility 0.8s ease; cursor: pointer; }
     .splash-content { display: flex; flex-direction: column; align-items: center; gap: 15px; animation: slideUpSplash 0.8s ease forwards; }
     @keyframes slideUpSplash { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    
     .splash-cmd-logo { font-size: 60px; color: var(--primary); text-shadow: 0 0 30px rgba(59,130,246,0.6); margin-bottom: 10px; }
     .splash-title { font-family: 'Space Grotesk', sans-serif; font-size: 2.5rem; font-weight: 700; color: #fff; letter-spacing: 1px; text-align: center; }
     .splash-title span { color: var(--primary); }
     .splash-subtitle { font-family: 'Fira Code', monospace; font-size: 1rem; color: #475569; letter-spacing: 2px; margin-top: 5px; }
     .splash-subtitle .cursor { display: inline-block; width: 8px; height: 15px; background: var(--primary); animation: blink 1s step-end infinite; vertical-align: middle; margin-left: 5px; }
     @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-    
     .splash-skip { position: absolute; bottom: 30px; font-size: 12px; color: #475569; animation: pulse 2s infinite; }
 
-    /* --- AUTH EKRANI (SPLIT LAYOUT) --- */
+    /* --- AUTH EKRANI --- */
     #auth-screen { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: none; flex-direction: row; }
-    
-    /* Sol Taraf: Arka Plan / Görsel */
     .auth-left { flex: 1; position: relative; background: linear-gradient(135deg, #05070a 0%, #0b101d 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; border-right: 1px solid var(--border); }
-    
-    /* Siber Ağ Çizgileri Arka Planı */
     .cyber-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px); background-size: 40px 40px; perspective: 500px; transform: rotateX(60deg) translateY(-200px) scale(2); opacity: 0.6; }
     .cyber-glow { position: absolute; width: 400px; height: 400px; background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%); border-radius: 50%; filter: blur(40px); animation: float 8s infinite alternate; }
     @keyframes float { 0% { transform: translate(0, 0); } 100% { transform: translate(30px, -30px); } }
-    
     .auth-brand { position: relative; z-index: 2; text-align: center; }
     .auth-brand-logo { font-size: 80px; color: var(--primary); text-shadow: 0 0 40px rgba(59,130,246,0.4); margin-bottom: 20px; }
     .auth-brand h1 { font-family: 'Space Grotesk', sans-serif; font-size: 3rem; font-weight: 700; color: #fff; letter-spacing: -1px; margin-bottom: 10px;}
     .auth-brand p { font-family: 'Fira Code', monospace; color: var(--primary); font-size: 1rem; letter-spacing: 2px; }
 
-    /* Sağ Taraf: Form */
     .auth-right { width: 500px; background: var(--panel); display: flex; flex-direction: column; justify-content: center; padding: 50px; position: relative; z-index: 10; box-shadow: -10px 0 50px rgba(0,0,0,0.5); }
-    
     .auth-right h2 { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
     .auth-right > p { font-size: 14px; color: var(--muted); margin-bottom: 35px; }
-    
     .auth-input-group { position: relative; margin-bottom: 20px; }
     .auth-input-group label { display: block; font-size: 12px; color: var(--muted); font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
     .auth-input-group i { position: absolute; left: 16px; top: 42px; color: var(--muted); font-size: 18px; transition: 0.3s; }
     .auth-input { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 15px 15px 15px 50px; border-radius: 10px; font-size: 14px; outline: none; transition: 0.3s; }
     .auth-input:focus { border-color: var(--primary); background: var(--sidebar); box-shadow: 0 0 0 4px rgba(59,130,246,0.15); }
     .auth-input:focus + i { color: var(--primary); }
-    
     .auth-btn { width: 100%; background: var(--primary); color: white; padding: 16px; border-radius: 10px; border: none; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.3s; margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(59,130,246,0.3); }
     .auth-btn:hover { background: var(--primary-hover); transform: translateY(-1px); }
     .auth-btn:disabled { opacity: 0.7; cursor: wait; }
-    
     .auth-error { color: var(--danger); background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); border-radius: 8px; font-size: 13px; padding: 12px; margin-bottom: 20px; display: none; text-align: center; }
-    
     .auth-switch { margin-top: 30px; font-size: 14px; color: var(--muted); text-align: center; }
     .auth-switch span { color: var(--primary); font-weight: 600; cursor: pointer; transition: 0.2s; }
     .auth-switch span:hover { text-decoration: underline; }
@@ -98,6 +84,24 @@
     .toast { background: var(--panel); border: 1px solid var(--border); border-left: 4px solid var(--success); color: var(--text); padding: 15px 20px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 500; animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
     .toast i { color: var(--success); font-size: 20px; }
     @keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+
+    /* --- MODAL (ÇIKIŞ ONAY EKRANI) --- */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); z-index: 10000; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; }
+    .modal-overlay.show { display: flex; opacity: 1; }
+    
+    .modal-box { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 30px; width: 100%; max-width: 400px; text-align: center; transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+    .modal-overlay.show .modal-box { transform: scale(1); }
+    
+    .modal-icon { width: 60px; height: 60px; border-radius: 50%; background: rgba(239, 68, 68, 0.1); color: var(--danger); display: grid; place-items: center; font-size: 30px; margin: 0 auto 20px; }
+    .modal-box h3 { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+    .modal-box p { font-size: 14px; color: var(--muted); margin-bottom: 30px; line-height: 1.5; }
+    
+    .modal-actions { display: flex; gap: 12px; }
+    .modal-btn { flex: 1; padding: 12px; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; border: none; transition: 0.2s; }
+    .btn-cancel { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+    .btn-cancel:hover { background: var(--panel-hover); }
+    .btn-confirm { background: var(--danger); color: white; }
+    .btn-confirm:hover { background: #dc2626; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); }
 
     /* --- PANEL CSS'LERİ --- */
     .sidebar { width: 260px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; overflow-y: auto; transition: transform 0.3s ease, background-color 0.3s; }
@@ -117,9 +121,15 @@
     .topbar { height: 70px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; background: var(--bg); position: sticky; top: 0; z-index: 50; transition: background-color 0.3s; }
     .topbar-left { display: flex; align-items: center; gap: 15px; font-weight: 600; font-size: 16px; color: var(--text);}
     .topbar-right { display: flex; align-items: center; gap: 15px; color: var(--muted); font-size: 20px; }
-    .user-profile { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--text); background: var(--panel); padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); cursor: pointer; transition: 0.2s;}
-    .user-profile:hover { border-color: var(--primary); }
+    
+    .user-profile { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--text); background: var(--panel); padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); transition: 0.2s;}
     .user-profile i { color: var(--primary); font-size: 16px; }
+    
+    /* Yeni Çıkış Butonu */
+    .logout-btn { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--danger); background: rgba(239, 68, 68, 0.1); padding: 6px 12px; border-radius: 20px; border: 1px solid rgba(239, 68, 68, 0.2); cursor: pointer; transition: 0.2s; }
+    .logout-btn:hover { background: rgba(239, 68, 68, 0.2); }
+    .logout-btn i { font-size: 16px; }
+
     .theme-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--panel); border: 1px solid var(--border); display: grid; place-items: center; cursor: pointer; color: var(--text); transition: 0.2s; }
     .theme-btn:hover { background: var(--panel-hover); transform: scale(1.05); }
     .menu-toggle { display: none; cursor: pointer; font-size: 24px; color: var(--text); }
@@ -203,7 +213,7 @@
 
     @media (max-width: 900px) {
         .auth-screen { flex-direction: column; }
-        .auth-left { display: none; } /* Mobilde sol tarafı gizle, direk form gelsin */
+        .auth-left { display: none; }
         .auth-right { width: 100%; border-radius: 0; }
         
         .sidebar { position: fixed; left: 0; top: 0; height: 100vh; transform: translateX(-100%); box-shadow: 10px 0 30px rgba(0,0,0,0.1); }
@@ -221,14 +231,27 @@
         .topbar { padding: 0 15px; }
         th, td { padding: 12px 15px; }
         .splash-title { font-size: 1.8rem; }
+        .logout-btn span { display: none; } /* Mobilde yazıyı gizle sadece ikon kalsın */
+        .logout-btn { padding: 8px; }
     }
 </style>
 </head>
 <body>
-    <!-- Bildirim Kutusu -->
     <div id="toast-container"></div>
-
     <canvas id="snow-canvas"></canvas>
+
+    <!-- ÇIKIŞ ONAY MODALI -->
+    <div class="modal-overlay" id="logoutModal">
+        <div class="modal-box">
+            <div class="modal-icon"><i class="ph ph-sign-out"></i></div>
+            <h3>Çıkış Yap?</h3>
+            <p>Oturumunuzu sonlandırmak üzeresiniz. Devam etmek istediğinize emin misiniz?</p>
+            <div class="modal-actions">
+                <button class="modal-btn btn-cancel" id="cancelLogout">İptal</button>
+                <button class="modal-btn btn-confirm" id="confirmLogout">Evet, Çıkış Yap</button>
+            </div>
+        </div>
+    </div>
 
     <!-- SPLASH EKRANI -->
     <div id="splash-screen" onclick="skipSplash()">
@@ -240,9 +263,8 @@
         <div class="splash-skip">Atlamak için tıkla</div>
     </div>
 
-    <!-- GELİŞMİŞ GİRİŞ EKRANI (SPLIT LAYOUT) -->
+    <!-- GİRİŞ EKRANI -->
     <div id="auth-screen">
-        <!-- Sol Taraf: Arka Plan ve Logo -->
         <div class="auth-left">
             <div class="cyber-grid"></div>
             <div class="cyber-glow"></div>
@@ -252,36 +274,28 @@
                 <p>[ SYSTEM ONLINE ]</p>
             </div>
         </div>
-
-        <!-- Sağ Taraf: Form -->
         <div class="auth-right">
             <h2 id="authTitle">Tekrar Hoş Geldin</h2>
             <p id="authDesc">Syncra Cloud'a erişmek için giriş yap.</p>
-            
             <div class="auth-error" id="authError"></div>
-
             <div class="auth-input-group">
                 <label>E-posta Adresi</label>
                 <input type="email" id="authEmail" class="auth-input" placeholder="ornek@mail.com">
                 <i class="ph ph-envelope-simple"></i>
             </div>
-            
             <div class="auth-input-group">
                 <label>Şifre</label>
                 <input type="password" id="authPassword" class="auth-input" placeholder="••••••••">
                 <i class="ph ph-lock-key"></i>
             </div>
-            
             <div class="auth-input-group" id="usernameGroup" style="display:none;">
                 <label>Kullanıcı Adı</label>
                 <input type="text" id="authUsername" class="auth-input" placeholder="Takma adınız">
                 <i class="ph ph-user"></i>
             </div>
-
             <button class="auth-btn" id="authSubmitBtn">
                 <span id="btnText">Giriş Yap</span> <i class="ph ph-arrow-right"></i>
             </button>
-            
             <div class="auth-switch" id="authSwitch">
                 Hesabın yok mu? <span>Hemen Kayıt Ol</span>
             </div>
@@ -316,9 +330,15 @@
                 <span id="topbarTitle">Dashboard</span>
             </div>
             <div class="topbar-right">
-                <div class="user-profile" id="userProfileBtn">
+                <!-- Çıkış Butonu -->
+                <div class="logout-btn" id="logoutBtn">
+                    <i class="ph ph-sign-out"></i> <span>Çıkış Yap</span>
+                </div>
+                
+                <div class="user-profile">
                     <i class="ph ph-user-circle"></i> <span id="currentUsername">Kullanıcı</span>
                 </div>
+                
                 <div class="theme-btn" id="themeToggle" title="Temayı Değiştir">
                     <i class="ph ph-moon" id="themeIcon"></i>
                 </div>
@@ -431,7 +451,7 @@
     </div>
 
     <script>
-        // --- SUPABASE İSTEMCİSİNİ BAŞLAT ---
+        // --- SUPABASE ---
         let supabaseClient = null;
         try {
             if (window.supabase) {
@@ -439,22 +459,16 @@
                     'https://elpnyxhlhoyqmcqkkcsg.supabase.co',
                     'sb_publishable_DDw6BF8q1YCn1KDo1FzxCg_94qrvzdr'
                 );
-                console.log("Supabase istemcisi başarıyla oluşturuldu.");
-            } else {
-                console.error("Supabase kütüphanesi yüklenemedi. CDN engellenmiş olabilir.");
             }
-        } catch (e) {
-            console.error("Supabase başlatma hatası:", e);
-        }
+        } catch (e) { console.error("Supabase başlatma hatası:", e); }
 
-        // --- TOAST BİLDİRİM FONKSİYONU ---
+        // --- TOAST BİLDİRİM ---
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             toast.className = 'toast';
             if (type === 'error') {
                 toast.style.borderLeftColor = 'var(--danger)';
-                toast.querySelector('i')?.remove();
                 toast.innerHTML = `<i class="ph ph-warning-circle" style="color:var(--danger)"></i> ${message}`;
             } else {
                 toast.innerHTML = `<i class="ph ph-check-circle"></i> ${message}`;
@@ -478,37 +492,18 @@
         document.body.addEventListener('click', initAudio, { once: true });
         document.querySelectorAll('button, .nav-item, .theme-btn, .auth-switch').forEach(btn => { btn.addEventListener('click', playClickSound); });
 
-        // --- SPLASH MANTIĞI ---
+        // --- SPLASH ---
         const splashScreen = document.getElementById('splash-screen');
         let splashTimeout1, splashTimeout2;
-
         function startSplash() {
-            splashTimeout1 = setTimeout(() => { 
-                // Eski kırılma efektini iptal ettik, sadece bekleme süresi
-                playCrackSound(); 
-            }, 1500);
-            
-            splashTimeout2 = setTimeout(() => {
-                finishSplash();
-            }, 2500);
+            splashTimeout1 = setTimeout(() => { playCrackSound(); }, 1500);
+            splashTimeout2 = setTimeout(() => { finishSplash(); }, 2500);
         }
-
-        function skipSplash() {
-            clearTimeout(splashTimeout1);
-            clearTimeout(splashTimeout2);
-            finishSplash();
-        }
-
-        function finishSplash() {
-            splashScreen.style.opacity = '0'; 
-            splashScreen.style.visibility = 'hidden';
-            playWelcomeSound();
-            checkAuth();
-        }
-
+        function skipSplash() { clearTimeout(splashTimeout1); clearTimeout(splashTimeout2); finishSplash(); }
+        function finishSplash() { splashScreen.style.opacity = '0'; splashScreen.style.visibility = 'hidden'; playWelcomeSound(); checkAuth(); }
         startSplash();
 
-        // --- AUTH MANTIĞI ---
+        // --- AUTH ---
         let isLoginMode = true;
         const authScreen = document.getElementById('auth-screen');
         const authTitle = document.getElementById('authTitle');
@@ -521,7 +516,6 @@
         const usernameGroup = document.getElementById('usernameGroup');
         const authError = document.getElementById('authError');
         const btnText = document.getElementById('btnText');
-        
         const sidebar = document.getElementById('sidebar');
         const mainContent = document.getElementById('main-content');
         const currentUsernameSpan = document.getElementById('currentUsername');
@@ -542,18 +536,13 @@
         });
 
         authSubmitBtn.addEventListener('click', async () => {
-            if (!supabaseClient) {
-                return showAuthError('Veritabanı kütüphanesi yüklenemedi. Lütfen sayfayı yenile veya farklı bir tarayıcı dene.');
-            }
-
+            if (!supabaseClient) return showAuthError('Veritabanı kütüphanesi yüklenemedi.');
             const email = authEmail.value.trim();
             const password = authPassword.value.trim();
             const username = authUsername.value.trim();
-            
             authError.style.display = 'none';
-
-            if (!email || !password) return showAuthError('Lütfen e-posta ve şifre alanlarını doldur.');
-            if (!isLoginMode && !username) return showAuthError('Lütfen bir kullanıcı adı belirle.');
+            if (!email || !password) return showAuthError('Lütfen tüm alanları doldurun.');
+            if (!isLoginMode && !username) return showAuthError('Lütfen bir kullanıcı adı belirleyin.');
 
             authSubmitBtn.disabled = true;
             btnText.textContent = isLoginMode ? 'Giriş Yapılıyor...' : 'Kayıt Olunuyor...';
@@ -562,28 +551,16 @@
                 if (isLoginMode) {
                     const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
                     if (error) throw error;
-                    
                     const { data: profile } = await supabaseClient.from('profiles').select('username').eq('id', data.user.id).single();
                     loginSuccess(profile ? profile.username : email.split('@')[0]);
-                    
                 } else {
                     const { data, error } = await supabaseClient.auth.signUp({ email, password });
                     if (error) throw error;
-                    
                     if (data.user) {
-                        const { error: profileError } = await supabaseClient.from('profiles').insert([
-                            { id: data.user.id, username: username, email: email }
-                        ]);
-                        if (profileError) console.error("Profil oluşturma hatası:", profileError);
+                        await supabaseClient.from('profiles').insert([{ id: data.user.id, username: username, email: email }]);
                     }
-                    
-                    // KAYIT BAŞARILI BİLDİRİMİ
                     showToast('Kayıt başarıyla tamamlandı! Panele yönlendiriliyorsunuz...', 'success');
-                    
-                    // 3 saniye bekle ve sonra giriş yap
-                    setTimeout(() => {
-                        loginSuccess(username);
-                    }, 3000);
+                    setTimeout(() => { loginSuccess(username); }, 3000);
                 }
             } catch (error) {
                 showAuthError(error.message);
@@ -592,78 +569,76 @@
             }
         });
 
-        function showAuthError(msg) {
-            authError.textContent = msg;
-            authError.style.display = 'block';
-        }
-
+        function showAuthError(msg) { authError.textContent = msg; authError.style.display = 'block'; }
         async function loginSuccess(username) {
             authScreen.style.display = 'none';
             sidebar.style.display = 'flex';
             mainContent.style.display = 'flex';
             currentUsernameSpan.textContent = username;
             welcomeNameSpan.textContent = username;
-            
             loadUserStats(username);
             loadHistory(username);
             logToTerminal(`Kullanıcı girişi başarılı: ${username}`);
         }
 
         async function checkAuth() {
-            if (!supabaseClient) {
-                authScreen.style.display = 'flex';
-                return;
-            }
-
+            if (!supabaseClient) { authScreen.style.display = 'flex'; return; }
             try {
                 const { data: { session } } = await supabaseClient.auth.getSession();
-                
                 if (session) {
                     const { data: profile } = await supabaseClient.from('profiles').select('username').eq('id', session.user.id).single();
                     loginSuccess(profile ? profile.username : session.user.email.split('@')[0]);
                 } else {
                     authScreen.style.display = 'flex';
                 }
-            } catch (error) {
-                console.error("Auth kontrol hatası:", error);
-                authScreen.style.display = 'flex';
-            }
+            } catch (error) { authScreen.style.display = 'flex'; }
         }
 
-        document.getElementById('userProfileBtn').addEventListener('click', async () => {
-            if(confirm('Çıkış yapmak istediğinize emin misiniz?')) {
-                if (supabaseClient) await supabaseClient.auth.signOut();
-                location.reload();
-            }
+        // --- ÇIKIŞ MODALI MANTIĞI ---
+        const logoutModal = document.getElementById('logoutModal');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const cancelLogout = document.getElementById('cancelLogout');
+        const confirmLogout = document.getElementById('confirmLogout');
+
+        logoutBtn.addEventListener('click', () => {
+            logoutModal.classList.add('show');
         });
 
-        // --- KULLANICI BAZLI İSTATİSTİK VE GEÇMİŞ ---
-        let currentUser = '';
-        let totalQueries = 0;
-        let todayQueries = 0;
+        cancelLogout.addEventListener('click', () => {
+            logoutModal.classList.remove('show');
+        });
 
+        confirmLogout.addEventListener('click', async () => {
+            confirmLogout.innerHTML = '<i class="ph ph-spinner-gap spin"></i> Çıkış Yapılıyor...';
+            if (supabaseClient) await supabaseClient.auth.signOut();
+            location.reload();
+        });
+
+        // Modal dışına tıklayınca kapat
+        logoutModal.addEventListener('click', (e) => {
+            if (e.target === logoutModal) logoutModal.classList.remove('show');
+        });
+
+        // --- İSTATİSTİK VE GEÇMİŞ ---
+        let currentUser = ''; let totalQueries = 0; let todayQueries = 0;
         function loadUserStats(username) {
             currentUser = username;
             const todayDate = new Date().toDateString();
             const savedDate = localStorage.getItem(`syncra-${username}-date`);
-            
             totalQueries = parseInt(localStorage.getItem(`syncra-${username}-total`) || '0');
             todayQueries = parseInt(localStorage.getItem(`syncra-${username}-today`) || '0');
-
             if (savedDate !== todayDate) {
                 todayQueries = 0;
                 localStorage.setItem(`syncra-${username}-date`, todayDate);
             }
             updateStatsUI();
         }
-
         function updateStatsUI() {
             document.getElementById('statTotalQueries').textContent = totalQueries;
             document.getElementById('statTodayQueries').textContent = todayQueries;
             localStorage.setItem(`syncra-${currentUser}-total`, totalQueries);
             localStorage.setItem(`syncra-${currentUser}-today`, todayQueries);
         }
-
         function loadHistory(username) {
             const history = JSON.parse(localStorage.getItem(`syncra-${username}-history`) || '[]');
             const list = document.getElementById('historyList');
@@ -671,34 +646,23 @@
                 list.innerHTML = '<div class="empty-state" style="padding: 20px;">Henüz sorgu geçmişiniz yok.</div>';
                 return;
             }
-            list.innerHTML = history.map((item, index) => `
+            list.innerHTML = history.map((item) => `
                 <div class="history-item" onclick="reRunHistory('${item.page}', '${item.params}', '${item.endpoint}')">
-                    <div class="history-info">
-                        <h4>${item.title}</h4>
-                        <p>${item.queryText}</p>
-                    </div>
+                    <div class="history-info"><h4>${item.title}</h4><p>${item.queryText}</p></div>
                     <div class="history-time">${item.time}</div>
                 </div>
             `).join('');
         }
-
         function addHistory(page, params, queryText, title, endpoint) {
             let history = JSON.parse(localStorage.getItem(`syncra-${currentUser}-history`) || '[]');
             const now = new Date();
             const timeStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
-            
             history.unshift({ page, params, queryText, title, endpoint, time: timeStr });
             if (history.length > 5) history = history.slice(0, 5);
-            
             localStorage.setItem(`syncra-${currentUser}-history`, JSON.stringify(history));
             loadHistory(currentUser);
         }
-
-        function clearHistory() {
-            localStorage.removeItem(`syncra-${currentUser}-history`);
-            loadHistory(currentUser);
-        }
-
+        function clearHistory() { localStorage.removeItem(`syncra-${currentUser}-history`); loadHistory(currentUser); }
         function reRunHistory(page, paramsStr, endpoint) {
             const params = JSON.parse(paramsStr.replace(/'/g, '"'));
             document.querySelector(`.nav-item[data-page="${page}"]`).click();
@@ -710,7 +674,6 @@
                 document.getElementById('runBtn').click();
             }, 100);
         }
-
         function logToTerminal(message, isError = false) {
             const terminal = document.getElementById('terminalLogs');
             const now = new Date();
@@ -722,7 +685,7 @@
             terminal.scrollTop = terminal.scrollHeight;
         }
 
-        // --- TEMA MANTIĞI ---
+        // --- TEMA ---
         const themeToggle = document.getElementById('themeToggle');
         const themeIcon = document.getElementById('themeIcon');
         const htmlElement = document.documentElement;
@@ -812,7 +775,6 @@
                 menuItems.forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
                 currentPage = item.dataset.page;
-                
                 if (currentPage === 'dashboard') {
                     topbarTitle.textContent = 'Dashboard';
                     dashboardView.style.display = 'block';
@@ -944,22 +906,14 @@
                 </tr>`;
             }
             tableBody.innerHTML = skeletonHTML;
-            
             logToTerminal(`${config.title} isteği başlatıldı: ${queryTextArr.join(' - ')}`);
 
             try {
                 const queryString = new URLSearchParams({ endpoint: config.endpoint, ...params }).toString();
                 const response = await fetch(`/api/proxy?${queryString}`);
-                
                 const rawText = await response.text();
                 let data;
-                
-                try {
-                    data = JSON.parse(rawText);
-                } catch (e) {
-                    throw new Error(`API'den geçersiz yanıt geldi.`);
-                }
-
+                try { data = JSON.parse(rawText); } catch (e) { throw new Error(`API'den geçersiz yanıt geldi.`); }
                 if (!response.ok || data.error) throw new Error(data.error || 'Sunucu hatası döndü.');
 
                 let resultData = [];
@@ -969,19 +923,12 @@
                 } else {
                     let foundArray = false;
                     for (const key in data) {
-                        if (Array.isArray(data[key]) && data[key].length > 0) {
-                            resultData = data[key];
-                            foundArray = true;
-                            break;
-                        }
+                        if (Array.isArray(data[key]) && data[key].length > 0) { resultData = data[key]; foundArray = true; break; }
                     }
                     if (!foundArray) resultData = [data];
                 }
 
-                if (data.status === false || data.Status === false) {
-                     throw new Error(data.message || data.error || 'API isteği reddetti.');
-                }
-
+                if (data.status === false || data.Status === false) throw new Error(data.message || data.error || 'API isteği reddetti.');
                 resultData = resultData.filter(item => Object.keys(item).length > 0 && !item.error);
 
                 if (!resultData || resultData.length === 0) {
@@ -996,9 +943,7 @@
                     return;
                 }
 
-                totalQueries++;
-                todayQueries++;
-                updateStatsUI();
+                totalQueries++; todayQueries++; updateStatsUI();
                 addHistory(currentPage, JSON.stringify(params), queryTextArr.join(' - '), config.title, config.endpoint);
 
                 currentResults = resultData;
@@ -1023,7 +968,6 @@
                     <i class="ph ph-warning-circle" style="font-size:32px; margin-bottom:10px;"></i><br>
                     <b>Sorgulama Başarısız!</b><br>
                     <span style="font-size:12px; margin-top:5px; display:block;">${error.message}</span>
-                    <span style="font-size:11px; color:var(--muted); margin-top:10px; display:block;">Lütfen internet bağlantınızı kontrol edin veya daha sonra tekrar deneyin.</span>
                 </td></tr>`;
                 resultSummary.textContent = 'Hata oluştu.';
                 logToTerminal(`Sorgu hatası: ${error.message}`, true);
@@ -1038,23 +982,13 @@
             let sortedData = [...currentResults];
             if (sortColumn) {
                 sortedData.sort((a, b) => {
-                    let valA = a[sortColumn] || '';
-                    let valB = b[sortColumn] || '';
-                    if (typeof valA === 'string') valA = valA.toLowerCase();
-                    if (typeof valB === 'string') valB = valB.toLowerCase();
-                    if (valA < valB) return sortAsc ? -1 : 1;
-                    if (valA > valB) return sortAsc ? 1 : -1;
-                    return 0;
+                    let valA = a[sortColumn] || ''; let valB = b[sortColumn] || '';
+                    if (typeof valA === 'string') valA = valA.toLowerCase(); if (typeof valB === 'string') valB = valB.toLowerCase();
+                    if (valA < valB) return sortAsc ? -1 : 1; if (valA > valB) return sortAsc ? 1 : -1; return 0;
                 });
             }
-
             tableHead.innerHTML = '<tr>' + currentColumns.map(col => {
-                let icon = '';
-                if (sortColumn === col) {
-                    icon = sortAsc ? '<i class="ph ph-arrow-up"></i>' : '<i class="ph ph-arrow-down"></i>';
-                } else {
-                    icon = '<i class="ph ph-arrows-down-up" style="opacity:0.3;"></i>';
-                }
+                let icon = ''; if (sortColumn === col) { icon = sortAsc ? '<i class="ph ph-arrow-up"></i>' : '<i class="ph ph-arrow-down"></i>'; } else { icon = '<i class="ph ph-arrows-down-up" style="opacity:0.3;"></i>'; }
                 return `<th onclick="handleSort('${col}')">${col} ${icon}</th>`;
             }).join('') + '<th style="text-align:right;">İşlem</th></tr>';
 
@@ -1063,43 +997,25 @@
                 html += '<tr>';
                 currentColumns.forEach(col => {
                     let val = row[col];
-                    if (val === undefined || val === null || val === '' || val === 'YOK' || val === 'Bulunamadı') {
-                        html += `<td style="color:var(--muted)">-</td>`;
-                    } else {
-                        html += `<td>${val}</td>`;
-                    }
+                    if (val === undefined || val === null || val === '' || val === 'YOK' || val === 'Bulunamadı') { html += `<td style="color:var(--muted)">-</td>`; } else { html += `<td>${val}</td>`; }
                 });
-                html += `<td style="text-align:right;">
-                            <button class="copy-btn" title="Satırı Kopyala" onclick="copyRow(${JSON.stringify(row).replace(/"/g, '&quot;')})">
-                                <i class="ph ph-copy"></i>
-                            </button>
-                          </td>`;
-                html += '</tr>';
+                html += `<td style="text-align:right;"><button class="copy-btn" title="Satırı Kopyala" onclick="copyRow(${JSON.stringify(row).replace(/"/g, '&quot;')})"><i class="ph ph-copy"></i></button></td></tr>`;
             });
             tableBody.innerHTML = html;
         }
 
-        function handleSort(column) {
-            if (sortColumn === column) { sortAsc = !sortAsc; } else { sortColumn = column; sortAsc = true; }
-            renderTable();
-        }
-
+        function handleSort(column) { if (sortColumn === column) { sortAsc = !sortAsc; } else { sortColumn = column; sortAsc = true; } renderTable(); }
         function copyRow(rowData) {
             let text = "";
             for (const [key, value] of Object.entries(rowData)) {
-                if (value !== null && value !== undefined && value !== '' && value !== 'YOK' && value !== 'Bulunamadı') {
-                    text += `${key}: ${value}\n`;
-                }
+                if (value !== null && value !== undefined && value !== '' && value !== 'YOK' && value !== 'Bulunamadı') { text += `${key}: ${value}\n`; }
             }
-            navigator.clipboard.writeText(text).then(() => {
-                alert('Kayıt panoya kopyalandı!');
-            });
+            navigator.clipboard.writeText(text).then(() => { showToast('Kayıt panoya kopyalandı!', 'success'); });
         }
 
         function downloadData(format) {
             if (!currentResults || currentResults.length === 0) return alert('İndirilecek veri yok.');
             const fileName = `syncra_sorgu_${Date.now()}`;
-
             if (format === 'csv') {
                 let csvContent = currentColumns.join(',') + '\n';
                 currentResults.forEach(row => {
@@ -1115,9 +1031,7 @@
                     txtContent += `[Kayıt ${i + 1}]\n`;
                     currentColumns.forEach(col => {
                         let val = row[col];
-                        if (val !== undefined && val !== null && val !== '' && val !== 'YOK' && val !== 'Bulunamadı') {
-                            txtContent += `${col.padEnd(20)}: ${val}\n`;
-                        }
+                        if (val !== undefined && val !== null && val !== '' && val !== 'YOK' && val !== 'Bulunamadı') { txtContent += `${col.padEnd(20)}: ${val}\n`; }
                     });
                     txtContent += '\n';
                 });
