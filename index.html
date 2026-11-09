@@ -13,17 +13,25 @@
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
 <style>
-    /* --- TEMA DEĞİŞKENLERİ --- */
+    /* --- YENİ YEŞİL TEMA DEĞİŞKENLERİ --- */
     :root { 
-        --bg: #0b0e14; --sidebar: #111520; --panel: #171c26; --panel-hover: #1f2533;
-        --border: #262d3d; --text: #e2e8f0; --muted: #94a3b8; --primary: #3b82f6;
-        --primary-hover: #2563eb; --danger: #ef4444; --success: #10b981;
+        --bg: #060b08; 
+        --sidebar: #0a120d; 
+        --panel: #0f1a13; 
+        --panel-hover: #14241b;
+        --border: #1a2e22; 
+        --text: #e2e8f0; 
+        --muted: #7b8e83; 
+        --primary: #22c55e; 
+        --primary-hover: #16a34a;
+        --danger: #ef4444; 
+        --success: #22c55e;
         --warning: #f59e0b;
     }
     [data-theme="light"] {
-        --bg: #f8fafc; --sidebar: #ffffff; --panel: #ffffff; --panel-hover: #f1f5f9;
-        --border: #e2e8f0; --text: #0f172a; --muted: #64748b; --primary: #2563eb;
-        --primary-hover: #1d4ed8; --danger: #dc2626; --success: #059669;
+        --bg: #f0fdf4; --sidebar: #ffffff; --panel: #ffffff; --panel-hover: #f1f5f9;
+        --border: #e2e8f0; --text: #0f172a; --muted: #64748b; --primary: #16a34a;
+        --primary-hover: #15803d; --danger: #dc2626; --success: #059669;
         --warning: #d97706;
     }
 
@@ -40,44 +48,56 @@
     #snow-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; opacity: 0.6; transition: 0.3s; }
 
     /* --- SPLASH EKRANI --- */
-    #splash-screen { position: fixed; inset: 0; background: #05070a; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.8s ease, visibility 0.8s ease; cursor: pointer; }
-    .splash-content { display: flex; flex-direction: column; align-items: center; gap: 15px; animation: slideUpSplash 0.8s ease forwards; }
-    @keyframes slideUpSplash { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .splash-cmd-logo { font-size: 60px; color: var(--primary); text-shadow: 0 0 30px rgba(59,130,246,0.6); margin-bottom: 10px; }
-    .splash-title { font-family: 'Space Grotesk', sans-serif; font-size: 2.5rem; font-weight: 700; color: #fff; letter-spacing: 1px; text-align: center; }
+    #splash-screen { position: fixed; inset: 0; background: #040806; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.8s ease, visibility 0.8s ease; cursor: pointer; }
+    .splash-content { display: flex; flex-direction: column; align-items: center; gap: 15px; }
+    .splash-cmd-logo { font-size: 60px; color: var(--primary); text-shadow: 0 0 30px rgba(34,197,94,0.6); margin-bottom: 10px; }
+    .splash-title { font-family: 'Space Grotesk', sans-serif; font-size: 2.5rem; font-weight: 700; color: #fff; letter-spacing: 1px; }
     .splash-title span { color: var(--primary); }
-    .splash-subtitle { font-family: 'Fira Code', monospace; font-size: 1rem; color: #475569; letter-spacing: 2px; margin-top: 5px; }
-    .splash-subtitle .cursor { display: inline-block; width: 8px; height: 15px; background: var(--primary); animation: blink 1s step-end infinite; vertical-align: middle; margin-left: 5px; }
+    .splash-subtitle { font-family: 'Fira Code', monospace; font-size: 1rem; color: #475569; letter-spacing: 2px; }
+    .cursor { display: inline-block; width: 8px; height: 15px; background: var(--primary); animation: blink 1s step-end infinite; vertical-align: middle; margin-left: 5px; }
     @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-    .splash-skip { position: absolute; bottom: 30px; font-size: 12px; color: #475569; animation: pulse 2s infinite; }
-
-    /* --- AUTH EKRANI --- */
+    
+    /* --- YENİ AUTH EKRANI (2'YE BÖLÜNMÜŞ) --- */
     #auth-screen { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: none; flex-direction: row; }
-    .auth-left { flex: 1; position: relative; background: linear-gradient(135deg, #05070a 0%, #0b101d 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; border-right: 1px solid var(--border); }
-    .cyber-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px); background-size: 40px 40px; perspective: 500px; transform: rotateX(60deg) translateY(-200px) scale(2); opacity: 0.6; }
-    .cyber-glow { position: absolute; width: 400px; height: 400px; background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%); border-radius: 50%; filter: blur(40px); animation: float 8s infinite alternate; }
-    @keyframes float { 0% { transform: translate(0, 0); } 100% { transform: translate(30px, -30px); } }
+    
+    /* Sol Taraf: Görsel */
+    .auth-left { flex: 1.2; position: relative; background: linear-gradient(135deg, #040806 0%, #0a1a10 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; }
+    .auth-left::before { content: ''; position: absolute; inset: 0; background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png'); opacity: 0.1; }
+    
+    /* Timsah Logosu Tarzı */
     .auth-brand { position: relative; z-index: 2; text-align: center; }
-    .auth-brand-logo { font-size: 80px; color: var(--primary); text-shadow: 0 0 40px rgba(59,130,246,0.4); margin-bottom: 20px; }
-    .auth-brand h1 { font-family: 'Space Grotesk', sans-serif; font-size: 3rem; font-weight: 700; color: #fff; letter-spacing: -1px; margin-bottom: 10px;}
-    .auth-brand p { font-family: 'Fira Code', monospace; color: var(--primary); font-size: 1rem; letter-spacing: 2px; }
+    .auth-brand-logo { font-size: 100px; color: var(--primary); text-shadow: 0 0 50px rgba(34,197,94,0.4); margin-bottom: 20px; }
+    .auth-brand h1 { font-family: 'Space Grotesk', sans-serif; font-size: 3.5rem; font-weight: 700; color: #fff; letter-spacing: -1px; margin-bottom: 5px;}
+    .auth-brand h1 span { color: var(--primary); }
+    .auth-brand p { font-family: 'Fira Code', monospace; color: #7b8e83; font-size: 1rem; letter-spacing: 3px; margin-top: 10px;}
 
-    .auth-right { width: 500px; background: var(--panel); display: flex; flex-direction: column; justify-content: center; padding: 50px; position: relative; z-index: 10; box-shadow: -10px 0 50px rgba(0,0,0,0.5); }
+    /* Sağ Taraf: Form */
+    .auth-right { width: 450px; background: var(--panel); display: flex; flex-direction: column; justify-content: center; padding: 50px; position: relative; z-index: 10; box-shadow: -10px 0 50px rgba(0,0,0,0.5); border-left: 1px solid var(--border); }
     .auth-right h2 { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
-    .auth-right > p { font-size: 14px; color: var(--muted); margin-bottom: 35px; }
-    .auth-input-group { position: relative; margin-bottom: 20px; }
-    .auth-input-group label { display: block; font-size: 12px; color: var(--muted); font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .auth-input-group i { position: absolute; left: 16px; top: 42px; color: var(--muted); font-size: 18px; transition: 0.3s; }
-    .auth-input { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 15px 15px 15px 50px; border-radius: 10px; font-size: 14px; outline: none; transition: 0.3s; }
-    .auth-input:focus { border-color: var(--primary); background: var(--sidebar); box-shadow: 0 0 0 4px rgba(59,130,246,0.15); }
-    .auth-input:focus + i { color: var(--primary); }
-    .auth-btn { width: 100%; background: var(--primary); color: white; padding: 16px; border-radius: 10px; border: none; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.3s; margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(59,130,246,0.3); }
-    .auth-btn:hover { background: var(--primary-hover); transform: translateY(-1px); }
+    .auth-right > p { font-size: 14px; color: var(--muted); margin-bottom: 30px; }
+    
+    .auth-input-group { position: relative; margin-bottom: 15px; }
+    .auth-input { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 15px 15px; border-radius: 8px; font-size: 14px; outline: none; transition: 0.3s; }
+    .auth-input:focus { border-color: var(--primary); background: var(--sidebar); box-shadow: 0 0 0 4px rgba(34,197,94,0.1); }
+    
+    .auth-options { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; font-size: 13px; color: var(--muted); }
+    .auth-options label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    .auth-options input[type="checkbox"] { accent-color: var(--primary); }
+    .auth-options a { color: var(--primary); text-decoration: none; }
+    
+    .auth-btn { width: 100%; background: var(--primary); color: #000; padding: 16px; border-radius: 8px; border: none; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; }
+    .auth-btn:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 10px 20px -10px rgba(34,197,94,0.5); }
     .auth-btn:disabled { opacity: 0.7; cursor: wait; }
-    .auth-error { color: var(--danger); background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); border-radius: 8px; font-size: 13px; padding: 12px; margin-bottom: 20px; display: none; text-align: center; }
-    .auth-switch { margin-top: 30px; font-size: 14px; color: var(--muted); text-align: center; }
+    
+    .auth-switch { margin-top: 25px; font-size: 14px; color: var(--muted); text-align: center; }
     .auth-switch span { color: var(--primary); font-weight: 600; cursor: pointer; transition: 0.2s; }
     .auth-switch span:hover { text-decoration: underline; }
+    
+    .social-login { display: flex; justify-content: center; gap: 15px; margin-top: 25px; border-top: 1px solid var(--border); padding-top: 25px; }
+    .social-btn { width: 45px; height: 45px; border-radius: 50%; background: var(--bg); border: 1px solid var(--border); display: grid; place-items: center; font-size: 20px; color: var(--muted); cursor: pointer; transition: 0.2s; }
+    .social-btn:hover { color: var(--primary); border-color: var(--primary); }
+
+    .auth-error { color: var(--danger); background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); border-radius: 8px; font-size: 13px; padding: 12px; margin-bottom: 20px; display: none; text-align: center; }
 
     /* --- TOAST BİLDİRİM --- */
     #toast-container { position: fixed; top: 20px; right: 20px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; }
@@ -85,78 +105,93 @@
     .toast i { color: var(--success); font-size: 20px; }
     @keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
 
-    /* --- MODAL (ÇIKIŞ ONAY EKRANI) --- */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); z-index: 10000; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; }
+    /* --- MODAL --- */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); z-index: 10000; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; }
     .modal-overlay.show { display: flex; opacity: 1; }
-    
-    .modal-box { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 30px; width: 100%; max-width: 400px; text-align: center; transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+    .modal-box { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 30px; width: 100%; max-width: 400px; text-align: center; transform: scale(0.9); transition: transform 0.3s; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
     .modal-overlay.show .modal-box { transform: scale(1); }
-    
     .modal-icon { width: 60px; height: 60px; border-radius: 50%; background: rgba(239, 68, 68, 0.1); color: var(--danger); display: grid; place-items: center; font-size: 30px; margin: 0 auto 20px; }
     .modal-box h3 { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
     .modal-box p { font-size: 14px; color: var(--muted); margin-bottom: 30px; line-height: 1.5; }
-    
     .modal-actions { display: flex; gap: 12px; }
-    .modal-btn { flex: 1; padding: 12px; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; border: none; transition: 0.2s; }
+    .modal-btn { flex: 1; padding: 12px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; border: none; transition: 0.2s; }
     .btn-cancel { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
     .btn-cancel:hover { background: var(--panel-hover); }
     .btn-confirm { background: var(--danger); color: white; }
-    .btn-confirm:hover { background: #dc2626; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); }
+    .btn-confirm:hover { background: #dc2626; }
 
-    /* --- PANEL CSS'LERİ --- */
+    /* --- PANEL CSS'LERİ (YEŞİL TEMA) --- */
     .sidebar { width: 260px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; overflow-y: auto; transition: transform 0.3s ease, background-color 0.3s; }
     .brand { padding: 20px; font-size: 22px; font-weight: 800; display: flex; align-items: center; gap: 10px; color: var(--text); border-bottom: 1px solid var(--border); letter-spacing: -1px;}
     .brand span { color: var(--primary); }
-    .nav-section { padding: 20px 15px; flex: 1; }
-    .nav-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 600; margin-bottom: 10px; padding-left: 10px; }
-    .nav-item { padding: 12px 15px; color: var(--muted); cursor: pointer; font-size: 14px; font-weight: 500; border-radius: 8px; transition: 0.2s; display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+    
+    /* Yeni Sidebar Profil Kartı */
+    .side-profile { padding: 15px; margin: 15px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: 0.2s; }
+    .side-profile:hover { border-color: var(--primary); }
+    .side-avatar { width: 40px; height: 40px; border-radius: 8px; background: rgba(34,197,94,0.1); color: var(--primary); display: grid; place-items: center; font-size: 20px; }
+    .side-info b { display: block; font-size: 14px; color: var(--text); }
+    .side-info small { display: block; font-size: 11px; color: var(--primary); margin-top: 2px;}
+
+    .nav-section { padding: 0 15px 20px 15px; flex: 1; }
+    .nav-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 600; margin-bottom: 10px; padding-left: 10px; margin-top: 15px; }
+    .nav-item { padding: 12px 15px; color: var(--muted); cursor: pointer; font-size: 14px; font-weight: 500; border-radius: 8px; transition: 0.2s; display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px; }
+    .nav-item .left { display: flex; align-items: center; gap: 12px; }
     .nav-item i { font-size: 18px; }
     .nav-item:hover { background: var(--panel-hover); color: var(--text); }
-    .nav-item.active { background: rgba(59, 130, 246, 0.1); color: var(--primary); border-left: 3px solid var(--primary); border-radius: 0 8px 8px 0; margin-left: -15px; padding-left: 27px;}
-    .nav-item.active i { color: var(--primary); }
+    .nav-item.active { background: rgba(34, 197, 94, 0.1); color: var(--primary); border-left: 3px solid var(--primary); border-radius: 0 8px 8px 0; margin-left: -15px; padding-left: 27px; }
     .dev-credit { padding: 20px; text-align: center; font-size: 12px; color: var(--muted); border-top: 1px solid var(--border); }
     .dev-credit b { color: var(--primary); font-weight: 600; }
 
-    .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; z-index: 1; }
-    .topbar { height: 70px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; background: var(--bg); position: sticky; top: 0; z-index: 50; transition: background-color 0.3s; }
+    .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; z-index: 1; background: var(--bg); }
+    .topbar { height: 70px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; background: var(--bg); position: sticky; top: 0; z-index: 50; }
     .topbar-left { display: flex; align-items: center; gap: 15px; font-weight: 600; font-size: 16px; color: var(--text);}
     .topbar-right { display: flex; align-items: center; gap: 15px; color: var(--muted); font-size: 20px; }
-    
-    .user-profile { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--text); background: var(--panel); padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); transition: 0.2s;}
+    .user-profile { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--text); background: var(--panel); padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border);}
     .user-profile i { color: var(--primary); font-size: 16px; }
-    
-    /* Yeni Çıkış Butonu */
     .logout-btn { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--danger); background: rgba(239, 68, 68, 0.1); padding: 6px 12px; border-radius: 20px; border: 1px solid rgba(239, 68, 68, 0.2); cursor: pointer; transition: 0.2s; }
     .logout-btn:hover { background: rgba(239, 68, 68, 0.2); }
-    .logout-btn i { font-size: 16px; }
-
     .theme-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--panel); border: 1px solid var(--border); display: grid; place-items: center; cursor: pointer; color: var(--text); transition: 0.2s; }
     .theme-btn:hover { background: var(--panel-hover); transform: scale(1.05); }
     .menu-toggle { display: none; cursor: pointer; font-size: 24px; color: var(--text); }
 
     .content { padding: 30px; max-width: 1400px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 25px; }
-    .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-    .dash-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 25px; display: flex; flex-direction: column; gap: 15px; position: relative; overflow: hidden; transition: transform 0.2s;}
-    .dash-card:hover { transform: translateY(-3px); border-color: var(--primary); }
-    .dash-icon { width: 50px; height: 50px; border-radius: 12px; display: grid; place-items: center; font-size: 24px; }
-    .dash-icon.blue { background: rgba(59, 130, 246, 0.1); color: var(--primary); }
-    .dash-icon.green { background: rgba(16, 185, 129, 0.1); color: var(--success); }
-    .dash-icon.orange { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
-    .dash-card h3 { font-size: 32px; font-weight: 700; color: var(--text); margin: 0; }
-    .dash-card p { font-size: 13px; color: var(--muted); margin: 0; font-weight: 500;}
-    .welcome-panel { background: linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(59,130,246,0.0) 100%); border: 1px solid rgba(59,130,246,0.2); border-radius: 12px; padding: 30px; }
-    .welcome-panel h2 { font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
-    .welcome-panel p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+    
+    /* Selamlama */
+    .welcome-text { font-size: 24px; font-weight: 700; color: #fff; margin-bottom: 5px;}
+    .welcome-text span { color: var(--primary); }
+    .welcome-sub { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
 
-    .history-list { display: flex; flex-direction: column; gap: 10px; }
-    .history-item { background: var(--bg); border: 1px solid var(--border); padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; }
-    .history-item:hover { border-color: var(--primary); }
-    .history-info h4 { font-size: 14px; color: var(--text); margin-bottom: 4px; }
-    .history-info p { font-size: 12px; color: var(--muted); }
-    .history-time { font-size: 11px; color: var(--muted); background: var(--panel); padding: 4px 8px; border-radius: 4px; }
-    .terminal { background: #05070a; border: 1px solid var(--border); border-radius: 8px; padding: 15px; font-family: 'Fira Code', monospace; font-size: 12px; height: 200px; overflow-y: auto; color: #10b981; }
+    /* İstatistik Kartları (Görseldeki gibi) */
+    .dashboard-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    .dash-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 15px; position: relative; overflow: hidden; transition: transform 0.2s; }
+    .dash-card:hover { transform: translateY(-3px); border-color: var(--primary); }
+    .dash-top { display: flex; justify-content: space-between; align-items: flex-start; }
+    .dash-top h3 { font-size: 28px; font-weight: 700; color: #fff; margin: 0; font-family: 'Space Grotesk', sans-serif;}
+    .dash-top .icon-box { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; font-size: 20px; background: rgba(34, 197, 94, 0.1); color: var(--primary); border: 1px solid rgba(34, 197, 94, 0.2);}
+    .dash-card p { font-size: 12px; color: var(--muted); margin: 0; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;}
+    
+    /* Özel Kart Tasarımları */
+    .card-blue .icon-box { background: rgba(59, 130, 246, 0.1); color: #3b82f6; border-color: rgba(59, 130, 246, 0.2); }
+    .card-blue:hover { border-color: #3b82f6; }
+    .card-purple .icon-box { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; border-color: rgba(139, 92, 246, 0.2); }
+    .card-purple:hover { border-color: #8b5cf6; }
+    
+    .panel-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 15px;}
+    .panel-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 5px;}
+    .panel-header h3 { font-size: 15px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 8px;}
+    .panel-header h3 i { color: var(--primary); }
+    .panel-header span { font-size: 11px; color: var(--primary); background: rgba(34,197,94,0.1); padding: 4px 8px; border-radius: 4px;}
+
+    .history-list { display: flex; flex-direction: column; gap: 8px; }
+    .history-item { background: var(--bg); border: 1px solid var(--border); padding: 12px 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; }
+    .history-item:hover { border-color: var(--primary); background: var(--panel-hover);}
+    .history-info h4 { font-size: 13px; color: var(--text); margin-bottom: 4px; }
+    .history-info p { font-size: 11px; color: var(--muted); }
+    .history-time { font-size: 10px; color: var(--primary); background: rgba(34,197,94,0.1); padding: 3px 8px; border-radius: 4px; }
+    
+    .terminal { background: #040806; border: 1px solid var(--border); border-radius: 8px; padding: 15px; font-family: 'Fira Code', monospace; font-size: 12px; height: 180px; overflow-y: auto; color: var(--primary); }
     .terminal-line { margin-bottom: 5px; }
-    .terminal-line::before { content: '> '; color: #64748b; }
+    .terminal-line::before { content: '> '; color: #475569; }
     .terminal-line.error { color: #ef4444; }
 
     .search-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: background-color 0.3s; }
@@ -170,12 +205,12 @@
     .input-wrapper { position: relative; display: flex; align-items: center; }
     .input-wrapper i { position: absolute; left: 15px; color: var(--muted); font-size: 18px; transition: 0.2s; pointer-events: none; }
     .input-wrapper input { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 14px 16px 14px 45px; border-radius: 10px; font-size: 14px; outline: none; transition: all 0.3s ease; }
-    .input-wrapper input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15); background: var(--sidebar); }
+    .input-wrapper input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(34,197,94,0.15); background: var(--sidebar); }
     .input-wrapper input:focus + i { color: var(--primary); transform: scale(1.1); }
     .input-wrapper input::placeholder { color: var(--muted); opacity: 0.7; }
     .button-group { display: flex; justify-content: flex-end; gap: 15px; }
     button { border: none; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-weight: 600; transition: 0.2s; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 15px rgba(59,130,246,0.3); }
+    .btn-primary { background: var(--primary); color: #000; box-shadow: 0 4px 15px rgba(34,197,94,0.3); }
     .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
     .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none;}
     .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
@@ -204,19 +239,20 @@
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: var(--panel-hover); }
     .copy-btn { background: transparent; border: none; color: var(--muted); cursor: pointer; padding: 5px; border-radius: 5px; font-size: 16px; transition: 0.2s; }
-    .copy-btn:hover { color: var(--primary); background: rgba(59,130,246,0.1); }
+    .copy-btn:hover { color: var(--primary); background: rgba(34,197,94,0.1); }
     .empty-state { padding: 50px; text-align: center; color: var(--muted); font-size: 14px; }
     .skeleton-cell { height: 16px; background: linear-gradient(90deg, var(--border) 25%, var(--panel-hover) 50%, var(--border) 75%); background-size: 200% 100%; border-radius: 4px; animation: shimmer 1.5s infinite; margin: 5px 0;}
     @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
     .spin { animation: spin 1s linear infinite; }
     @keyframes spin { 100% { transform: rotate(360deg); } }
 
-    @media (max-width: 900px) {
-        .auth-screen { flex-direction: column; }
+    @media (max-width: 1000px) {
+        .dashboard-grid { grid-template-columns: 1fr 1fr; }
         .auth-left { display: none; }
-        .auth-right { width: 100%; border-radius: 0; }
-        
-        .sidebar { position: fixed; left: 0; top: 0; height: 100vh; transform: translateX(-100%); box-shadow: 10px 0 30px rgba(0,0,0,0.1); }
+        .auth-right { width: 100%; }
+    }
+    @media (max-width: 900px) {
+        .sidebar { position: fixed; left: 0; top: 0; height: 100vh; transform: translateX(-100%); box-shadow: 10px 0 30px rgba(0,0,0,0.5); }
         .sidebar.open { transform: translateX(0); }
         .menu-toggle { display: block; }
         .content { padding: 15px; }
@@ -231,8 +267,9 @@
         .topbar { padding: 0 15px; }
         th, td { padding: 12px 15px; }
         .splash-title { font-size: 1.8rem; }
-        .logout-btn span { display: none; } /* Mobilde yazıyı gizle sadece ikon kalsın */
+        .logout-btn span { display: none; }
         .logout-btn { padding: 8px; }
+        .dashboard-grid { grid-template-columns: 1fr; }
     }
 </style>
 </head>
@@ -258,68 +295,88 @@
         <div class="splash-content">
             <i class="ph ph-command-line splash-cmd-logo"></i>
             <div class="splash-title">Developed by <span>Onur</span></div>
-            <div class="splash-subtitle">ONUR SYSTEM 2026 <span class="cursor"></span></div>
+            <div class="splash-subtitle">SYNCRA CLOUD SYSTEM <span class="cursor"></span></div>
         </div>
-        <div class="splash-skip">Atlamak için tıkla</div>
     </div>
 
     <!-- GİRİŞ EKRANI -->
     <div id="auth-screen">
         <div class="auth-left">
-            <div class="cyber-grid"></div>
-            <div class="cyber-glow"></div>
             <div class="auth-brand">
                 <i class="ph ph-shield-check auth-brand-logo"></i>
-                <h1>Syncra Cloud</h1>
-                <p>[ SYSTEM ONLINE ]</p>
+                <h1>Syncra <span>Cloud</span></h1>
+                <p>SYSTEM ONLINE</p>
             </div>
         </div>
         <div class="auth-right">
-            <h2 id="authTitle">Tekrar Hoş Geldin</h2>
-            <p id="authDesc">Syncra Cloud'a erişmek için giriş yap.</p>
+            <h2 id="authTitle">Giriş Yap</h2>
+            <p id="authDesc">Syncra Cloud sistemine erişmek için giriş yapın.</p>
             <div class="auth-error" id="authError"></div>
+            
             <div class="auth-input-group">
-                <label>E-posta Adresi</label>
-                <input type="email" id="authEmail" class="auth-input" placeholder="ornek@mail.com">
-                <i class="ph ph-envelope-simple"></i>
+                <input type="email" id="authEmail" class="auth-input" placeholder="Kullanıcı Adı veya E-posta">
             </div>
             <div class="auth-input-group">
-                <label>Şifre</label>
-                <input type="password" id="authPassword" class="auth-input" placeholder="••••••••">
-                <i class="ph ph-lock-key"></i>
+                <input type="password" id="authPassword" class="auth-input" placeholder="Şifre">
             </div>
             <div class="auth-input-group" id="usernameGroup" style="display:none;">
-                <label>Kullanıcı Adı</label>
-                <input type="text" id="authUsername" class="auth-input" placeholder="Takma adınız">
-                <i class="ph ph-user"></i>
+                <input type="text" id="authUsername" class="auth-input" placeholder="Kullanıcı Adı Belirle">
             </div>
+            
+            <div class="auth-options">
+                <label><input type="checkbox"> Beni Hatırla</label>
+                <a href="#">Şifremi Unuttum</a>
+            </div>
+            
             <button class="auth-btn" id="authSubmitBtn">
                 <span id="btnText">Giriş Yap</span> <i class="ph ph-arrow-right"></i>
             </button>
+            
             <div class="auth-switch" id="authSwitch">
-                Hesabın yok mu? <span>Hemen Kayıt Ol</span>
+                Hesabın yok mu? <span>Kayıt Ol</span>
+            </div>
+            
+            <div class="social-login">
+                <div class="social-btn"><i class="ph ph-discord-logo"></i></div>
+                <div class="social-btn"><i class="ph ph-telegram-logo"></i></div>
             </div>
         </div>
     </div>
 
     <!-- SOL MENÜ -->
     <div class="sidebar" id="sidebar" style="display:none;">
-        <div class="brand"><i class="ph ph-shield-check" style="color:var(--primary)"></i> SORGU<span>PANELİ</span></div>
-        <div class="nav-section">
-            <div class="nav-title">Genel</div>
-            <div class="nav-item active" data-page="dashboard"><i class="ph ph-squares-four"></i> Dashboard</div>
-            
-            <div class="nav-title" style="margin-top:20px;">Sorgu Çözümleri</div>
-            <div class="nav-item" data-page="tc"><i class="ph ph-identification-card"></i> TC Sorgu</div>
-            <div class="nav-item" data-page="adsoyad"><i class="ph ph-user"></i> Ad Soyad Sorgu</div>
-            <div class="nav-item" data-page="aile"><i class="ph ph-users"></i> Aile Sorgu</div>
-            <div class="nav-item" data-page="sulale"><i class="ph ph-tree-structure"></i> Sülale Sorgu</div>
-            <div class="nav-item" data-page="tcgsm"><i class="ph ph-device-mobile"></i> TC → GSM</div>
-            <div class="nav-item" data-page="gsmtc"><i class="ph ph-phone-call"></i> GSM → TC</div>
-            <div class="nav-item" data-page="eokul"><i class="ph ph-graduation-cap"></i> E-Okul Sorgu</div>
-            <div class="nav-item" data-page="adres"><i class="ph ph-map-pin"></i> Adres Sorgu</div>
+        <div class="brand"><i class="ph ph-shield-check" style="color:var(--primary)"></i> SYNCRA<span>PANEL</span></div>
+        
+        <!-- Profil Kartı -->
+        <div class="side-profile">
+            <div class="side-avatar"><i class="ph ph-user"></i></div>
+            <div class="side-info">
+                <b id="sideUsername">Kullanıcı</b>
+                <small>Süper Admin</small>
+            </div>
+            <i class="ph ph-caret-down" style="margin-left:auto; color:var(--muted)"></i>
         </div>
-        <div class="dev-credit">Telif hakları saklıdır. <b>2026</b></div>
+
+        <div class="nav-section">
+            <div class="nav-item active" data-page="dashboard">
+                <div class="left"><i class="ph ph-house"></i> Ana Sayfa</div>
+            </div>
+            <div class="nav-item">
+                <div class="left"><i class="ph ph-storefront"></i> Market</div>
+                <i class="ph ph-caret-right" style="font-size:12px;"></i>
+            </div>
+            
+            <div class="nav-title">Sorgu Çözümleri</div>
+            <div class="nav-item" data-page="tc"><div class="left"><i class="ph ph-identification-card"></i> TC Sorgu</div></div>
+            <div class="nav-item" data-page="adsoyad"><div class="left"><i class="ph ph-user"></i> Ad Soyad Sorgu</div></div>
+            <div class="nav-item" data-page="aile"><div class="left"><i class="ph ph-users"></i> Aile Sorgu</div></div>
+            <div class="nav-item" data-page="sulale"><div class="left"><i class="ph ph-tree-structure"></i> Sülale Sorgu</div></div>
+            <div class="nav-item" data-page="tcgsm"><div class="left"><i class="ph ph-device-mobile"></i> TC → GSM</div></div>
+            <div class="nav-item" data-page="gsmtc"><div class="left"><i class="ph ph-phone-call"></i> GSM → TC</div></div>
+            <div class="nav-item" data-page="eokul"><div class="left"><i class="ph ph-graduation-cap"></i> E-Okul Sorgu</div></div>
+            <div class="nav-item" data-page="adres"><div class="left"><i class="ph ph-map-pin"></i> Adres Sorgu</div></div>
+        </div>
+        <div class="dev-credit">Developed by <b>onur_baris65</b></div>
     </div>
 
     <!-- ANA İÇERİK -->
@@ -330,15 +387,12 @@
                 <span id="topbarTitle">Dashboard</span>
             </div>
             <div class="topbar-right">
-                <!-- Çıkış Butonu -->
                 <div class="logout-btn" id="logoutBtn">
-                    <i class="ph ph-sign-out"></i> <span>Çıkış Yap</span>
+                    <i class="ph ph-sign-out"></i> <span>Çıkış</span>
                 </div>
-                
                 <div class="user-profile">
                     <i class="ph ph-user-circle"></i> <span id="currentUsername">Kullanıcı</span>
                 </div>
-                
                 <div class="theme-btn" id="themeToggle" title="Temayı Değiştir">
                     <i class="ph ph-moon" id="themeIcon"></i>
                 </div>
@@ -348,57 +402,64 @@
         <div class="content">
             <!-- DASHBOARD EKRANI -->
             <div id="dashboardView">
-                <div class="welcome-panel" style="margin-bottom: 25px;">
-                    <h2>Hoş Geldin, <span id="welcomeName">Operatör</span>.</h2>
-                    <p>Syncra Cloud sistemine başarıyla bağlandın. Sol taraftaki menüden yapmak istediğin sorgu türünü seçerek başlayabilirsin.</p>
-                </div>
+                
+                <div class="welcome-text">Syncra Cloud'a hoş geldin, <span id="welcomeName">Operatör</span></div>
+                <div class="welcome-sub">Sistemdeki son durum ve istatistikler aşağıdadır.</div>
 
-                <div class="dashboard-grid" style="margin-bottom: 25px;">
+                <!-- İstatistik Kartları -->
+                <div class="dashboard-grid">
                     <div class="dash-card">
-                        <div class="dash-icon blue"><i class="ph ph-chart-line-up"></i></div>
-                        <div>
+                        <div class="dash-top">
                             <h3 id="statTotalQueries">0</h3>
-                            <p>Toplam Yapılan Sorgu</p>
+                            <div class="icon-box"><i class="ph ph-users"></i></div>
                         </div>
+                        <p>TOPLAM SORGU</p>
                     </div>
-                    <div class="dash-card">
-                        <div class="dash-icon green"><i class="ph ph-check-circle"></i></div>
-                        <div>
+                    <div class="dash-card card-blue">
+                        <div class="dash-top">
                             <h3 id="statTodayQueries">0</h3>
-                            <p>Bugünkü Sorgu</p>
+                            <div class="icon-box"><i class="ph ph-sign-in"></i></div>
                         </div>
+                        <p>BUGÜNKÜ SORGU</p>
+                    </div>
+                    <div class="dash-card card-purple">
+                        <div class="dash-top">
+                            <h3>8</h3>
+                            <div class="icon-box"><i class="ph ph-diamond"></i></div>
+                        </div>
+                        <p>AKTİF MODÜL</p>
                     </div>
                     <div class="dash-card">
-                        <div class="dash-icon orange"><i class="ph ph-database"></i></div>
-                        <div>
-                            <h3>8</h3>
-                            <p>Aktif Sorgu Modülü</p>
+                        <div class="dash-top">
+                            <h3 style="font-size:20px; margin-top:4px;">Free Üyelik</h3>
+                            <div class="icon-box"><i class="ph ph-identification-badge"></i></div>
                         </div>
+                        <p>ÜYELİK DURUMUNUZ</p>
                     </div>
                 </div>
 
+                <!-- Alt Paneller -->
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
-                    <div class="panel">
-                        <div style="padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
-                            <h3 style="font-size: 16px; font-weight: 600; color: var(--text);">Son Sorgularım</h3>
-                            <button style="background:none; border:none; color:var(--danger); font-size:12px; cursor:pointer;" onclick="clearHistory()">Temizle</button>
+                    <!-- Son Sorgular -->
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <h3><i class="ph ph-clock-counter-clockwise"></i> Son Sorgularım</h3>
+                            <button style="background:none; border:none; color:var(--danger); font-size:11px; cursor:pointer;" onclick="clearHistory()">Temizle</button>
                         </div>
-                        <div style="padding: 20px;">
-                            <div class="history-list" id="historyList">
-                                <div class="empty-state" style="padding: 20px;">Henüz sorgu geçmişiniz yok.</div>
-                            </div>
+                        <div class="history-list" id="historyList">
+                            <div class="empty-state" style="padding: 20px;">Henüz sorgu geçmişiniz yok.</div>
                         </div>
                     </div>
 
-                    <div class="panel">
-                        <div style="padding: 20px; border-bottom: 1px solid var(--border);">
-                            <h3 style="font-size: 16px; font-weight: 600; color: var(--text);">Canlı Sistem Logları</h3>
+                    <!-- Canlı Loglar -->
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <h3><i class="ph ph-terminal-window"></i> Canlı Sistem Logları</h3>
+                            <span>CANLI</span>
                         </div>
-                        <div style="padding: 20px;">
-                            <div class="terminal" id="terminalLogs">
-                                <div class="terminal-line">Sistem başlatıldı...</div>
-                                <div class="terminal-line">Supabase bağlantısı kuruluyor...</div>
-                            </div>
+                        <div class="terminal" id="terminalLogs">
+                            <div class="terminal-line">Sistem başlatıldı...</div>
+                            <div class="terminal-line">Supabase bağlantısı kuruluyor...</div>
                         </div>
                     </div>
                 </div>
@@ -426,7 +487,7 @@
                         </div>
                         <div class="download-group">
                             <button class="btn-share" id="shareBtn" style="display:none;"><i class="ph ph-share-network"></i> Paylaş</button>
-                            <button class="btn-download" id="copyAllBtn" style="display:none; background: rgba(59, 130, 246, 0.1); color: var(--primary);"><i class="ph ph-copy"></i> Hepsini Kopyala</button>
+                            <button class="btn-download" id="copyAllBtn" style="display:none;"><i class="ph ph-copy"></i> Kopyala</button>
                             <div style="position:relative;">
                                 <button class="btn-download" id="downloadBtn" style="display:none;"><i class="ph ph-download-simple"></i> İndir <i class="ph ph-caret-down"></i></button>
                                 <div class="download-dropdown" id="downloadDropdown">
@@ -519,17 +580,18 @@
         const sidebar = document.getElementById('sidebar');
         const mainContent = document.getElementById('main-content');
         const currentUsernameSpan = document.getElementById('currentUsername');
+        const sideUsernameSpan = document.getElementById('sideUsername');
         const welcomeNameSpan = document.getElementById('welcomeName');
 
         authSwitch.addEventListener('click', () => {
             isLoginMode = !isLoginMode;
             authError.style.display = 'none';
             if (isLoginMode) {
-                authTitle.textContent = 'Tekrar Hoş Geldin'; authDesc.textContent = 'Syncra Cloud\'a erişmek için giriş yap.';
-                btnText.textContent = 'Giriş Yap'; authSwitch.innerHTML = 'Hesabın yok mu? <span>Hemen Kayıt Ol</span>';
+                authTitle.textContent = 'Giriş Yap'; authDesc.textContent = 'Syncra Cloud sistemine erişmek için giriş yapın.';
+                btnText.textContent = 'Giriş Yap'; authSwitch.innerHTML = 'Hesabın yok mu? <span>Kayıt Ol</span>';
                 usernameGroup.style.display = 'none';
             } else {
-                authTitle.textContent = 'Aramıza Katıl'; authDesc.textContent = 'Syncra Cloud hesabını oluştur.';
+                authTitle.textContent = 'Kayıt Ol'; authDesc.textContent = 'Syncra Cloud hesabını oluştur.';
                 btnText.textContent = 'Kayıt Ol'; authSwitch.innerHTML = 'Zaten hesabın var mı? <span>Giriş Yap</span>';
                 usernameGroup.style.display = 'block';
             }
@@ -575,6 +637,7 @@
             sidebar.style.display = 'flex';
             mainContent.style.display = 'flex';
             currentUsernameSpan.textContent = username;
+            sideUsernameSpan.textContent = username;
             welcomeNameSpan.textContent = username;
             loadUserStats(username);
             loadHistory(username);
@@ -600,24 +663,14 @@
         const cancelLogout = document.getElementById('cancelLogout');
         const confirmLogout = document.getElementById('confirmLogout');
 
-        logoutBtn.addEventListener('click', () => {
-            logoutModal.classList.add('show');
-        });
-
-        cancelLogout.addEventListener('click', () => {
-            logoutModal.classList.remove('show');
-        });
-
+        logoutBtn.addEventListener('click', () => { logoutModal.classList.add('show'); });
+        cancelLogout.addEventListener('click', () => { logoutModal.classList.remove('show'); });
         confirmLogout.addEventListener('click', async () => {
             confirmLogout.innerHTML = '<i class="ph ph-spinner-gap spin"></i> Çıkış Yapılıyor...';
             if (supabaseClient) await supabaseClient.auth.signOut();
             location.reload();
         });
-
-        // Modal dışına tıklayınca kapat
-        logoutModal.addEventListener('click', (e) => {
-            if (e.target === logoutModal) logoutModal.classList.remove('show');
-        });
+        logoutModal.addEventListener('click', (e) => { if (e.target === logoutModal) logoutModal.classList.remove('show'); });
 
         // --- İSTATİSTİK VE GEÇMİŞ ---
         let currentUser = ''; let totalQueries = 0; let todayQueries = 0;
@@ -1041,7 +1094,7 @@
             else if (format === 'pdf') {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF('l', 'pt', 'a4');
-                doc.setFontSize(18); doc.setTextColor(59, 130, 246); doc.text("Syncra Sorgu Raporu", 40, 40);
+                doc.setFontSize(18); doc.setTextColor(34, 197, 94); doc.text("Syncra Sorgu Raporu", 40, 40);
                 doc.setFontSize(10); doc.setTextColor(100); doc.text(`Tarih: ${new Date().toLocaleString('tr-TR')}`, 40, 55);
                 const tableColumn = currentColumns;
                 const tableRows = currentResults.map(row => currentColumns.map(col => {
@@ -1051,7 +1104,7 @@
                 doc.autoTable({
                     head: [tableColumn], body: tableRows, startY: 70, theme: 'grid',
                     styles: { font: 'helvetica', fontSize: 8, cellPadding: 4, textColor: 50 },
-                    headStyles: { fillColor: [23, 28, 38], textColor: [255, 255, 255], fontStyle: 'bold' },
+                    headStyles: { fillColor: [15, 26, 19], textColor: [255, 255, 255], fontStyle: 'bold' },
                     alternateRowStyles: { fillColor: [245, 247, 250] },
                     margin: { top: 70, right: 40, bottom: 40, left: 40 }
                 });
