@@ -14,19 +14,16 @@
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
-    /* --- TEMEL DEĞİŞKENLER --- */
     :root { --bg: #0b0e14; --panel: #171c26; --border: #262d3d; --text: #e2e8f0; --muted: #94a3b8; --primary: #3b82f6; --danger: #ef4444; --success: #10b981; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; height: 100vh; display: flex; overflow: hidden; }
-    
-    /* --- ÖZEL SCROLLBAR (BEYAZ ÇUBUĞU DÜZELTİR) --- */
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: var(--bg); border-radius: 10px; }
     ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; transition: 0.2s; }
     ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
     * { scrollbar-width: thin; scrollbar-color: #334155 var(--bg); }
 
-    /* --- SPLASH --- */
+    /* Splash */
     #splash-screen { position: fixed; inset: 0; background: #05070a; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease; cursor: pointer; }
     .splash-cmd-logo { font-size: 60px; color: var(--primary); text-shadow: 0 0 30px rgba(59,130,246,0.6); margin-bottom: 10px; }
     .splash-title { font-family: 'Space Grotesk', sans-serif; font-size: 2.5rem; font-weight: 700; color: #fff; }
@@ -34,7 +31,7 @@
     .splash-subtitle { font-family: 'Fira Code', monospace; font-size: 1rem; color: #475569; margin-top: 10px; }
     .splash-skip { position: absolute; bottom: 30px; font-size: 12px; color: #475569; }
 
-    /* --- AUTH --- */
+    /* Auth */
     #auth-screen { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: none; flex-direction: row; }
     .auth-left { flex: 1; background: linear-gradient(135deg, #05070a 0%, #0b101d 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; border-right: 1px solid var(--border); }
     .auth-right { width: 500px; background: var(--panel); display: flex; flex-direction: column; justify-content: center; padding: 50px; }
@@ -43,7 +40,7 @@
     .auth-btn { width: 100%; background: var(--primary); color: white; padding: 16px; border-radius: 10px; border: none; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.3s; }
     .auth-btn:hover { background: #2563eb; }
 
-    /* --- SIDEBAR --- */
+    /* Sidebar */
     .sidebar { width: 260px; background: var(--panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; overflow-y: auto; }
     .brand { padding: 20px; font-size: 22px; font-weight: 800; display: flex; align-items: center; gap: 10px; color: var(--text); border-bottom: 1px solid var(--border); }
     .brand span { color: var(--primary); }
@@ -52,11 +49,9 @@
     .nav-item:hover { background: #1f2533; color: var(--text); }
     .nav-item.active { background: rgba(59, 130, 246, 0.1); color: var(--primary); border-left: 3px solid var(--primary); }
 
-    /* --- MAIN & TOPBAR (DÜZELTİLDİ) --- */
+    /* Main & Topbar */
     .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
     .topbar { height: 70px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; background: var(--bg); position: sticky; top: 0; z-index: 50; }
-    
-    /* Profil ve Rozet Hizalaması */
     .user-profile { display: flex; align-items: center; gap: 8px; background: var(--panel); padding: 5px 12px 5px 5px; border-radius: 30px; border: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
     .user-profile:hover { border-color: var(--primary); }
     .user-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; background: var(--border); display: none; }
@@ -68,14 +63,11 @@
     .logout-btn:hover { background: rgba(239, 68, 68, 0.2); }
 
     .content { padding: 30px; max-width: 1400px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 25px; }
-    
-    /* Tablo */
     table { width: 100%; border-collapse: collapse; text-align: left; }
     th { padding: 15px; font-size: 11px; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); }
     td { padding: 15px; font-size: 13px; border-bottom: 1px solid var(--border); color: var(--text); }
     tr:hover td { background: #1f2533; }
 
-    /* Modal */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); z-index: 10000; display: none; justify-content: center; align-items: center; }
     .modal-overlay.show { display: flex; }
     .modal-box { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 30px; width: 100%; max-width: 400px; text-align: center; }
@@ -90,8 +82,7 @@
         .menu-toggle { display: block; }
         .content { padding: 15px; }
         .topbar { padding: 0 15px; }
-        .user-profile span { display: none; } /* Mobilde ismi gizle */
-        .logout-btn span { display: none; } /* Mobilde yazıyı gizle */
+        .user-profile span, .logout-btn span { display: none; }
     }
 </style>
 </head>
@@ -136,6 +127,13 @@
 
             <button class="auth-btn" id="authSubmitBtn">Giriş Yap</button>
             <div class="text-center mt-6 text-sm text-gray-400 cursor-pointer" id="authSwitch">Hesabın yok mu? <span class="text-blue-500 font-semibold">Kayıt Ol</span></div>
+            
+            <!-- Paylaşılan Link Bilgilendirmesi -->
+            <div id="sharedNotice" class="hidden mt-6 bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 text-center">
+                <i class="ph ph-share-network text-2xl text-blue-500 mb-2"></i>
+                <p class="text-sm text-white font-semibold">Bir sorgu paylaşıldı!</p>
+                <p class="text-xs text-gray-400 mt-1">Sonuçları görmek için lütfen giriş yapın veya kayıt olun.</p>
+            </div>
         </div>
     </div>
 
@@ -167,14 +165,12 @@
                 <span id="topbarTitle" class="font-semibold text-white">Ana Sayfa</span>
             </div>
             <div class="flex items-center gap-4">
-                <!-- Profil -->
                 <div class="user-profile" onclick="showPage('settings')">
                     <img src="" id="topAvatar" class="user-avatar">
                     <div class="user-avatar-icon" id="topAvatarIcon">U</div>
                     <span id="currentUsername" class="text-sm font-semibold text-white ml-1">Kullanıcı</span>
                     <span id="topBadge" class="badge badge-free">Free</span>
                 </div>
-                <!-- Çıkış -->
                 <div class="logout-btn" onclick="document.getElementById('logoutModal').classList.add('show')">
                     <i class="ph ph-sign-out"></i> <span>Çıkış</span>
                 </div>
@@ -253,9 +249,10 @@
                 <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
                     <div class="flex justify-between items-center border-b border-gray-700 pb-4 mb-4">
                         <div><h3 class="font-semibold text-white">Sonuçlar</h3><span id="resultSummary" class="text-xs text-gray-400">Henüz sorgu yok.</span></div>
-                        <div class="relative">
+                        <div class="flex gap-2 relative">
+                            <button id="shareBtn" class="hidden bg-blue-500/10 text-blue-500 border border-blue-500/30 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-500/20 transition flex items-center gap-2"><i class="ph ph-share-network"></i> Paylaş</button>
                             <button id="downloadBtn" class="hidden bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-500 transition flex items-center gap-2"><i class="ph ph-download-simple"></i> İndir</button>
-                            <div id="downloadDropdown" class="hidden absolute right-0 mt-2 w-40 bg-gray-900 border border-gray-700 rounded-lg shadow-xl z-50">
+                            <div id="downloadDropdown" class="hidden absolute right-0 top-full mt-2 w-40 bg-gray-900 border border-gray-700 rounded-lg shadow-xl z-50">
                                 <button onclick="downloadData('pdf')" class="w-full text-left px-4 py-3 text-sm text-white hover:bg-gray-700 transition flex items-center gap-2"><i class="ph ph-file-pdf text-red-500"></i> PDF İndir</button>
                                 <button onclick="downloadData('txt')" class="w-full text-left px-4 py-3 text-sm text-white hover:bg-gray-700 transition flex items-center gap-2"><i class="ph ph-file-text text-blue-500"></i> TXT İndir</button>
                             </div>
@@ -297,7 +294,7 @@
     </div>
 
     <script>
-        // --- SUPABASE (Çakışmayı önlemek için supabaseClient) ---
+        // --- SUPABASE ---
         let supabaseClient = null;
         try {
             supabaseClient = window.supabase.createClient(
@@ -307,6 +304,7 @@
         } catch (e) { console.error("Supabase başlatılamadı:", e); }
 
         let currentUser = null;
+        let pendingShare = null; // Paylaşılan sorgu burada bekleyecek
 
         // --- TOAST ---
         window.showToast = function(msg, type='success') {
@@ -414,6 +412,12 @@
             } else {
                 document.getElementById('adminNav').classList.add('hidden');
             }
+
+            // Eğer URL'de paylaşılan bir sorgu varsa onu yükle
+            if (pendingShare) {
+                processSharedQuery(pendingShare);
+                pendingShare = null;
+            }
         }
 
         function updateProfileUI() {
@@ -439,7 +443,6 @@
             document.getElementById('settingsAvatar').value = currentUser.avatar_url || '';
         }
 
-        // Profil Kaydet
         document.getElementById('saveProfileBtn').onclick = async () => {
             const newName = document.getElementById('settingsName').value;
             const newAvatar = document.getElementById('settingsAvatar').value;
@@ -454,7 +457,6 @@
             showToast('Profil güncellendi!');
         };
 
-        // --- ÇIKIŞ ---
         document.getElementById('confirmLogoutBtn').onclick = async () => {
             if(supabaseClient) await supabaseClient.auth.signOut();
             location.reload();
@@ -498,6 +500,7 @@
         let activeQuery = 'tc';
         let currentResults = null;
         let currentColumns = [];
+        let lastQueryInfo = null; // Paylaşım için son sorgu bilgisi
 
         function setupQuery(page) {
             activeQuery = page;
@@ -520,9 +523,12 @@
             document.getElementById('tableHead').innerHTML = '';
             document.getElementById('tableBody').innerHTML = '<tr><td colspan="10" class="text-center text-gray-500 py-8 text-sm">Sorgu yapılmadı.</td></tr>';
             document.getElementById('downloadBtn').classList.add('hidden');
+            document.getElementById('shareBtn').classList.add('hidden');
+            currentResults = null;
+            lastQueryInfo = null;
         }
 
-                document.getElementById('runBtn').onclick = async () => {
+        document.getElementById('runBtn').onclick = async () => {
             const cfg = queryConfig[activeQuery];
             let params = {};
             cfg.f.forEach(f => {
@@ -541,21 +547,13 @@
                 
                 if(data.error) throw new Error(data.error);
                 
-                // --- KRİTİK DÜZELTME: Gelen veriyi güvenli bir şekilde diziye çevir ---
                 let rows = [];
                 if (data.data) {
-                    if (Array.isArray(data.data)) {
-                        rows = data.data;
-                    } else if (typeof data.data === 'object' && data.data !== null) {
-                        rows = [data.data]; // Tek obje ise diziye çevir
-                    }
-                } else if (Array.isArray(data)) {
-                    rows = data;
-                } else if (typeof data === 'object' && data !== null) {
-                    rows = [data];
-                }
+                    if (Array.isArray(data.data)) rows = data.data;
+                    else if (typeof data.data === 'object' && data.data !== null) rows = [data.data];
+                } else if (Array.isArray(data)) rows = data;
+                else if (typeof data === 'object' && data !== null) rows = [data];
 
-                // Boş objeleri ve hatalı kayıtları filtrele
                 rows = rows.filter(r => r && Object.keys(r).length > 0 && !r.error);
 
                 if(rows.length === 0) {
@@ -569,6 +567,7 @@
 
                 currentResults = rows;
                 currentColumns = Object.keys(rows[0]);
+                lastQueryInfo = { type: activeQuery, params: params, title: cfg.title };
 
                 let html = '<tr>' + currentColumns.map(k => `<th class="text-left p-3 text-xs text-gray-400 uppercase border-b border-gray-700">${k}</th>`).join('') + '<th class="text-center p-3 text-xs text-gray-400 uppercase border-b border-gray-700">İşlem</th></tr>';
                 document.getElementById('tableHead').innerHTML = html;
@@ -581,6 +580,7 @@
 
                 document.getElementById('resultSummary').innerText = `${rows.length} kayıt bulundu.`;
                 document.getElementById('downloadBtn').classList.remove('hidden');
+                document.getElementById('shareBtn').classList.remove('hidden');
 
             } catch(e) {
                 showToast(e.message, 'error');
@@ -590,7 +590,7 @@
             }
         };
 
-        // Kopyalama
+        // --- KOPYALAMA ---
         window.copyRow = function(rowData) {
             let text = "";
             for (const [key, value] of Object.entries(rowData)) {
@@ -599,7 +599,7 @@
             navigator.clipboard.writeText(text).then(() => { showToast('Kayıt panoya kopyalandı!', 'success'); });
         };
 
-        // İndirme
+        // --- İNDİRME ---
         window.downloadData = function(format) {
             if (!currentResults || currentResults.length === 0) return;
             const fileName = `syncra_sorgu_${Date.now()}`;
@@ -632,12 +632,86 @@
             document.getElementById('downloadDropdown').classList.add('hidden');
         };
 
-        // Dropdown Toggle
         document.getElementById('downloadBtn').onclick = (e) => {
             e.stopPropagation();
             document.getElementById('downloadDropdown').classList.toggle('hidden');
         };
         document.addEventListener('click', () => document.getElementById('downloadDropdown').classList.add('hidden'));
+
+        // --- PAYLAŞIM MANTIĞI ---
+        document.getElementById('shareBtn').onclick = async () => {
+            if (!lastQueryInfo) return;
+            
+            // Sorgu verisini JSON'a çevir ve Base64 ile encode et
+            const shareData = {
+                type: lastQueryInfo.type,
+                title: lastQueryInfo.title,
+                params: lastQueryInfo.params,
+                results: currentResults,
+                columns: currentColumns,
+                sharedBy: currentUser.username
+            };
+            
+            try {
+                const jsonString = JSON.stringify(shareData);
+                const base64Data = btoa(unescape(encodeURIComponent(jsonString)));
+                const shareUrl = `${window.location.origin}${window.location.pathname}?share=${base64Data}`;
+                
+                await navigator.clipboard.writeText(shareUrl);
+                showToast('Paylaşım linki kopyalandı!', 'success');
+            } catch (e) {
+                showToast('Link oluşturulamadı: ' + e.message, 'error');
+            }
+        };
+
+        // Sayfa yüklendiğinde URL'de paylaşılan link var mı kontrol et
+        async function checkSharedQuery() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const shareData = urlParams.get('share');
+            
+            if (shareData) {
+                try {
+                    const decoded = decodeURIComponent(escape(atob(shareData)));
+                    pendingShare = JSON.parse(decoded);
+                    
+                    // Eğer kullanıcı giriş yapmamışsa "Giriş yapmalısın" uyarısı göster
+                    if (!currentUser) {
+                        document.getElementById('sharedNotice').classList.remove('hidden');
+                    }
+                } catch (e) {
+                    console.error("Paylaşım linki okunamadı:", e);
+                }
+            }
+        }
+
+        // Paylaşılan sorguyu ekrana bas
+        function processSharedQuery(share) {
+            // Bildirimi göster
+            showToast(`${share.sharedBy} adlı kullanıcı sizinle bir sorgu paylaştı!`, 'success');
+            
+            // Sorgu sayfasına yönlendir
+            showPage(share.type);
+            
+            // Sonuçları ekrana bas
+            currentResults = share.results;
+            currentColumns = share.columns;
+            
+            let html = '<tr>' + currentColumns.map(k => `<th class="text-left p-3 text-xs text-gray-400 uppercase border-b border-gray-700">${k}</th>`).join('') + '<th class="text-center p-3 text-xs text-gray-400 uppercase border-b border-gray-700">İşlem</th></tr>';
+            document.getElementById('tableHead').innerHTML = html;
+            
+            document.getElementById('tableBody').innerHTML = currentResults.map((r, i) => {
+                let tds = currentColumns.map(k => `<td class="p-3 text-sm text-gray-300 border-b border-gray-700">${r[k] || '-'}</td>`).join('');
+                let copyBtn = `<td class="p-3 text-center border-b border-gray-700"><button onclick='copyRow(${JSON.stringify(r).replace(/'/g, "&#39;")})' class="text-blue-500 hover:text-white transition"><i class="ph ph-copy text-lg"></i></button></td>`;
+                return `<tr>${tds}${copyBtn}</tr>`;
+            }).join('');
+
+            document.getElementById('resultSummary').innerText = `${currentResults.length} kayıt bulundu (Paylaşılan)`;
+            document.getElementById('downloadBtn').classList.remove('hidden');
+            document.getElementById('shareBtn').classList.add('hidden'); // Paylaşılan sorguyu tekrar paylaşmayı engelle
+            
+            // URL'yi temizle
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
 
         // --- İSTATİSTİKLER & GEÇMİŞ ---
         function updateStats(increment) {
@@ -776,13 +850,13 @@
                     loadApp(profile || { id: session.user.id, username: session.user.email.split('@')[0], email: session.user.email, is_admin: 0 });
                 } else {
                     document.getElementById('auth-screen').style.display = 'flex';
+                    await checkSharedQuery(); // Login ekranında paylaşım var mı bak
                 }
             } catch(e) {
                 document.getElementById('auth-screen').style.display = 'flex';
             }
         }
 
-        // Mobil Menü
         document.getElementById('menuToggle').onclick = () => document.getElementById('sidebar').classList.toggle('open');
     </script>
 </body>
