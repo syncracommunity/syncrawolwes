@@ -13,7 +13,6 @@
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
 <style>
-    /* --- TEMA DEĞİŞKENLERİ --- */
     :root { 
         --bg: #0b0e14; --sidebar: #111520; --panel: #171c26; --panel-hover: #1f2533;
         --border: #262d3d; --text: #e2e8f0; --muted: #94a3b8; --primary: #3b82f6;
@@ -21,106 +20,82 @@
         --warning: #f59e0b;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: var(--bg); border-radius: 10px; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; transition: 0.2s; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
     * { scrollbar-width: thin; scrollbar-color: #334155 var(--bg); }
 
-    body { background-color: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; height: 100vh; display: flex; overflow: hidden; position: relative; transition: background-color 0.3s, color 0.3s; }
-    #snow-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; opacity: 0.6; transition: 0.3s; }
-
-    /* --- SPLASH EKRANI --- */
-    #splash-screen { position: fixed; inset: 0; background: #05070a; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.8s ease, visibility 0.8s ease; cursor: pointer; }
-    .splash-content { display: flex; flex-direction: column; align-items: center; gap: 15px; animation: slideUpSplash 0.8s ease forwards; }
-    @keyframes slideUpSplash { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    body { background-color: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; height: 100vh; display: flex; overflow: hidden; position: relative; }
+    
+    /* SPLASH */
+    #splash-screen { position: fixed; inset: 0; background: #05070a; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease; cursor: pointer; }
     .splash-cmd-logo { font-size: 60px; color: var(--primary); text-shadow: 0 0 30px rgba(59,130,246,0.6); margin-bottom: 10px; }
-    .splash-title { font-family: 'Space Grotesk', sans-serif; font-size: 2.5rem; font-weight: 700; color: #fff; letter-spacing: 1px; text-align: center; }
+    .splash-title { font-family: 'Space Grotesk', sans-serif; font-size: 2.5rem; font-weight: 700; color: #fff; }
     .splash-title span { color: var(--primary); }
-    .splash-subtitle { font-family: 'Fira Code', monospace; font-size: 1rem; color: #475569; letter-spacing: 2px; margin-top: 5px; }
-    .splash-subtitle .cursor { display: inline-block; width: 8px; height: 15px; background: var(--primary); animation: blink 1s step-end infinite; vertical-align: middle; margin-left: 5px; }
-    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-    .splash-skip { position: absolute; bottom: 30px; font-size: 12px; color: #475569; animation: pulse 2s infinite; }
+    .splash-subtitle { font-family: 'Fira Code', monospace; font-size: 1rem; color: #475569; margin-top: 10px; }
+    .splash-skip { position: absolute; bottom: 30px; font-size: 12px; color: #475569; }
 
-    /* --- AUTH EKRANI --- */
+    /* AUTH */
     #auth-screen { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: none; flex-direction: row; }
-    .auth-left { flex: 1; position: relative; background: linear-gradient(135deg, #05070a 0%, #0b101d 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; border-right: 1px solid var(--border); }
-    .cyber-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px); background-size: 40px 40px; perspective: 500px; transform: rotateX(60deg) translateY(-200px) scale(2); opacity: 0.6; }
-    .cyber-glow { position: absolute; width: 400px; height: 400px; background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%); border-radius: 50%; filter: blur(40px); animation: float 8s infinite alternate; }
-    @keyframes float { 0% { transform: translate(0, 0); } 100% { transform: translate(30px, -30px); } }
-    .auth-brand { position: relative; z-index: 2; text-align: center; }
-    .auth-brand-logo { font-size: 80px; color: var(--primary); text-shadow: 0 0 40px rgba(59,130,246,0.4); margin-bottom: 20px; }
-    .auth-brand h1 { font-family: 'Space Grotesk', sans-serif; font-size: 3rem; font-weight: 700; color: #fff; letter-spacing: -1px; margin-bottom: 10px;}
+    .auth-left { flex: 1; position: relative; background: linear-gradient(135deg, #05070a 0%, #0b101d 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; border-right: 1px solid var(--border); }
+    .auth-brand-logo { font-size: 80px; color: var(--primary); margin-bottom: 20px; }
+    .auth-brand h1 { font-family: 'Space Grotesk', sans-serif; font-size: 3rem; color: #fff; margin-bottom: 10px;}
     .auth-brand p { font-family: 'Fira Code', monospace; color: var(--primary); font-size: 1rem; letter-spacing: 2px; }
-
-    .auth-right { width: 500px; background: var(--panel); display: flex; flex-direction: column; justify-content: center; padding: 50px; position: relative; z-index: 10; box-shadow: -10px 0 50px rgba(0,0,0,0.5); }
-    .auth-right h2 { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+    .auth-right { width: 500px; background: var(--panel); display: flex; flex-direction: column; justify-content: center; padding: 50px; }
+    .auth-right h2 { font-family: 'Space Grotesk', sans-serif; font-size: 28px; margin-bottom: 8px; color: var(--text); }
     .auth-right > p { font-size: 14px; color: var(--muted); margin-bottom: 35px; }
     .auth-input-group { position: relative; margin-bottom: 20px; }
-    .auth-input-group label { display: block; font-size: 12px; color: var(--muted); font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .auth-input-group i { position: absolute; left: 16px; top: 42px; color: var(--muted); font-size: 18px; transition: 0.3s; }
-    .auth-input { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 15px 15px 15px 50px; border-radius: 10px; font-size: 14px; outline: none; transition: 0.3s; }
-    .auth-input:focus { border-color: var(--primary); background: var(--sidebar); box-shadow: 0 0 0 4px rgba(59,130,246,0.15); }
-    .auth-input:focus + i { color: var(--primary); }
-    .auth-btn { width: 100%; background: var(--primary); color: white; padding: 16px; border-radius: 10px; border: none; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.3s; margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(59,130,246,0.3); }
-    .auth-btn:hover { background: var(--primary-hover); transform: translateY(-1px); }
-    .auth-btn:disabled { opacity: 0.7; cursor: wait; }
+    .auth-input-group label { display: block; font-size: 12px; color: var(--muted); font-weight: 600; margin-bottom: 8px; text-transform: uppercase; }
+    .auth-input-group i { position: absolute; left: 16px; top: 42px; color: var(--muted); font-size: 18px; }
+    .auth-input { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 15px 15px 15px 50px; border-radius: 10px; font-size: 14px; outline: none; }
+    .auth-input:focus { border-color: var(--primary); }
+    .auth-btn { width: 100%; background: var(--primary); color: white; padding: 16px; border-radius: 10px; border: none; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.3s; }
+    .auth-btn:hover { background: var(--primary-hover); }
     .auth-error { color: var(--danger); background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); border-radius: 8px; font-size: 13px; padding: 12px; margin-bottom: 20px; display: none; text-align: center; }
-    .auth-switch { margin-top: 30px; font-size: 14px; color: var(--muted); text-align: center; }
-    .auth-switch span { color: var(--primary); font-weight: 600; cursor: pointer; transition: 0.2s; }
-    .auth-switch span:hover { text-decoration: underline; }
+    .auth-switch { margin-top: 30px; font-size: 14px; color: var(--muted); text-align: center; cursor: pointer; }
+    .auth-switch span { color: var(--primary); font-weight: 600; }
 
-    /* --- TOAST BİLDİRİM --- */
+    /* TOAST */
     #toast-container { position: fixed; top: 20px; right: 20px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; }
-    .toast { background: var(--panel); border: 1px solid var(--border); border-left: 4px solid var(--success); color: var(--text); padding: 15px 20px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 500; animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-    .toast i { color: var(--success); font-size: 20px; }
+    .toast { background: var(--panel); border: 1px solid var(--border); color: var(--text); padding: 15px 20px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-size: 14px; animation: slideInRight 0.4s; }
     @keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
 
-    /* --- MODAL --- */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); z-index: 10000; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; }
-    .modal-overlay.show { display: flex; opacity: 1; }
-    .modal-box { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 30px; width: 100%; max-width: 450px; text-align: center; transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
-    .modal-overlay.show .modal-box { transform: scale(1); }
-    .modal-icon { width: 60px; height: 60px; border-radius: 50%; background: rgba(239, 68, 68, 0.1); color: var(--danger); display: grid; place-items: center; font-size: 30px; margin: 0 auto 20px; }
-    .modal-box h3 { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
-    .modal-box p { font-size: 14px; color: var(--muted); margin-bottom: 30px; line-height: 1.5; }
+    /* MODAL */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); z-index: 10000; display: none; justify-content: center; align-items: center; }
+    .modal-overlay.show { display: flex; }
+    .modal-box { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 30px; width: 100%; max-width: 400px; text-align: center; }
+    .modal-box h3 { font-family: 'Space Grotesk', sans-serif; font-size: 22px; margin-bottom: 10px; }
+    .modal-box p { font-size: 14px; color: var(--muted); margin-bottom: 20px; }
+    .modal-box input { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 14px; border-radius: 8px; margin-bottom: 15px; }
     .modal-actions { display: flex; gap: 12px; }
-    .modal-btn { flex: 1; padding: 12px; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; border: none; transition: 0.2s; }
+    .modal-btn { flex: 1; padding: 12px; border-radius: 10px; font-weight: 600; cursor: pointer; border: none; }
     .btn-cancel { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
-    .btn-confirm { background: var(--danger); color: white; }
-    .btn-confirm:hover { background: #dc2626; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); }
+    .btn-confirm { background: var(--primary); color: white; }
 
-    /* --- PANEL --- */
-    .sidebar { width: 260px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; overflow-y: auto; transition: transform 0.3s ease, background-color 0.3s; }
-    .brand { padding: 20px; font-size: 22px; font-weight: 800; display: flex; align-items: center; gap: 10px; color: var(--text); border-bottom: 1px solid var(--border); letter-spacing: -1px;}
+    /* PANEL */
+    .sidebar { width: 260px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; overflow-y: auto; }
+    .brand { padding: 20px; font-size: 22px; font-weight: 800; display: flex; align-items: center; gap: 10px; color: var(--text); border-bottom: 1px solid var(--border); }
     .brand span { color: var(--primary); }
     .nav-section { padding: 20px 15px; flex: 1; }
     .nav-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 600; margin-bottom: 10px; padding-left: 10px; }
     .nav-item { padding: 12px 15px; color: var(--muted); cursor: pointer; font-size: 14px; font-weight: 500; border-radius: 8px; transition: 0.2s; display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
-    .nav-item i { font-size: 18px; }
     .nav-item:hover { background: var(--panel-hover); color: var(--text); }
-    .nav-item.active { background: rgba(59, 130, 246, 0.1); color: var(--primary); border-left: 3px solid var(--primary); border-radius: 0 8px 8px 0; margin-left: -15px; padding-left: 27px;}
+    .nav-item.active { background: rgba(59, 130, 246, 0.1); color: var(--primary); border-left: 3px solid var(--primary); }
     .dev-credit { padding: 20px; text-align: center; font-size: 12px; color: var(--muted); border-top: 1px solid var(--border); }
-    .dev-credit b { color: var(--primary); font-weight: 600; }
 
-    .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; z-index: 1; }
-    .topbar { height: 70px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; background: var(--bg); position: sticky; top: 0; z-index: 50; transition: background-color 0.3s; }
+    .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+    .topbar { height: 70px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; background: var(--bg); position: sticky; top: 0; z-index: 50; }
     .topbar-left { display: flex; align-items: center; gap: 15px; font-weight: 600; font-size: 16px; color: var(--text);}
-    .topbar-right { display: flex; align-items: center; gap: 15px; color: var(--muted); font-size: 20px; }
+    .topbar-right { display: flex; align-items: center; gap: 15px; }
     
-    /* Profil Butonu */
-    .user-profile { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--text); background: var(--panel); padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
-    .user-profile:hover { border-color: var(--primary); }
-    .user-avatar { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; background: var(--border); display: none; }
+    .user-profile { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--text); background: var(--panel); padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); cursor: pointer; }
+    .user-avatar { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; display: none; }
+    .logout-btn { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--danger); background: rgba(239, 68, 68, 0.1); padding: 6px 12px; border-radius: 20px; border: 1px solid rgba(239, 68, 68, 0.2); cursor: pointer; }
+    
     .badge { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
     .badge-admin { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
     .badge-free { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
-
-    .logout-btn { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--danger); background: rgba(239, 68, 68, 0.1); padding: 6px 12px; border-radius: 20px; border: 1px solid rgba(239, 68, 68, 0.2); cursor: pointer; transition: 0.2s; }
-    .logout-btn:hover { background: rgba(239, 68, 68, 0.2); }
-    .theme-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--panel); border: 1px solid var(--border); display: grid; place-items: center; cursor: pointer; color: var(--text); transition: 0.2s; }
-    .menu-toggle { display: none; cursor: pointer; font-size: 24px; color: var(--text); }
 
     .content { padding: 30px; max-width: 1400px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 25px; }
     .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
@@ -136,13 +111,9 @@
     .panel-header { border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
     .panel-header h3 { font-size: 16px; font-weight: 600; color: var(--text); margin: 0; }
     
-    .search-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 30px; }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
     .form-group { display: flex; flex-direction: column; gap: 8px; }
     .form-group label { font-size: 12px; color: var(--muted); font-weight: 500; }
-    .input-wrapper { position: relative; display: flex; align-items: center; }
-    .input-wrapper i { position: absolute; left: 15px; color: var(--muted); font-size: 18px; }
-    .input-wrapper input { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 14px 16px 14px 45px; border-radius: 10px; font-size: 14px; outline: none; }
+    .form-group input { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 14px; border-radius: 10px; font-size: 14px; outline: none; }
     
     table { width: 100%; border-collapse: collapse; text-align: left; }
     th { padding: 15px; font-size: 11px; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); }
@@ -152,50 +123,37 @@
     .password-cell { display: flex; align-items: center; gap: 8px; }
     .password-text { font-family: monospace; color: var(--warning); letter-spacing: 2px;}
     .toggle-pass-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; }
-    .toggle-pass-btn:hover { color: var(--primary); }
-    
     .hidden { display: none !important; }
-    .spin { animation: spin 1s linear infinite; }
-    @keyframes spin { 100% { transform: rotate(360deg); } }
+    .menu-toggle { display: none; cursor: pointer; font-size: 24px; }
 
     @media (max-width: 900px) {
-        .auth-screen { flex-direction: column; } .auth-left { display: none; } .auth-right { width: 100%; padding: 30px 20px;}
-        .sidebar { position: fixed; left: 0; top: 0; height: 100vh; transform: translateX(-100%); box-shadow: 10px 0 30px rgba(0,0,0,0.5); z-index: 1000; }
+        .auth-left { display: none; } .auth-right { width: 100%; padding: 30px 20px; }
+        .sidebar { position: fixed; left: 0; top: 0; height: 100vh; transform: translateX(-100%); transition: 0.3s; }
         .sidebar.open { transform: translateX(0); }
         .menu-toggle { display: block; }
         .content { padding: 15px; }
-        .form-grid { grid-template-columns: 1fr; }
         .topbar { padding: 0 15px; }
-        .user-profile span { display: none; } .user-profile { padding: 8px; }
-        .logout-btn span { display: none; } .logout-btn { padding: 8px; }
         .dashboard-grid { grid-template-columns: 1fr; }
-        .modal-box { padding: 20px; }
+        .user-profile span, .logout-btn span { display: none; }
     }
 </style>
 </head>
 <body>
     <div id="toast-container"></div>
-    <canvas id="snow-canvas"></canvas>
 
     <!-- SPLASH -->
-    <div id="splash-screen" onclick="skipSplash()">
-        <div class="splash-content">
-            <i class="ph ph-command-line splash-cmd-logo"></i>
-            <div class="splash-title">Developed by <span>Onur</span></div>
-            <div class="splash-subtitle">SYNCRA CLOUD SYSTEM <span class="cursor"></span></div>
-        </div>
+    <div id="splash-screen" onclick="window.skipSplash()">
+        <i class="ph ph-command-line splash-cmd-logo"></i>
+        <div class="splash-title">Developed by <span>Onur</span></div>
+        <div class="splash-subtitle">SYNCRA CLOUD SYSTEM</div>
         <div class="splash-skip">Atlamak için tıkla</div>
     </div>
 
     <!-- GİRİŞ -->
     <div id="auth-screen">
         <div class="auth-left">
-            <div class="cyber-grid"></div><div class="cyber-glow"></div>
-            <div class="auth-brand">
-                <i class="ph ph-shield-check auth-brand-logo"></i>
-                <h1>Syncra Cloud</h1>
-                <p>[ SYSTEM ONLINE ]</p>
-            </div>
+            <i class="ph ph-shield-check auth-brand-logo"></i>
+            <div class="auth-brand"><h1>Syncra Cloud</h1><p>[ SYSTEM ONLINE ]</p></div>
         </div>
         <div class="auth-right">
             <h2 id="authTitle">Tekrar Hoş Geldin</h2>
@@ -216,7 +174,7 @@
                 <input type="text" id="authUsername" class="auth-input" placeholder="Takma adınız">
                 <i class="ph ph-user"></i>
             </div>
-            <button class="auth-btn" id="authSubmitBtn"><span id="btnText">Giriş Yap</span> <i class="ph ph-arrow-right"></i></button>
+            <button class="auth-btn" id="authSubmitBtn">Giriş Yap</button>
             <div class="auth-switch" id="authSwitch">Hesabın yok mu? <span>Hemen Kayıt Ol</span></div>
         </div>
     </div>
@@ -295,11 +253,11 @@
                     <div class="panel-header"><h3>Profil Bilgileri</h3></div>
                     <div class="form-group" style="margin-bottom:15px;">
                         <label>Görünen Ad</label>
-                        <input type="text" id="settingsName" style="width:100%; padding:12px; background:var(--bg); border:1px solid var(--border); color:#fff; border-radius:8px;">
+                        <input type="text" id="settingsName">
                     </div>
                     <div class="form-group" style="margin-bottom:15px;">
                         <label>Avatar URL</label>
-                        <input type="text" id="settingsAvatar" placeholder="https://..." style="width:100%; padding:12px; background:var(--bg); border:1px solid var(--border); color:#fff; border-radius:8px;">
+                        <input type="text" id="settingsAvatar" placeholder="https://...">
                     </div>
                     <button class="auth-btn" id="saveProfileBtn">Kaydet</button>
                 </div>
@@ -323,9 +281,9 @@
 
             <!-- SORGU -->
             <div id="queryView" style="display:none; flex-direction:column; gap:25px;">
-                <div class="search-panel">
+                <div class="search-panel" style="background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:30px;">
                     <h2 id="pageTitle" style="margin-bottom:20px;">Sorgulama</h2>
-                    <div id="dynamicForm" class="form-grid"></div>
+                    <div id="dynamicForm" style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:25px;"></div>
                     <div style="display:flex; justify-content:flex-end; gap:10px;">
                         <button style="background:var(--bg); border:1px solid var(--border); color:#fff; padding:12px 24px; border-radius:10px; cursor:pointer;" onclick="document.querySelectorAll('.form-group input').forEach(i=>i.value='')">Temizle</button>
                         <button id="runBtn" style="background:var(--primary); border:none; color:#fff; padding:12px 24px; border-radius:10px; cursor:pointer;">Sorgula</button>
@@ -344,12 +302,11 @@
     <!-- MODALLAR -->
     <div class="modal-overlay" id="logoutModal">
         <div class="modal-box">
-            <div class="modal-icon"><i class="ph ph-sign-out"></i></div>
             <h3>Çıkış Yap?</h3>
-            <p>Oturumunuzu sonlandırmak üzeresiniz. Emin misiniz?</p>
+            <p>Oturumunuzu sonlandırmak üzeresiniz.</p>
             <div class="modal-actions">
                 <button class="modal-btn btn-cancel" onclick="document.getElementById('logoutModal').classList.remove('show')">İptal</button>
-                <button class="modal-btn btn-confirm" id="confirmLogoutBtn">Evet, Çıkış Yap</button>
+                <button class="modal-btn btn-confirm" id="confirmLogoutBtn" style="background:var(--danger);">Çıkış Yap</button>
             </div>
         </div>
     </div>
@@ -357,40 +314,46 @@
     <div class="modal-overlay" id="pwdModal">
         <div class="modal-box">
             <h3>Şifre Değiştir</h3>
-            <p id="pwdSub" style="color:var(--muted); font-size:12px; margin-bottom:15px;"></p>
-            <input type="text" id="newPasswordInput" placeholder="Yeni şifre" style="width:100%; background:var(--bg); border:1px solid var(--border); color:#fff; padding:14px; border-radius:8px; margin-bottom:15px;">
+            <p id="pwdSub" style="font-size:12px;"></p>
+            <input type="text" id="newPasswordInput" placeholder="Yeni şifre">
             <div class="modal-actions">
                 <button class="modal-btn btn-cancel" onclick="document.getElementById('pwdModal').classList.remove('show')">İptal</button>
-                <button class="modal-btn btn-confirm" id="saveNewPwdBtn" style="background:var(--primary);">Kaydet</button>
+                <button class="modal-btn btn-confirm" id="saveNewPwdBtn">Kaydet</button>
             </div>
         </div>
     </div>
 
     <script>
-        // --- SUPABASE ---
-        const supabase = window.supabase.createClient(
-            'https://elpnyxhlhoyqmcqkkcsg.supabase.co',
-            'sb_publishable_DDw6BF8q1YCn1KDo1FzxCg_94qrvzdr'
-        );
+        // --- SUPABASE (Değişken adı çakışmasını önlemek için supabaseClient kullanıldı) ---
+        let supabaseClient = null;
+        try {
+            supabaseClient = window.supabase.createClient(
+                'https://elpnyxhlhoyqmcqkkcsg.supabase.co',
+                'sb_publishable_DDw6BF8q1YCn1KDo1FzxCg_94qrvzdr'
+            );
+        } catch (e) { console.error("Supabase başlatılamadı:", e); }
+
         let currentUser = null;
 
-        // --- TOAST ---
-        function showToast(msg, type='success') {
+        // --- YARDIMCILAR ---
+        window.showToast = function(msg, type='success') {
             const c = document.getElementById('toast-container');
             const t = document.createElement('div');
             t.className = 'toast';
-            t.style.borderLeftColor = type === 'error' ? 'var(--danger)' : 'var(--success)';
+            t.style.borderLeft = `4px solid ${type === 'error' ? 'var(--danger)' : 'var(--success)'}`;
             t.innerHTML = `<i class="ph ${type === 'error' ? 'ph-warning-circle' : 'ph-check-circle'}" style="color:${type === 'error' ? 'var(--danger)' : 'var(--success)'}"></i> ${msg}`;
             c.appendChild(t);
             setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000);
-        }
+        };
 
-        // --- SES ---
-        function playClickSound() {}
-        function playWelcomeSound() {}
-        function playCrackSound() {}
-        function skipSplash() { document.getElementById('splash-screen').style.display = 'none'; checkAuth(); }
-        setTimeout(skipSplash, 2500); // Splash kendi kendine kapansın
+        // --- SPLASH ---
+        window.skipSplash = function() {
+            const splash = document.getElementById('splash-screen');
+            if(splash) splash.style.display = 'none';
+            checkAuth();
+        };
+        // Splash 2.5 saniye sonra otomatik kapansın
+        setTimeout(window.skipSplash, 2500);
 
         // --- AUTH ---
         let isLoginMode = true;
@@ -404,27 +367,25 @@
         const authUsername = document.getElementById('authUsername');
         const usernameGroup = document.getElementById('usernameGroup');
         const authError = document.getElementById('authError');
-        const btnText = document.getElementById('btnText');
         const sidebar = document.getElementById('sidebar');
         const mainContent = document.getElementById('main-content');
-        const currentUsernameSpan = document.getElementById('currentUsername');
-        const welcomeNameSpan = document.getElementById('welcomeName');
 
         authSwitch.addEventListener('click', () => {
             isLoginMode = !isLoginMode;
             authError.style.display = 'none';
             if (isLoginMode) {
                 authTitle.textContent = 'Tekrar Hoş Geldin'; authDesc.textContent = 'Syncra Cloud\'a erişmek için giriş yap.';
-                btnText.textContent = 'Giriş Yap'; authSwitch.innerHTML = 'Hesabın yok mu? <span>Hemen Kayıt Ol</span>';
+                authSubmitBtn.textContent = 'Giriş Yap'; authSwitch.innerHTML = 'Hesabın yok mu? <span>Hemen Kayıt Ol</span>';
                 usernameGroup.style.display = 'none';
             } else {
                 authTitle.textContent = 'Aramıza Katıl'; authDesc.textContent = 'Syncra Cloud hesabını oluştur.';
-                btnText.textContent = 'Kayıt Ol'; authSwitch.innerHTML = 'Zaten hesabın var mı? <span>Giriş Yap</span>';
+                authSubmitBtn.textContent = 'Kayıt Ol'; authSwitch.innerHTML = 'Zaten hesabın var mı? <span>Giriş Yap</span>';
                 usernameGroup.style.display = 'block';
             }
         });
 
         authSubmitBtn.addEventListener('click', async () => {
+            if (!supabaseClient) return showToast('Veritabanı bağlantısı kurulamadı.', 'error');
             const email = authEmail.value.trim();
             const password = authPassword.value.trim();
             const username = authUsername.value.trim();
@@ -433,23 +394,23 @@
             if (!isLoginMode && !username) return showAuthError('Lütfen bir kullanıcı adı belirleyin.');
 
             authSubmitBtn.disabled = true;
-            btnText.textContent = 'İşleniyor...';
+            authSubmitBtn.textContent = 'İşleniyor...';
 
             try {
                 if (isLoginMode) {
-                    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+                    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
                     if (error) throw error;
                     
-                    // Son giriş güncelle (hata olsa bile devam et)
-                    supabase.from('profiles').update({ last_login: new Date() }).eq('id', data.user.id).then(()=>{});
+                    // last_login güncelle (hata olsa bile devam et)
+                    supabaseClient.from('profiles').update({ last_login: new Date() }).eq('id', data.user.id).then(()=>{});
 
-                    const { data: profile } = await supabase.from('profiles').select('*').eq('id', data.user.id).single();
+                    const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', data.user.id).single();
                     loadApp(profile || { id: data.user.id, username: email.split('@')[0], email: email, is_admin: 0 });
                 } else {
-                    const { data, error } = await supabase.auth.signUp({ email, password });
+                    const { data, error } = await supabaseClient.auth.signUp({ email, password });
                     if (error) throw error;
                     if (data.user) {
-                        await supabase.from('profiles').insert([{ 
+                        await supabaseClient.from('profiles').insert([{ 
                             id: data.user.id, username: username, email: email, password: password, is_admin: 0 
                         }]);
                     }
@@ -462,7 +423,7 @@
                 showAuthError(error.message);
             } finally {
                 authSubmitBtn.disabled = false;
-                btnText.textContent = isLoginMode ? 'Giriş Yap' : 'Kayıt Ol';
+                authSubmitBtn.textContent = isLoginMode ? 'Giriş Yap' : 'Kayıt Ol';
             }
         });
 
@@ -488,8 +449,8 @@
 
         function updateProfileUI() {
             const name = currentUser.username || 'Kullanıcı';
-            currentUsernameSpan.textContent = name;
-            welcomeNameSpan.textContent = name;
+            document.getElementById('currentUsername').textContent = name;
+            document.getElementById('welcomeName').textContent = name;
             document.getElementById('topAvatarIcon').textContent = name[0].toUpperCase();
             
             const badge = document.getElementById('topBadge');
@@ -515,7 +476,7 @@
             const newAvatar = document.getElementById('settingsAvatar').value;
             if (!newName) return showToast('İsim boş olamaz', 'error');
 
-            const { error } = await supabase.from('profiles').update({ username: newName, avatar_url: newAvatar }).eq('id', currentUser.id);
+            const { error } = await supabaseClient.from('profiles').update({ username: newName, avatar_url: newAvatar }).eq('id', currentUser.id);
             if (error) return showToast(error.message, 'error');
 
             currentUser.username = newName;
@@ -526,12 +487,12 @@
 
         // --- ÇIKIŞ ---
         document.getElementById('confirmLogoutBtn').onclick = async () => {
-            await supabase.auth.signOut();
+            if(supabaseClient) await supabaseClient.auth.signOut();
             location.reload();
         };
 
         // --- SAYFA YÖNLENDİRME ---
-        function showPage(page) {
+        window.showPage = function(page) {
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.querySelector(`.nav-item[data-page="${page}"]`)?.classList.add('active');
             document.querySelectorAll('.content > div').forEach(v => v.style.display = 'none');
@@ -548,7 +509,7 @@
                 setupQuery(page);
             }
             document.getElementById('sidebar').classList.remove('open');
-        }
+        };
         document.querySelectorAll('.nav-item[data-page]').forEach(item => {
             item.onclick = () => showPage(item.dataset.page);
         });
@@ -573,7 +534,7 @@
             const form = document.getElementById('dynamicForm');
             form.innerHTML = '';
             cfg.f.forEach(f => {
-                form.innerHTML += `<div class="form-group"><label>${f.l}</label><div class="input-wrapper"><i class="ph ph-identification-card"></i><input id="q_${f.id}" placeholder="${f.l}"></div></div>`;
+                form.innerHTML += `<div class="form-group"><label>${f.l}</label><input id="q_${f.id}" placeholder="${f.l}"></div>`;
             });
             document.getElementById('resultSummary').innerText = 'Henüz sorgu yok.';
             document.getElementById('tableHead').innerHTML = '';
@@ -661,7 +622,7 @@
         // --- SON GİRİŞLER ---
         async function loadRecentLogins() {
             try {
-                const { data, error } = await supabase.from('profiles').select('username, last_login, avatar_url').order('last_login', { ascending: false }).limit(5);
+                const { data, error } = await supabaseClient.from('profiles').select('username, last_login, avatar_url').order('last_login', { ascending: false }).limit(5);
                 const list = document.getElementById('recentLogins');
                 if(error || !data) return list.innerHTML = '<div style="text-align:center; color:var(--muted); font-size:12px;">Son giriş bilgisi mevcut değil.</div>';
                 
@@ -681,7 +642,7 @@
 
         // --- ADMIN PANELİ ---
         async function loadAdminUsers() {
-            const { data, error } = await supabase.from('profiles').select('*');
+            const { data, error } = await supabaseClient.from('profiles').select('*');
             const tbody = document.getElementById('adminTableBody');
             if(error) return tbody.innerHTML = `<tr><td colspan="6">Hata: ${error.message}</td></tr>`;
 
@@ -711,34 +672,34 @@
             }).join('');
         }
 
-        function togglePass(id) {
+        window.togglePass = function(id) {
             const el = document.getElementById(`pass_${id}`);
             if(el.innerText === '••••••') el.innerText = el.dataset.real;
             else el.innerText = '••••••';
-        }
+        };
 
-        async function toggleAdmin(id, currentStatus) {
+        window.toggleAdmin = async function(id, currentStatus) {
             const newVal = currentStatus === 1 ? 0 : 1;
-            const { error } = await supabase.from('profiles').update({ is_admin: newVal }).eq('id', id);
+            const { error } = await supabaseClient.from('profiles').update({ is_admin: newVal }).eq('id', id);
             if(error) showToast(error.message, 'error');
             else {
                 showToast('Yetki güncellendi!');
                 loadAdminUsers();
             }
-        }
+        };
 
         let selectedPwdId = null;
-        function openPwdModal(id, username) {
+        window.openPwdModal = function(id, username) {
             selectedPwdId = id;
             document.getElementById('pwdSub').innerText = `${username} için yeni şifre:`;
             document.getElementById('newPasswordInput').value = '';
             document.getElementById('pwdModal').classList.add('show');
-        }
+        };
 
         document.getElementById('saveNewPwdBtn').onclick = async () => {
             const newP = document.getElementById('newPasswordInput').value;
             if(!newP) return showToast('Boş olamaz', 'error');
-            const { error } = await supabase.from('profiles').update({ password: newP }).eq('id', selectedPwdId);
+            const { error } = await supabaseClient.from('profiles').update({ password: newP }).eq('id', selectedPwdId);
             if(error) showToast(error.message, 'error');
             else {
                 showToast('Şifre güncellendi!');
@@ -749,16 +710,20 @@
 
         // --- BAŞLANGIÇ ---
         async function checkAuth() {
+            if(!supabaseClient) {
+                document.getElementById('auth-screen').style.display = 'flex';
+                return;
+            }
             try {
-                const { data: { session } } = await supabase.auth.getSession();
+                const { data: { session } } = await supabaseClient.auth.getSession();
                 if (session) {
-                    const { data: profile } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
+                    const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', session.user.id).single();
                     loadApp(profile || { id: session.user.id, username: session.user.email.split('@')[0], email: session.user.email, is_admin: 0 });
                 } else {
-                    authScreen.style.display = 'flex';
+                    document.getElementById('auth-screen').style.display = 'flex';
                 }
             } catch(e) {
-                authScreen.style.display = 'flex';
+                document.getElementById('auth-screen').style.display = 'flex';
             }
         }
 
