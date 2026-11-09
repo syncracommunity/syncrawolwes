@@ -10,8 +10,6 @@
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-<!-- Supabase Kütüphanesi -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
     /* --- TEMA DEĞİŞKENLERİ --- */
@@ -40,42 +38,49 @@
     body { background-color: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; height: 100vh; display: flex; overflow: hidden; position: relative; transition: background-color 0.3s, color 0.3s; }
     #snow-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; opacity: 0.6; transition: 0.3s; }
 
-    /* --- SPLASH EKRANI --- */
-    #splash-screen { position: fixed; inset: 0; background: #05070a; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 1s ease, visibility 1s ease; }
+    /* --- SPLASH EKRANI (Hata giderildi, tıklayınca da geçer) --- */
+    #splash-screen { position: fixed; inset: 0; background: #05070a; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.8s ease, visibility 0.8s ease; cursor: pointer; }
     .splash-title { font-family: 'Space Grotesk', sans-serif; font-size: 4rem; font-weight: 700; color: #fff; letter-spacing: 2px; display: flex; gap: 5px; position: relative; text-shadow: 0 0 20px rgba(59,130,246,0.5); }
     .splash-title span { display: inline-block; animation: dropIn 0.5s ease forwards; opacity: 0; transform: translateY(-50px); }
     @keyframes dropIn { to { opacity: 1; transform: translateY(0); } }
     .splash-title.crack span { animation: crackAnim 0.6s ease forwards; }
     @keyframes crackAnim { 0% { transform: scale(1); opacity: 1; filter: blur(0); } 50% { transform: scale(1.1); opacity: 1; filter: blur(1px); color: #3b82f6;} 100% { transform: translate(var(--x), var(--y)) rotate(var(--r)); opacity: 0; filter: blur(5px); } }
-    .splash-subtitle { margin-top: 20px; font-size: 1.2rem; color: var(--primary); opacity: 0; animation: fadeIn 1s ease forwards; animation-delay: 1.5s; font-family: 'Space Grotesk', sans-serif; letter-spacing: 4px; }
+    .splash-subtitle { margin-top: 20px; font-size: 1.2rem; color: var(--primary); opacity: 0; animation: fadeIn 1s ease forwards; animation-delay: 1s; font-family: 'Space Grotesk', sans-serif; letter-spacing: 4px; }
     @keyframes fadeIn { to { opacity: 1; } }
+    .splash-skip { position: absolute; bottom: 30px; font-size: 12px; color: #475569; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
-    /* --- YENİ GELİŞMİŞ AUTH EKRANI --- */
-    #auth-screen { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: none; justify-content: center; align-items: center; overflow: hidden; }
+    /* --- YENİ NESİL AUTH EKRANI --- */
+    #auth-screen { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: none; justify-content: center; align-items: center; overflow: hidden; padding: 20px; }
     
-    .auth-bg-blob { position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, rgba(11,14,20,0) 70%); border-radius: 50%; filter: blur(60px); animation: float 10s infinite ease-in-out alternate; }
+    /* Arka plan animasyonu */
+    .auth-bg-blob { position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, rgba(59,130,246,0.18) 0%, rgba(11,14,20,0) 70%); border-radius: 50%; filter: blur(60px); animation: float 10s infinite ease-in-out alternate; }
     .auth-bg-blob:nth-child(2) { width: 400px; height: 400px; background: radial-gradient(circle, rgba(139,92,246,0.15) 0%, rgba(11,14,20,0) 70%); right: 10%; bottom: 10%; animation-duration: 12s; animation-delay: -5s; }
     @keyframes float { 0% { transform: translate(0, 0); } 100% { transform: translate(50px, 50px); } }
 
     .auth-box { 
         position: relative; z-index: 2; 
-        background: rgba(23, 28, 38, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.05); 
-        padding: 45px 40px; border-radius: 20px; width: 100%; max-width: 420px; 
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); text-align: center;
+        background: rgba(23, 28, 38, 0.6); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+        border: 1px solid rgba(255,255,255,0.08); border-top: 1px solid rgba(255,255,255,0.15);
+        padding: 45px 40px; border-radius: 24px; width: 100%; max-width: 440px; 
+        box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.7); text-align: center;
         animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(40px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
-    .auth-box h2 { font-size: 28px; font-weight: 700; margin-bottom: 8px; color: #fff; font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.5px; }
+    .auth-logo { width: 60px; height: 60px; background: linear-gradient(135deg, var(--primary), #6366f1); border-radius: 16px; display: grid; place-items: center; margin: 0 auto 20px; font-size: 30px; color: #fff; box-shadow: 0 10px 25px -5px rgba(59,130,246,0.5); }
+    
+    .auth-box h2 { font-size: 26px; font-weight: 700; margin-bottom: 8px; color: #fff; font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.5px; }
     .auth-box p { font-size: 13px; color: var(--muted); margin-bottom: 30px; }
     
-    .auth-input-group { position: relative; margin-bottom: 15px; }
-    .auth-input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 18px; }
+    .auth-input-group { position: relative; margin-bottom: 15px; text-align: left; }
+    .auth-input-group i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 18px; transition: 0.3s; }
     .auth-input { 
-        width: 100%; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: #fff; 
-        padding: 15px 15px 15px 48px; border-radius: 12px; font-size: 14px; outline: none; transition: 0.3s; 
+        width: 100%; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.08); color: #fff; 
+        padding: 15px 15px 15px 50px; border-radius: 12px; font-size: 14px; outline: none; transition: 0.3s; 
     }
     .auth-input:focus { border-color: var(--primary); background: rgba(59,130,246,0.05); box-shadow: 0 0 0 4px rgba(59,130,246,0.15); }
+    .auth-input:focus + i { color: var(--primary); }
     .auth-input::placeholder { color: #64748b; }
     
     .auth-btn { 
@@ -87,9 +92,9 @@
     .auth-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 25px -10px rgba(59,130,246,0.6); }
     .auth-btn:disabled { opacity: 0.7; cursor: wait; transform: none; }
 
-    .auth-error { color: var(--danger); font-size: 12px; margin-bottom: 15px; display: none; text-align: left; padding-left: 5px; }
+    .auth-error { color: var(--danger); background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); border-radius: 8px; font-size: 12px; padding: 10px; margin-bottom: 15px; display: none; text-align: center; }
     
-    .auth-switch { margin-top: 25px; font-size: 13px; color: var(--muted); cursor: pointer; }
+    .auth-switch { margin-top: 25px; font-size: 13px; color: var(--muted); cursor: pointer; user-select: none; }
     .auth-switch span { color: var(--primary); font-weight: 600; transition: 0.2s; }
     .auth-switch span:hover { color: #fff; }
 
@@ -222,7 +227,8 @@
         .button-group button { width: 100%; }
         .topbar { padding: 0 15px; }
         th, td { padding: 12px 15px; }
-        .splash-title { font-size: 2.5rem; }
+        .splash-title { font-size: 2.2rem; }
+        .auth-box { padding: 30px 25px; }
     }
 </style>
 </head>
@@ -230,11 +236,12 @@
     <canvas id="snow-canvas"></canvas>
 
     <!-- SPLASH EKRANI -->
-    <div id="splash-screen">
+    <div id="splash-screen" onclick="skipSplash()">
         <div class="splash-title" id="splashTitle">
             <span>O</span><span>N</span><span>U</span><span>R</span> &nbsp; <span>B</span><span>A</span><span>R</span><span>I</span><span>Ş</span>
         </div>
         <div class="splash-subtitle">SYNCRA CLOUD SYSTEM</div>
+        <div class="splash-skip">Atlamak için tıkla</div>
     </div>
 
     <!-- GELİŞMİŞ GİRİŞ EKRANI -->
@@ -243,23 +250,24 @@
         <div class="auth-bg-blob"></div>
 
         <div class="auth-box">
+            <div class="auth-logo"><i class="ph ph-shield-check"></i></div>
             <h2 id="authTitle">Tekrar Hoş Geldin</h2>
-            <p id="authDesc">Devam etmek için hesabına giriş yap.</p>
+            <p id="authDesc">Syncra Cloud'a erişmek için giriş yap.</p>
             
             <div class="auth-error" id="authError"></div>
 
             <div class="auth-input-group">
-                <i class="ph ph-envelope-simple"></i>
                 <input type="email" id="authEmail" class="auth-input" placeholder="E-posta Adresin">
+                <i class="ph ph-envelope-simple"></i>
             </div>
             <div class="auth-input-group">
-                <i class="ph ph-lock-key"></i>
                 <input type="password" id="authPassword" class="auth-input" placeholder="Şifren">
+                <i class="ph ph-lock-key"></i>
             </div>
             
             <div class="auth-input-group" id="usernameGroup" style="display:none;">
-                <i class="ph ph-user"></i>
                 <input type="text" id="authUsername" class="auth-input" placeholder="Kullanıcı Adın (Takma Ad)">
+                <i class="ph ph-user"></i>
             </div>
 
             <button class="auth-btn" id="authSubmitBtn">
@@ -361,7 +369,7 @@
                         <div style="padding: 20px;">
                             <div class="terminal" id="terminalLogs">
                                 <div class="terminal-line">Sistem başlatıldı...</div>
-                                <div class="terminal-line">API bağlantısı kuruldu.</div>
+                                <div class="terminal-line">Supabase bağlantısı kuruluyor...</div>
                             </div>
                         </div>
                     </div>
@@ -418,17 +426,28 @@
         // --- SUPABASE BAĞLANTISI ---
         const SUPABASE_URL = 'https://elpnyxhlhoyqmcqkkcsg.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_DDw6BF8q1YCn1KDo1FzxCg_94qrvzdr';
-        
-        // Supabase client oluştur
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let supabase = null;
 
-        // --- SES MOTORU (Aynı) ---
+        // Supabase'i güvenli bir şekilde başlat
+        try {
+            if (window.supabase) {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                console.log("Supabase başarıyla başlatıldı.");
+            } else {
+                console.error("Supabase kütüphanesi yüklenemedi!");
+            }
+        } catch (e) {
+            console.error("Supabase başlatma hatası:", e);
+        }
+
+        // --- SES MOTORU ---
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx;
         function initAudio() { if (!audioCtx) audioCtx = new AudioContext(); if (audioCtx.state === 'suspended') audioCtx.resume(); }
         function playClickSound() { initAudio(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'sine'; osc.frequency.setValueAtTime(600, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.1); gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.1); }
         function playWelcomeSound() { initAudio(); const notes = [440, 554.37, 659.25, 880]; notes.forEach((freq, index) => { const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'triangle'; osc.frequency.value = freq; gain.gain.setValueAtTime(0, audioCtx.currentTime + index * 0.15); gain.gain.linearRampToValueAtTime(0.1, audioCtx.currentTime + index * 0.15 + 0.05); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + index * 0.15 + 0.5); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(audioCtx.currentTime + index * 0.15); osc.stop(audioCtx.currentTime + index * 0.15 + 0.5); }); }
         function playCrackSound() { initAudio(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.3); gain.gain.setValueAtTime(0.15, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.3); }
+        
         document.body.addEventListener('click', initAudio, { once: true });
         document.querySelectorAll('button, .nav-item, .theme-btn, .auth-switch').forEach(btn => { btn.addEventListener('click', playClickSound); });
 
@@ -436,18 +455,40 @@
         const splashScreen = document.getElementById('splash-screen');
         const splashTitle = document.getElementById('splashTitle');
         const titleSpans = splashTitle.querySelectorAll('span');
+        let splashTimeout1, splashTimeout2;
+
         titleSpans.forEach(span => {
             span.style.setProperty('--x', (Math.random() * 200 - 100) + 'px');
             span.style.setProperty('--y', (Math.random() * 200 - 100) + 'px');
             span.style.setProperty('--r', (Math.random() * 180 - 90) + 'deg');
             span.style.animationDelay = (Math.random() * 0.5) + 's';
         });
-        setTimeout(() => { splashTitle.classList.add('crack'); playCrackSound(); }, 1500);
-        setTimeout(() => {
-            splashScreen.style.opacity = '0'; splashScreen.style.visibility = 'hidden';
+
+        function startSplash() {
+            splashTimeout1 = setTimeout(() => { 
+                splashTitle.classList.add('crack'); 
+                playCrackSound(); 
+            }, 1500);
+            
+            splashTimeout2 = setTimeout(() => {
+                finishSplash();
+            }, 2500);
+        }
+
+        function skipSplash() {
+            clearTimeout(splashTimeout1);
+            clearTimeout(splashTimeout2);
+            finishSplash();
+        }
+
+        function finishSplash() {
+            splashScreen.style.opacity = '0'; 
+            splashScreen.style.visibility = 'hidden';
             playWelcomeSound();
-            checkAuth(); 
-        }, 2200);
+            checkAuth();
+        }
+
+        startSplash();
 
         // --- SUPABASE AUTH MANTIĞI ---
         let isLoginMode = true;
@@ -468,12 +509,11 @@
         const currentUsernameSpan = document.getElementById('currentUsername');
         const welcomeNameSpan = document.getElementById('welcomeName');
 
-        // Giriş / Kayıt modunu değiştir
         authSwitch.addEventListener('click', () => {
             isLoginMode = !isLoginMode;
             authError.style.display = 'none';
             if (isLoginMode) {
-                authTitle.textContent = 'Tekrar Hoş Geldin'; authDesc.textContent = 'Devam etmek için hesabına giriş yap.';
+                authTitle.textContent = 'Tekrar Hoş Geldin'; authDesc.textContent = 'Syncra Cloud\'a erişmek için giriş yap.';
                 btnText.textContent = 'Giriş Yap'; authSwitch.innerHTML = 'Hesabın yok mu? <span>Hemen Kayıt Ol</span>';
                 usernameGroup.style.display = 'none';
             } else {
@@ -483,8 +523,9 @@
             }
         });
 
-        // Form Gönderme (Giriş veya Kayıt)
         authSubmitBtn.addEventListener('click', async () => {
+            if (!supabase) return showAuthError('Veritabanı bağlantısı kurulamadı. Lütfen sayfayı yenile.');
+
             const email = authEmail.value.trim();
             const password = authPassword.value.trim();
             const username = authUsername.value.trim();
@@ -499,27 +540,23 @@
 
             try {
                 if (isLoginMode) {
-                    // GİRİŞ YAP
                     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
                     if (error) throw error;
                     
-                    // Giriş başarılı, kullanıcı adını çek
+                    // Kullanıcı adını profilden al, yoksa emailin başını kullan
                     const { data: profile } = await supabase.from('profiles').select('username').eq('id', data.user.id).single();
                     loginSuccess(profile ? profile.username : email.split('@')[0]);
                     
                 } else {
-                    // KAYIT OL
                     const { data, error } = await supabase.auth.signUp({ email, password });
                     if (error) throw error;
                     
-                    // Profil tablosuna kullanıcı adını kaydet
                     if (data.user) {
                         const { error: profileError } = await supabase.from('profiles').insert([
                             { id: data.user.id, username: username, email: email }
                         ]);
                         if (profileError) console.error("Profil oluşturma hatası:", profileError);
                     }
-                    
                     loginSuccess(username);
                 }
             } catch (error) {
@@ -541,29 +578,35 @@
             currentUsernameSpan.textContent = username;
             welcomeNameSpan.textContent = username;
             
-            // Kullanıcı bazlı verileri yükle
             loadUserStats(username);
             loadHistory(username);
             logToTerminal(`Kullanıcı girişi başarılı: ${username}`);
         }
 
         async function checkAuth() {
-            const { data: { session } } = await supabase.auth.getSession();
-            
-            if (session) {
-                // Kullanıcı zaten giriş yapmış
-                const { data: profile } = await supabase.from('profiles').select('username').eq('id', session.user.id).single();
-                loginSuccess(profile ? profile.username : session.user.email.split('@')[0]);
-            } else {
-                // Giriş yapılmamış, auth ekranını göster
+            if (!supabase) {
+                authScreen.style.display = 'flex';
+                return;
+            }
+
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                
+                if (session) {
+                    const { data: profile } = await supabase.from('profiles').select('username').eq('id', session.user.id).single();
+                    loginSuccess(profile ? profile.username : session.user.email.split('@')[0]);
+                } else {
+                    authScreen.style.display = 'flex';
+                }
+            } catch (error) {
+                console.error("Auth kontrol hatası:", error);
                 authScreen.style.display = 'flex';
             }
         }
 
-        // Çıkış Yap
         document.getElementById('userProfileBtn').addEventListener('click', async () => {
             if(confirm('Çıkış yapmak istediğinize emin misiniz?')) {
-                await supabase.auth.signOut();
+                if (supabase) await supabase.auth.signOut();
                 location.reload();
             }
         });
@@ -695,7 +738,7 @@
         // --- MOBİL MENÜ ---
         document.getElementById('menuToggle').addEventListener('click', () => document.getElementById('sidebar').classList.toggle('open'));
 
-        // --- SORGU MANTIĞI (Aynı) ---
+        // --- SORGU MANTIĞI ---
         const menuItems = document.querySelectorAll('.nav-item[data-page]');
         const topbarTitle = document.getElementById('topbarTitle');
         const dashboardView = document.getElementById('dashboardView');
@@ -812,25 +855,6 @@
                 setTimeout(() => shareBtn.innerHTML = originalText, 2000);
                 logToTerminal(`Paylaşım linki oluşturuldu.`);
             });
-        });
-
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                const urlParams = new URLSearchParams(window.location.search);
-                const page = urlParams.get('page');
-                if (page && pageConfig[page] && localStorage.getItem('syncra-current-user')) {
-                    logToTerminal(`Paylaşılan link algılandı, otomatik yükleniyor...`);
-                    document.querySelector(`.nav-item[data-page="${page}"]`).click();
-                    setTimeout(() => {
-                        pageConfig[page].inputs.forEach(input => {
-                            if(urlParams.has(input.id)) {
-                                document.getElementById(`input_${input.id}`).value = urlParams.get(input.id);
-                            }
-                        });
-                        document.getElementById('runBtn').click();
-                    }, 100);
-                }
-            }, 2500);
         });
 
         copyAllBtn.addEventListener('click', () => {
