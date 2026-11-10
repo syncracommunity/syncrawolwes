@@ -13,15 +13,15 @@
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
 <style>
-    /* --- TEMEL DEĞİŞKENLER (İLK GÖRSELDEN) --- */
+    /* --- TEMEL DEĞİŞKENLER --- */
     :root { 
         --bg-dark: #0e1013; 
-        --bg-gradient: radial-gradient(circle at top right, #1a2233 0%, #0e1013 50%); /* Hafif mavi geçiş */
+        --bg-gradient: radial-gradient(circle at top right, #1a2233 0%, #0e1013 50%);
         --card-bg: #1a1c22; 
         --text-main: #ffffff;
         --text-muted: #8b8f97;
         --border-color: #262930;
-        --btn-light: #e2e4e9; /* Görseldeki beyaz buton */
+        --btn-light: #e2e4e9;
         --btn-text: #0e1013;
         --danger: #ef4444;
         --success: #10b981;
@@ -39,7 +39,6 @@
         -webkit-font-smoothing: antialiased;
     }
 
-    /* --- İNCE KOYU SCROLLBAR --- */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #2c2f36; border-radius: 10px; }
@@ -51,7 +50,7 @@
     .splash-title { font-size: 1.5rem; font-weight: 700; color: var(--text-main); letter-spacing: 1px; }
     .splash-subtitle { font-size: 0.9rem; color: var(--text-muted); margin-top: 8px; letter-spacing: 2px; }
 
-    /* --- GİRİŞ EKRANI --- */
+    /* --- GİRİŞ --- */
     #auth-screen { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(10px); z-index: 5000; display: none; justify-content: center; align-items: center; padding: 20px; }
     .auth-modal { background: linear-gradient(180deg, #1e2025 0%, #15171a 100%); border: 1px solid var(--border-color); border-radius: 32px; width: 100%; max-width: 480px; padding: 40px; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); text-align: center; }
     .auth-close-btn { position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; border-radius: 12px; background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); display: grid; place-items: center; cursor: pointer; transition: 0.2s; }
@@ -68,11 +67,10 @@
     .auth-skip-btn { margin-top: 25px; background: none; border: none; color: var(--text-muted); font-size: 14px; cursor: pointer; transition: 0.2s; }
     .auth-skip-btn:hover { color: var(--text-main); }
 
-    /* --- PANEL (GÖRSELDEKİ GİBİ) --- */
+    /* --- PANEL --- */
     .sidebar { width: 260px; background: var(--bg-dark); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; z-index: 100; }
     .brand { padding: 24px 20px; font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 10px; color: var(--text-main); border-bottom: 1px solid var(--border-color); }
-    
-    .nav-section { padding: 20px 15px; flex: 1; overflow-y: auto; /* Sağdaki scrollbar */ }
+    .nav-section { padding: 20px 15px; flex: 1; overflow-y: auto; }
     .nav-title { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); font-weight: 700; margin-bottom: 12px; padding-left: 15px; margin-top: 20px; }
     .nav-item { 
         padding: 14px 20px; 
@@ -94,7 +92,6 @@
     .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
     .topbar { height: 80px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 40px; background: transparent; position: sticky; top: 0; z-index: 50; }
     
-    /* Profil Butonu */
     .user-profile { display: flex; align-items: center; gap: 10px; background: #1c1e22; padding: 6px 16px 6px 6px; border-radius: 30px; border: 1px solid var(--border-color); cursor: pointer; }
     .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: #2b2d33; display: grid; place-items: center; color: var(--text-main); font-size: 14px; font-weight: 700;}
     .badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
@@ -103,24 +100,20 @@
 
     .content { padding: 40px; max-width: 1400px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 30px; }
     
-    /* Kartlar */
     .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 24px; padding: 25px; }
     .stat-card { display: flex; align-items: center; gap: 20px; }
     .stat-icon { width: 60px; height: 60px; border-radius: 20px; background: #2b2d33; display: grid; place-items: center; font-size: 28px; color: var(--text-main); }
 
-    /* Inputlar */
     .input-group { display: flex; flex-direction: column; gap: 8px; }
     .input-group label { font-size: 13px; color: var(--text-muted); font-weight: 600; }
     .main-input { width: 100%; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 16px 20px; border-radius: 16px; font-size: 15px; outline: none; }
     .main-input:focus { border-color: #5c626d; }
 
-    /* Butonlar */
     .btn-white { background: var(--btn-light); color: var(--btn-text); padding: 14px 24px; border-radius: 16px; border: none; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px; font-size: 14px; }
     .btn-white:hover { background: #fff; transform: scale(1.02); }
     .btn-dark { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); padding: 14px 24px; border-radius: 16px; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px; font-size: 14px; }
     .btn-dark:hover { background: #1c1e22; }
 
-    /* Tablo (Oval Satırlar) */
     table { width: 100%; border-collapse: separate; border-spacing: 0 8px; text-align: left; }
     th { padding: 15px 20px; font-size: 12px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 1px;}
     td { padding: 18px 20px; font-size: 14px; color: var(--text-main); background: #1c1e22; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); }
@@ -128,7 +121,6 @@
     td:last-child { border-right: 1px solid var(--border-color); border-radius: 0 16px 16px 0; }
     tr:hover td { background: #23262b; }
 
-    /* Modallar */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); z-index: 10000; display: none; justify-content: center; align-items: center; }
     .modal-overlay.show { display: flex; }
     .modal-box { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 32px; padding: 40px; width: 100%; max-width: 400px; text-align: center; }
@@ -136,8 +128,11 @@
     .hidden { display: none !important; }
     .menu-toggle { display: none; cursor: pointer; font-size: 24px; color: var(--text-main); }
 
+    /* --- SMS BOMBER ÖZEL CSS --- */
+    .bomber-log { margin-top:25px; background:#0e1013; border:1px solid #262930; border-radius:16px; padding:20px; min-height:150px; font-family:monospace; font-size:13px; color:#8b8f97; overflow-y:auto; max-height:400px; display: flex; flex-direction: column; gap: 5px; }
+
     @media (max-width: 900px) {
-        .sidebar { position: fixed; left: 0; top: 0; height: 100vh; transform: translateX(-100%); transition: 0.3s; }
+        .sidebar { position: fixed; left: 0; top: 0; height: 100vh; transform: translateX(-100%); transition: 0.3s; z-index: 1000;}
         .sidebar.open { transform: translateX(0); }
         .menu-toggle { display: block; }
         .content { padding: 20px; }
@@ -147,23 +142,23 @@
 </style>
 </head>
 <body>
-    <div id="toast-container" class="fixed top-5 right-5 z-[99999] flex flex-col gap-2"></div>
+    <div id="toast-container" style="position:fixed; top:20px; right:20px; z-index:99999; display:flex; flex-direction:column; gap:10px;"></div>
 
     <!-- SPLASH -->
     <div id="splash-screen" onclick="window.skipSplash()">
         <div class="splash-logo"><i class="ph ph-command-line"></i></div>
         <div class="splash-title">Developed by Onur</div>
-        <div class="splash-subtitle">ONUR SYSTEM 2026</div>
+        <div class="splash-subtitle">SYNCRA CLOUD SYSTEM</div>
     </div>
 
-    <!-- GİRİŞ (GÖRSELDEKİ MODAL) -->
+    <!-- GİRİŞ -->
     <div id="auth-screen">
         <div class="auth-modal">
             <button class="auth-close-btn" onclick="document.getElementById('auth-screen').style.display='none'"><i class="ph ph-x"></i></button>
             <div class="auth-logo-box"><i class="ph ph-shield-check"></i></div>
-            <div class="auth-eyebrow">Onur System</div>
-            <h2 class="auth-title">Hoş<br>geldiniz.</h2>
-            <p class="auth-desc">Tüm sistemler Ücretsiz<br>Sorgu Botları</p>
+            <div class="auth-eyebrow">Syncra Cloud</div>
+            <h2 class="auth-title">Sunucumuza<br>sen de katıl.</h2>
+            <p class="auth-desc">Premium Çekilişleri 60+ Method Kanalları Ücretsiz<br>Sorgu Botları+++</p>
             <div id="authError" class="hidden" style="color:#ef4444; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2); border-radius:12px; padding:12px; font-size:14px; margin-bottom:15px;"></div>
 
             <div class="auth-input-group">
@@ -187,9 +182,10 @@
 
     <!-- PANEL -->
     <div class="sidebar" id="sidebar" style="display:none;">
-        <div class="brand"><i class="ph ph-shield-check"></i> MERNİS 2026</div>
+        <div class="brand"><i class="ph ph-shield-check"></i> SYNCRA</div>
         <div class="nav-section">
             <div class="nav-item active" data-page="dashboard"><i class="ph ph-squares-four"></i> Ana Sayfa</div>
+            
             <div class="nav-title">Sorgu Çözümleri</div>
             <div class="nav-item" data-page="tc"><i class="ph ph-identification-card"></i> TC Sorgu</div>
             <div class="nav-item" data-page="adsoyad"><i class="ph ph-user"></i> Ad Soyad</div>
@@ -199,8 +195,10 @@
             <div class="nav-item" data-page="gsmtc"><i class="ph ph-phone-call"></i> GSM → TC</div>
             <div class="nav-item" data-page="eokul"><i class="ph ph-graduation-cap"></i> E-Okul</div>
             <div class="nav-item" data-page="adres"><i class="ph ph-map-pin"></i> Adres</div>
+            
             <div class="nav-title">Araçlar</div>
-<div class="nav-item" data-page="smsbomber"><i class="ph ph-paper-plane-tilt"></i> SMS Bomber</div>
+            <div class="nav-item" data-page="smsbomber"><i class="ph ph-paper-plane-tilt"></i> SMS Bomber</div>
+
             <div class="nav-title">Sistem</div>
             <div class="nav-item" data-page="settings"><i class="ph ph-gear"></i> Hesap Ayarları</div>
             <div class="nav-item hidden" id="adminNav" data-page="admin"><i class="ph ph-users-three"></i> Admin Paneli</div>
@@ -213,7 +211,6 @@
                 <i class="ph ph-list menu-toggle" id="menuToggle"></i>
                 <span id="topbarTitle" style="font-weight:600; color:#fff;">Ana Sayfa</span>
             </div>
-            
             <div style="display:flex; align-items:center; gap:15px;">
                 <div class="user-profile" onclick="showPage('settings')">
                     <div class="user-avatar" id="topAvatarIcon">U</div>
@@ -242,7 +239,7 @@
                     </div>
                     <div class="card stat-card">
                         <div class="stat-icon"><i class="ph ph-database"></i></div>
-                        <div><h3 style="font-size:32px; font-weight:700; color:#fff;">8</h3><p style="font-size:12px; color:#8b8f97;">Aktif Sistem Sayısı</p></div>
+                        <div><h3 style="font-size:32px; font-weight:700; color:#fff;">8</h3><p style="font-size:12px; color:#8b8f97;">Aktif Modül</p></div>
                     </div>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
@@ -253,6 +250,27 @@
                     <div class="card">
                         <div style="border-bottom:1px solid #262930; padding-bottom:15px; margin-bottom:15px;"><h3 style="font-size:16px; font-weight:600; color:#fff;">Son Giriş Yapanlar</h3></div>
                         <div id="recentLogins" style="display:flex; flex-direction:column; gap:10px;"><div style="text-align:center; color:#8b8f97; padding:20px; font-size:14px;">Yükleniyor...</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SMS BOMBER -->
+            <div id="smsbomberView" style="display:none; flex-direction:column; gap:25px;">
+                <div class="card">
+                    <h2 style="font-size:20px; font-weight:700; color:#fff; margin-bottom:15px;">SMS Bomber</h2>
+                    <p style="font-size:13px; color:#8b8f97; margin-bottom:20px;">Telefon numarasını girin, sisteme kayıtlı tüm servislere SMS isteği gönderilsin.</p>
+                    
+                    <div class="input-group" style="margin-bottom:20px;">
+                        <label>Telefon Numarası (10 hane, başında 0 olmadan)</label>
+                        <input type="text" id="bomberPhone" class="main-input" placeholder="5XX XXX XX XX" maxlength="10">
+                    </div>
+                    
+                    <div style="display:flex; gap:15px;">
+                        <button class="btn-white" id="startBomberBtn"><i class="ph ph-paper-plane-tilt"></i> Başlat</button>
+                    </div>
+                    
+                    <div id="bomberLog" class="bomber-log">
+                        <div>İşlem başlatılmadı...</div>
                     </div>
                 </div>
             </div>
@@ -338,26 +356,6 @@
             </div>
         </div>
     </div>
-    <!-- SMS BOMBER EKRANI -->
-<div id="smsbomberView" style="display:none; flex-direction:column; gap:25px;">
-    <div class="card">
-        <h2 style="font-size:20px; font-weight:700; color:#fff; margin-bottom:25px;">SMS Bomber</h2>
-        <p style="font-size:13px; color:#8b8f97; margin-bottom:20px;">Telefon numarasını girin, sisteme kayıtlı tüm servislere SMS isteği gönderilsin.</p>
-        
-        <div class="input-group" style="margin-bottom:20px;">
-            <label>Telefon Numarası (10 hane, başında 0 olmadan)</label>
-            <input type="text" id="bomberPhone" class="main-input" placeholder="5XX XXX XX XX" maxlength="10">
-        </div>
-        
-        <div style="display:flex; gap:15px;">
-            <button class="btn-white" id="startBomberBtn"><i class="ph ph-paper-plane-tilt"></i> Başlat</button>
-        </div>
-        
-        <div id="bomberLog" style="margin-top:25px; background:#0e1013; border:1px solid #262930; border-radius:16px; padding:20px; min-height:150px; font-family:monospace; font-size:13px; color:#8b8f97; overflow-y:auto; max-height:400px;">
-            <div>İşlem başlatılmadı...</div>
-        </div>
-    </div>
-</div>
 
     <script>
         // --- SUPABASE ---
@@ -519,13 +517,13 @@
             
             if (page === 'dashboard') document.getElementById('dashboardView').style.display = 'block';
             else if (page === 'settings') document.getElementById('settingsView').style.display = 'block';
-                else if (page === 'smsbomber') {
-    document.getElementById('smsbomberView').style.display = 'flex';
-}
             else if (page === 'admin') {
                 if (currentUser.is_admin !== 1) return showToast('Yetkiniz yok!', 'error');
                 document.getElementById('adminView').style.display = 'block';
                 loadAdminUsers();
+            }
+            else if (page === 'smsbomber') {
+                document.getElementById('smsbomberView').style.display = 'flex';
             }
             else {
                 document.getElementById('queryView').style.display = 'flex';
@@ -537,6 +535,44 @@
             item.onclick = () => showPage(item.dataset.page);
         });
 
+        // --- SMS BOMBER MANTIĞI ---
+        document.getElementById('startBomberBtn').onclick = async () => {
+            const phone = document.getElementById('bomberPhone').value.trim();
+            const log = document.getElementById('bomberLog');
+            const btn = document.getElementById('startBomberBtn');
+            
+            if (phone.length !== 10 || isNaN(phone)) return showToast('Telefon numarası 10 haneli olmalı.', 'error');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<i class="ph ph-spinner-gap spin"></i> Gönderiliyor...';
+            log.innerHTML = '<div style="color:#f59e0b;">> Sistem başlatıldı, istekler gönderiliyor...</div>';
+            
+            try {
+                const res = await fetch(`/api/proxy?action=smsbomber&phone=${phone}`);
+                const data = await res.json();
+                
+                if (data.error) throw new Error(data.error);
+                
+                log.innerHTML = '';
+                data.results.forEach(r => {
+                    const color = r.success ? '#10b981' : '#ef4444';
+                    const icon = r.success ? 'ph-check-circle' : 'ph-x-circle';
+                    log.innerHTML += `<div style="color:${color}; margin-bottom:5px;"><i class="ph ${icon}"></i> [${r.service.toUpperCase()}] ${r.message}</div>`;
+                });
+                
+                const successCount = data.results.filter(r => r.success).length;
+                showToast(`İşlem tamamlandı! ${successCount}/${data.results.length} başarılı.`, successCount > 0 ? 'success' : 'error');
+                
+            } catch(e) {
+                log.innerHTML += `<div style="color:#ef4444;">> Hata: ${e.message}</div>`;
+                showToast('SMS Bomber başarısız oldu.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="ph ph-paper-plane-tilt"></i> Başlat';
+            }
+        };
+
+        // --- SORGU MANTIĞI ---
         const queryConfig = {
             'tc': { title: 'TC Sorgu', endpoint: 'tc.php', f: [{ id: 'tc', l: 'TC Kimlik No' }] },
             'adsoyad': { title: 'Ad Soyad Sorgu', endpoint: 'adsoyad.php', f: [{ id: 'ad', l: 'Ad' }, { id: 'soyad', l: 'Soyad' }, { id: 'il', l: 'İl' }, { id: 'ilce', l: 'İlçe' }] },
@@ -818,40 +854,6 @@
         }
 
         document.getElementById('menuToggle').onclick = () => document.getElementById('sidebar').classList.toggle('open');
-        document.getElementById('startBomberBtn').onclick = async () => {
-    const phone = document.getElementById('bomberPhone').value.trim();
-    const log = document.getElementById('bomberLog');
-    const btn = document.getElementById('startBomberBtn');
-    
-    if (phone.length !== 10) return showToast('Telefon numarası 10 haneli olmalı.', 'error');
-    
-    btn.disabled = true;
-    btn.innerHTML = '<i class="ph ph-spinner-gap spin"></i> Gönderiliyor...';
-    log.innerHTML = '<div style="color:#f59e0b;">> Sistem başlatıldı, istekler gönderiliyor...</div>';
-    
-    try {
-        const res = await fetch(`/api/proxy?action=smsbomber&phone=${phone}`);
-        const data = await res.json();
-        
-        if (data.error) throw new Error(data.error);
-        
-        log.innerHTML = '';
-        data.results.forEach(r => {
-            const color = r.success ? '#10b981' : '#ef4444';
-            const icon = r.success ? 'ph-check-circle' : 'ph-x-circle';
-            log.innerHTML += `<div style="color:${color}; margin-bottom:5px;"><i class="ph ${icon}"></i> [${r.service.toUpperCase()}] ${r.message}</div>`;
-        });
-        
-        const successCount = data.results.filter(r => r.success).length;
-        showToast(`İşlem tamamlandı! ${successCount}/${data.results.length} başarılı.`, successCount > 0 ? 'success' : 'error');
-        
-    } catch(e) {
-        log.innerHTML += `<div style="color:#ef4444;">> Hata: ${e.message}</div>`;
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="ph ph-paper-plane-tilt"></i> Başlat';
-    }
-};
     </script>
 </body>
 </html>
