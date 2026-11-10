@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "description": "Syncra Cloud Sorgu Paneli",
   "engines": {
-    "node": "18.x"
+    "node": "26.x"
   }
 }
