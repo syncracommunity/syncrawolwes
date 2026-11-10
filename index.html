@@ -13,7 +13,6 @@
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
 <style>
-    /* --- TEMEL DEĞİŞKENLER --- */
     :root { 
         --bg-dark: #0e1013; 
         --bg-gradient: radial-gradient(circle at top right, #1a2233 0%, #0e1013 50%);
@@ -29,28 +28,18 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { 
-        background: var(--bg-gradient); 
-        color: var(--text-main); 
-        font-family: 'Inter', sans-serif; 
-        height: 100vh; 
-        display: flex; 
-        overflow: hidden; 
-        -webkit-font-smoothing: antialiased;
-    }
+    body { background: var(--bg-gradient); color: var(--text-main); font-family: 'Inter', sans-serif; height: 100vh; display: flex; overflow: hidden; -webkit-font-smoothing: antialiased; }
 
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #2c2f36; border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: #4b5059; }
 
-    /* --- SPLASH --- */
     #splash-screen { position: fixed; inset: 0; background: var(--bg-dark); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease; cursor: pointer; }
     .splash-logo { width: 80px; height: 80px; background: #2b2d33; border-radius: 24px; display: grid; place-items: center; font-size: 40px; color: var(--text-main); margin-bottom: 20px; }
     .splash-title { font-size: 1.5rem; font-weight: 700; color: var(--text-main); letter-spacing: 1px; }
     .splash-subtitle { font-size: 0.9rem; color: var(--text-muted); margin-top: 8px; letter-spacing: 2px; }
 
-    /* --- GİRİŞ --- */
     #auth-screen { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(10px); z-index: 5000; display: none; justify-content: center; align-items: center; padding: 20px; }
     .auth-modal { background: linear-gradient(180deg, #1e2025 0%, #15171a 100%); border: 1px solid var(--border-color); border-radius: 32px; width: 100%; max-width: 480px; padding: 40px; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); text-align: center; }
     .auth-close-btn { position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; border-radius: 12px; background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); display: grid; place-items: center; cursor: pointer; transition: 0.2s; }
@@ -67,24 +56,11 @@
     .auth-skip-btn { margin-top: 25px; background: none; border: none; color: var(--text-muted); font-size: 14px; cursor: pointer; transition: 0.2s; }
     .auth-skip-btn:hover { color: var(--text-main); }
 
-    /* --- PANEL --- */
     .sidebar { width: 260px; background: var(--bg-dark); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; z-index: 100; }
     .brand { padding: 24px 20px; font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 10px; color: var(--text-main); border-bottom: 1px solid var(--border-color); }
     .nav-section { padding: 20px 15px; flex: 1; overflow-y: auto; }
     .nav-title { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); font-weight: 700; margin-bottom: 12px; padding-left: 15px; margin-top: 20px; }
-    .nav-item { 
-        padding: 14px 20px; 
-        color: var(--text-muted); 
-        cursor: pointer; 
-        font-size: 14px; 
-        font-weight: 500; 
-        border-radius: 16px; 
-        transition: 0.2s; 
-        display: flex; 
-        align-items: center; 
-        gap: 12px; 
-        margin-bottom: 4px; 
-    }
+    .nav-item { padding: 14px 20px; color: var(--text-muted); cursor: pointer; font-size: 14px; font-weight: 500; border-radius: 16px; transition: 0.2s; display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
     .nav-item:hover { background: #1c1e22; color: var(--text-main); }
     .nav-item.active { background: #2b2d33; color: var(--text-main); font-weight: 600; }
     .nav-item i { font-size: 20px; }
@@ -92,8 +68,8 @@
     .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
     .topbar { height: 80px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 40px; background: transparent; position: sticky; top: 0; z-index: 50; }
     
-    .user-profile { display: flex; align-items: center; gap: 10px; background: #1c1e22; padding: 6px 16px 6px 6px; border-radius: 30px; border: 1px solid var(--border-color); cursor: pointer; }
-    .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: #2b2d33; display: grid; place-items: center; color: var(--text-main); font-size: 14px; font-weight: 700;}
+    /* Sadece isim ve rozet */
+    .user-profile { display: flex; align-items: center; gap: 10px; background: #1c1e22; padding: 10px 20px; border-radius: 30px; border: 1px solid var(--border-color); cursor: pointer; }
     .badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
     .badge-admin { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
     .badge-free { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
@@ -128,7 +104,6 @@
     .hidden { display: none !important; }
     .menu-toggle { display: none; cursor: pointer; font-size: 24px; color: var(--text-main); }
 
-    /* --- SMS BOMBER ÖZEL CSS --- */
     .bomber-log { margin-top:25px; background:#0e1013; border:1px solid #262930; border-radius:16px; padding:20px; min-height:150px; font-family:monospace; font-size:13px; color:#8b8f97; overflow-y:auto; max-height:400px; display: flex; flex-direction: column; gap: 5px; }
 
     @media (max-width: 900px) {
@@ -144,14 +119,12 @@
 <body>
     <div id="toast-container" style="position:fixed; top:20px; right:20px; z-index:99999; display:flex; flex-direction:column; gap:10px;"></div>
 
-    <!-- SPLASH -->
     <div id="splash-screen" onclick="window.skipSplash()">
         <div class="splash-logo"><i class="ph ph-command-line"></i></div>
         <div class="splash-title">Developed by Onur</div>
         <div class="splash-subtitle">SYNCRA CLOUD SYSTEM</div>
     </div>
 
-    <!-- GİRİŞ -->
     <div id="auth-screen">
         <div class="auth-modal">
             <button class="auth-close-btn" onclick="document.getElementById('auth-screen').style.display='none'"><i class="ph ph-x"></i></button>
@@ -180,7 +153,6 @@
         </div>
     </div>
 
-    <!-- PANEL -->
     <div class="sidebar" id="sidebar" style="display:none;">
         <div class="brand"><i class="ph ph-shield-check"></i> SYNCRA</div>
         <div class="nav-section">
@@ -212,9 +184,9 @@
                 <span id="topbarTitle" style="font-weight:600; color:#fff;">Ana Sayfa</span>
             </div>
             <div style="display:flex; align-items:center; gap:15px;">
+                <!-- Sadece isim ve rozet -->
                 <div class="user-profile" onclick="showPage('settings')">
-                    <div class="user-avatar" id="topAvatarIcon">U</div>
-                    <span id="currentUsername" style="font-size:14px; font-weight:600; color:#fff; margin-left:5px;">Kullanıcı</span>
+                    <span id="currentUsername" style="font-size:14px; font-weight:600; color:#fff;">Kullanıcı</span>
                     <span id="topBadge" class="badge badge-free">Free</span>
                 </div>
                 <button style="background:none; border:none; color:#8b8f97; cursor:pointer; transition:0.2s;" onclick="document.getElementById('logoutModal').classList.add('show')" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#8b8f97'"><i class="ph ph-sign-out" style="font-size:24px;"></i></button>
@@ -222,7 +194,6 @@
         </div>
 
         <div class="content">
-            <!-- DASHBOARD -->
             <div id="dashboardView">
                 <div class="card" style="padding: 30px; margin-bottom: 25px;">
                     <h2 style="font-size:24px; font-weight:700; color:#fff;">Hoş Geldin, <span id="welcomeName" style="color:#8b8f97;">Operatör</span>.</h2>
@@ -254,38 +225,31 @@
                 </div>
             </div>
 
-            <!-- SMS BOMBER -->
             <div id="smsbomberView" style="display:none; flex-direction:column; gap:25px;">
                 <div class="card">
                     <h2 style="font-size:20px; font-weight:700; color:#fff; margin-bottom:15px;">SMS Bomber</h2>
                     <p style="font-size:13px; color:#8b8f97; margin-bottom:20px;">Telefon numarasını girin, sisteme kayıtlı tüm servislere SMS isteği gönderilsin.</p>
-                    
                     <div class="input-group" style="margin-bottom:20px;">
                         <label>Telefon Numarası (10 hane, başında 0 olmadan)</label>
                         <input type="text" id="bomberPhone" class="main-input" placeholder="5XX XXX XX XX" maxlength="10">
                     </div>
-                    
                     <div style="display:flex; gap:15px;">
                         <button class="btn-white" id="startBomberBtn"><i class="ph ph-paper-plane-tilt"></i> Başlat</button>
                     </div>
-                    
                     <div id="bomberLog" class="bomber-log">
                         <div>İşlem başlatılmadı...</div>
                     </div>
                 </div>
             </div>
 
-            <!-- AYARLAR -->
             <div id="settingsView" style="display:none;">
                 <div class="card" style="max-width:600px;">
                     <div style="border-bottom:1px solid #262930; padding-bottom:15px; margin-bottom:20px;"><h3 style="font-size:16px; font-weight:600; color:#fff;">Profil Bilgileri</h3></div>
                     <div class="input-group" style="margin-bottom:15px;"><label>Görünen Ad</label><input type="text" id="settingsName" class="main-input"></div>
-                    <div class="input-group" style="margin-bottom:20px;"><label>Avatar URL</label><input type="text" id="settingsAvatar" placeholder="https://..." class="main-input"></div>
                     <button class="btn-white" id="saveProfileBtn">Kaydet</button>
                 </div>
             </div>
 
-            <!-- ADMIN -->
             <div id="adminView" style="display:none;">
                 <div class="card">
                     <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #262930; padding-bottom:15px; margin-bottom:20px;">
@@ -301,7 +265,6 @@
                 </div>
             </div>
 
-            <!-- SORGU -->
             <div id="queryView" style="display:none; flex-direction:column; gap:25px;">
                 <div class="card">
                     <h2 id="pageTitle" style="font-size:20px; font-weight:700; color:#fff; margin-bottom:25px;">Sorgulama</h2>
@@ -333,7 +296,6 @@
         </div>
     </div>
 
-    <!-- MODALLAR -->
     <div class="modal-overlay" id="logoutModal">
         <div class="modal-box">
             <h3 style="font-size:20px; font-weight:700; color:#fff; margin-bottom:10px;">Çıkış Yap?</h3>
@@ -358,7 +320,6 @@
     </div>
 
     <script>
-        // --- SUPABASE ---
         let supabaseClient = null;
         try {
             supabaseClient = window.supabase.createClient(
@@ -369,7 +330,6 @@
 
         let currentUser = null;
 
-        // --- TOAST ---
         window.showToast = function(msg, type='success') {
             const c = document.getElementById('toast-container');
             const t = document.createElement('div');
@@ -379,7 +339,6 @@
             setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000);
         };
 
-        // --- SPLASH ---
         window.skipSplash = function() {
             const splash = document.getElementById('splash-screen');
             if(splash) splash.style.display = 'none';
@@ -387,7 +346,6 @@
         };
         setTimeout(window.skipSplash, 2000);
 
-        // --- AUTH ---
         let isLoginMode = true;
         const authScreen = document.getElementById('auth-screen');
         const authSubmitBtn = document.getElementById('authSubmitBtn');
@@ -478,7 +436,6 @@
             const name = currentUser.username || 'Kullanıcı';
             document.getElementById('currentUsername').textContent = name;
             document.getElementById('welcomeName').textContent = name;
-            document.getElementById('topAvatarIcon').textContent = name[0].toUpperCase();
             
             const badge = document.getElementById('topBadge');
             if (currentUser.is_admin === 1) {
@@ -488,19 +445,16 @@
             }
 
             document.getElementById('settingsName').value = name;
-            document.getElementById('settingsAvatar').value = currentUser.avatar_url || '';
         }
 
         document.getElementById('saveProfileBtn').onclick = async () => {
             const newName = document.getElementById('settingsName').value;
-            const newAvatar = document.getElementById('settingsAvatar').value;
             if (!newName) return showToast('İsim boş olamaz', 'error');
 
-            const { error } = await supabaseClient.from('profiles').update({ username: newName, avatar_url: newAvatar }).eq('id', currentUser.id);
+            const { error } = await supabaseClient.from('profiles').update({ username: newName }).eq('id', currentUser.id);
             if (error) return showToast(error.message, 'error');
 
             currentUser.username = newName;
-            currentUser.avatar_url = newAvatar;
             updateProfileUI();
             showToast('Profil güncellendi!');
         };
@@ -535,7 +489,6 @@
             item.onclick = () => showPage(item.dataset.page);
         });
 
-        // --- SMS BOMBER MANTIĞI ---
         document.getElementById('startBomberBtn').onclick = async () => {
             const phone = document.getElementById('bomberPhone').value.trim();
             const log = document.getElementById('bomberLog');
@@ -549,7 +502,13 @@
             
             try {
                 const res = await fetch(`/api/proxy?action=smsbomber&phone=${phone}`);
-                const data = await res.json();
+                const textData = await res.text();
+                let data;
+                try {
+                    data = JSON.parse(textData);
+                } catch (parseErr) {
+                    throw new Error('API yanıtı okunamadı: ' + textData.substring(0, 50));
+                }
                 
                 if (data.error) throw new Error(data.error);
                 
@@ -572,7 +531,6 @@
             }
         };
 
-        // --- SORGU MANTIĞI ---
         const queryConfig = {
             'tc': { title: 'TC Sorgu', endpoint: 'tc.php', f: [{ id: 'tc', l: 'TC Kimlik No' }] },
             'adsoyad': { title: 'Ad Soyad Sorgu', endpoint: 'adsoyad.php', f: [{ id: 'ad', l: 'Ad' }, { id: 'soyad', l: 'Soyad' }, { id: 'il', l: 'İl' }, { id: 'ilce', l: 'İlçe' }] },
@@ -750,15 +708,12 @@
 
         async function loadRecentLogins() {
             try {
-                const { data, error } = await supabaseClient.from('profiles').select('username, last_login, avatar_url').order('last_login', { ascending: false }).limit(5);
+                const { data, error } = await supabaseClient.from('profiles').select('username, last_login').order('last_login', { ascending: false }).limit(5);
                 const list = document.getElementById('recentLogins');
                 if(error || !data) return list.innerHTML = '<div style="text-align:center; color:#8b8f97; padding:20px; font-size:14px;">Son giriş bilgisi mevcut değil.</div>';
                 
                 list.innerHTML = data.map(u => `
                     <div style="display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.03); padding:12px; border-radius:12px;">
-                        <div style="width:32px; height:32px; border-radius:50%; background:#2b2d33; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:12px;">
-                            ${u.avatar_url ? `<img src="${u.avatar_url}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">` : (u.username ? u.username[0].toUpperCase() : '?')}
-                        </div>
                         <div style="flex:1; font-size:13px;">
                             <b style="display:block; color:#fff;">${u.username || 'Bilinmeyen'}</b>
                             <span style="color:#8b8f97;">${u.last_login ? new Date(u.last_login).toLocaleString('tr-TR') : 'Bilinmiyor'}</span>
