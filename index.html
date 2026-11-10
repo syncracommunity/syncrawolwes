@@ -199,6 +199,8 @@
             <div class="nav-item" data-page="gsmtc"><i class="ph ph-phone-call"></i> GSM → TC</div>
             <div class="nav-item" data-page="eokul"><i class="ph ph-graduation-cap"></i> E-Okul</div>
             <div class="nav-item" data-page="adres"><i class="ph ph-map-pin"></i> Adres</div>
+            <div class="nav-title">Araçlar</div>
+<div class="nav-item" data-page="smsbomber"><i class="ph ph-paper-plane-tilt"></i> SMS Bomber</div>
             <div class="nav-title">Sistem</div>
             <div class="nav-item" data-page="settings"><i class="ph ph-gear"></i> Hesap Ayarları</div>
             <div class="nav-item hidden" id="adminNav" data-page="admin"><i class="ph ph-users-three"></i> Admin Paneli</div>
@@ -211,6 +213,7 @@
                 <i class="ph ph-list menu-toggle" id="menuToggle"></i>
                 <span id="topbarTitle" style="font-weight:600; color:#fff;">Ana Sayfa</span>
             </div>
+            
             <div style="display:flex; align-items:center; gap:15px;">
                 <div class="user-profile" onclick="showPage('settings')">
                     <div class="user-avatar" id="topAvatarIcon">U</div>
@@ -335,6 +338,26 @@
             </div>
         </div>
     </div>
+    <!-- SMS BOMBER EKRANI -->
+<div id="smsbomberView" style="display:none; flex-direction:column; gap:25px;">
+    <div class="card">
+        <h2 style="font-size:20px; font-weight:700; color:#fff; margin-bottom:25px;">SMS Bomber</h2>
+        <p style="font-size:13px; color:#8b8f97; margin-bottom:20px;">Telefon numarasını girin, sisteme kayıtlı tüm servislere SMS isteği gönderilsin.</p>
+        
+        <div class="input-group" style="margin-bottom:20px;">
+            <label>Telefon Numarası (10 hane, başında 0 olmadan)</label>
+            <input type="text" id="bomberPhone" class="main-input" placeholder="5XX XXX XX XX" maxlength="10">
+        </div>
+        
+        <div style="display:flex; gap:15px;">
+            <button class="btn-white" id="startBomberBtn"><i class="ph ph-paper-plane-tilt"></i> Başlat</button>
+        </div>
+        
+        <div id="bomberLog" style="margin-top:25px; background:#0e1013; border:1px solid #262930; border-radius:16px; padding:20px; min-height:150px; font-family:monospace; font-size:13px; color:#8b8f97; overflow-y:auto; max-height:400px;">
+            <div>İşlem başlatılmadı...</div>
+        </div>
+    </div>
+</div>
 
     <script>
         // --- SUPABASE ---
@@ -496,6 +519,9 @@
             
             if (page === 'dashboard') document.getElementById('dashboardView').style.display = 'block';
             else if (page === 'settings') document.getElementById('settingsView').style.display = 'block';
+                else if (page === 'smsbomber') {
+    document.getElementById('smsbomberView').style.display = 'flex';
+}
             else if (page === 'admin') {
                 if (currentUser.is_admin !== 1) return showToast('Yetkiniz yok!', 'error');
                 document.getElementById('adminView').style.display = 'block';
@@ -792,6 +818,40 @@
         }
 
         document.getElementById('menuToggle').onclick = () => document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('startBomberBtn').onclick = async () => {
+    const phone = document.getElementById('bomberPhone').value.trim();
+    const log = document.getElementById('bomberLog');
+    const btn = document.getElementById('startBomberBtn');
+    
+    if (phone.length !== 10) return showToast('Telefon numarası 10 haneli olmalı.', 'error');
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ph ph-spinner-gap spin"></i> Gönderiliyor...';
+    log.innerHTML = '<div style="color:#f59e0b;">> Sistem başlatıldı, istekler gönderiliyor...</div>';
+    
+    try {
+        const res = await fetch(`/api/proxy?action=smsbomber&phone=${phone}`);
+        const data = await res.json();
+        
+        if (data.error) throw new Error(data.error);
+        
+        log.innerHTML = '';
+        data.results.forEach(r => {
+            const color = r.success ? '#10b981' : '#ef4444';
+            const icon = r.success ? 'ph-check-circle' : 'ph-x-circle';
+            log.innerHTML += `<div style="color:${color}; margin-bottom:5px;"><i class="ph ${icon}"></i> [${r.service.toUpperCase()}] ${r.message}</div>`;
+        });
+        
+        const successCount = data.results.filter(r => r.success).length;
+        showToast(`İşlem tamamlandı! ${successCount}/${data.results.length} başarılı.`, successCount > 0 ? 'success' : 'error');
+        
+    } catch(e) {
+        log.innerHTML += `<div style="color:#ef4444;">> Hata: ${e.message}</div>`;
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ph ph-paper-plane-tilt"></i> Başlat';
+    }
+};
     </script>
 </body>
 </html>
