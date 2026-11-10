@@ -13,15 +13,16 @@
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
 <style>
-    /* --- TEMEL DEĞİŞKENLER (GÖRSELDEN ALINDI) --- */
+    /* --- TEMEL DEĞİŞKENLER --- */
     :root { 
-        --bg: #121417; /* Çok koyu gri/siyah */
-        --panel-bg: #1a1c20; /* Kart arka planı */
+        --bg: #0e1013; /* Görseldeki en koyu arka plan */
+        --sidebar-bg: #0e1013;
+        --card-bg: #1a1c22; /* Kartlar için biraz daha açık */
         --text-main: #ffffff;
         --text-muted: #8b8f97;
-        --border-color: #2c2f36;
+        --border-color: #262930;
         --btn-light: #e2e4e9;
-        --btn-text: #121417;
+        --btn-text: #0e1013;
         --danger: #ef4444;
         --success: #10b981;
     }
@@ -34,7 +35,6 @@
         height: 100vh; 
         display: flex; 
         overflow: hidden; 
-        -webkit-font-smoothing: antialiased;
     }
 
     /* --- SCROLLBAR --- */
@@ -49,137 +49,41 @@
     .splash-title { font-size: 1.5rem; font-weight: 700; color: var(--text-main); letter-spacing: 1px; }
     .splash-subtitle { font-size: 0.9rem; color: var(--text-muted); margin-top: 8px; letter-spacing: 2px; }
 
-    /* --- MODAL (GİRİŞ EKRANI - BİREBİR GÖRSEL) --- */
+    /* --- GİRİŞ EKRANI (BİREBİR MODAL) --- */
     #auth-screen { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(10px); z-index: 5000; display: none; justify-content: center; align-items: center; padding: 20px; }
-    
-    .auth-modal {
-        background: linear-gradient(180deg, #1e2025 0%, #15171a 100%);
-        border: 1px solid var(--border-color);
-        border-radius: 32px; /* Çok yuvarlak */
-        width: 100%;
-        max-width: 480px;
-        padding: 40px;
-        position: relative;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-        text-align: center;
-    }
-
-    .auth-close-btn {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        width: 40px;
-        height: 40px;
-        border-radius: 12px;
-        background: transparent;
-        border: 1px solid var(--border-color);
-        color: var(--text-muted);
-        display: grid;
-        place-items: center;
-        cursor: pointer;
-        transition: 0.2s;
-    }
+    .auth-modal { background: linear-gradient(180deg, #1e2025 0%, #15171a 100%); border: 1px solid var(--border-color); border-radius: 32px; width: 100%; max-width: 480px; padding: 40px; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); text-align: center; }
+    .auth-close-btn { position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; border-radius: 12px; background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); display: grid; place-items: center; cursor: pointer; transition: 0.2s; }
     .auth-close-btn:hover { background: #2b2d33; color: var(--text-main); }
-
-    .auth-logo-box {
-        width: 80px;
-        height: 80px;
-        background: #2b2d33;
-        border-radius: 24px;
-        display: grid;
-        place-items: center;
-        margin: 0 auto 25px;
-        font-size: 45px;
-        color: var(--text-main);
-        border: 1px solid #3f434d;
-    }
-
-    .auth-eyebrow {
-        font-size: 12px;
-        color: var(--text-muted);
-        letter-spacing: 4px;
-        text-transform: uppercase;
-        font-weight: 600;
-        margin-bottom: 15px;
-    }
-
-    .auth-title {
-        font-size: 32px;
-        font-weight: 700;
-        color: var(--text-main);
-        line-height: 1.2;
-        margin-bottom: 15px;
-    }
-
-    .auth-desc {
-        font-size: 14px;
-        color: var(--text-muted);
-        line-height: 1.6;
-        margin-bottom: 30px;
-    }
-
+    .auth-logo-box { width: 80px; height: 80px; background: #2b2d33; border-radius: 24px; display: grid; place-items: center; margin: 0 auto 25px; font-size: 45px; color: var(--text-main); border: 1px solid #3f434d; }
+    .auth-eyebrow { font-size: 12px; color: var(--text-muted); letter-spacing: 4px; text-transform: uppercase; font-weight: 600; margin-bottom: 15px; }
+    .auth-title { font-size: 32px; font-weight: 700; color: var(--text-main); line-height: 1.2; margin-bottom: 15px; }
+    .auth-desc { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 30px; }
     .auth-input-group { position: relative; margin-bottom: 15px; text-align: left; }
-    .auth-input {
-        width: 100%;
-        background: #121417;
-        border: 1px solid var(--border-color);
-        color: var(--text-main);
-        padding: 16px 20px;
-        border-radius: 16px; /* Yuvarlak input */
-        font-size: 15px;
-        outline: none;
-        transition: 0.2s;
-    }
+    .auth-input { width: 100%; background: #121417; border: 1px solid var(--border-color); color: var(--text-main); padding: 16px 20px; border-radius: 16px; font-size: 15px; outline: none; transition: 0.2s; }
     .auth-input:focus { border-color: #5c626d; }
-    .auth-input::placeholder { color: #5c626d; }
-
-    .auth-btn-main {
-        width: 100%;
-        background: var(--btn-light);
-        color: var(--btn-text);
-        padding: 18px;
-        border-radius: 16px;
-        border: none;
-        font-weight: 700;
-        font-size: 16px;
-        cursor: pointer;
-        transition: 0.2s;
-        margin-top: 10px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 10px;
-    }
+    .auth-btn-main { width: 100%; background: var(--btn-light); color: var(--btn-text); padding: 18px; border-radius: 16px; border: none; font-weight: 700; font-size: 16px; cursor: pointer; transition: 0.2s; margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 10px; }
     .auth-btn-main:hover { background: #ffffff; transform: scale(1.01); }
-
-    .auth-skip-btn {
-        margin-top: 25px;
-        background: none;
-        border: none;
-        color: var(--text-muted);
-        font-size: 14px;
-        cursor: pointer;
-        transition: 0.2s;
-    }
+    .auth-skip-btn { margin-top: 25px; background: none; border: none; color: var(--text-muted); font-size: 14px; cursor: pointer; transition: 0.2s; }
     .auth-skip-btn:hover { color: var(--text-main); }
 
-    /* --- PANEL --- */
-    .sidebar { width: 260px; background: var(--bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; z-index: 100; }
-    .brand { padding: 25px; font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 10px; color: var(--text-main); border-bottom: 1px solid var(--border-color); }
+    /* --- PANEL (GÖRSELDEKİ GİBİ) --- */
+    .sidebar { width: 260px; background: var(--sidebar-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; z-index: 100; }
+    .brand { padding: 24px 20px; font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 10px; color: var(--text-main); border-bottom: 1px solid var(--border-color); }
+    
     .nav-section { padding: 20px 15px; flex: 1; }
-    .nav-title { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); font-weight: 700; margin-bottom: 15px; padding-left: 15px; margin-top: 20px;}
+    .nav-title { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); font-weight: 700; margin-bottom: 12px; padding-left: 15px; margin-top: 20px; }
     .nav-item { 
         padding: 14px 20px; 
         color: var(--text-muted); 
         cursor: pointer; 
         font-size: 14px; 
         font-weight: 500; 
-        border-radius: 16px; /* Yuvarlak menü */
+        border-radius: 16px; 
         transition: 0.2s; 
         display: flex; 
         align-items: center; 
         gap: 12px; 
-        margin-bottom: 5px; 
+        margin-bottom: 4px; 
     }
     .nav-item:hover { background: #1c1e22; color: var(--text-main); }
     .nav-item.active { background: #2b2d33; color: var(--text-main); font-weight: 600; }
@@ -188,16 +92,17 @@
     .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; background: var(--bg); }
     .topbar { height: 80px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 40px; background: var(--bg); position: sticky; top: 0; z-index: 50; }
     
-    .user-profile { display: flex; align-items: center; gap: 10px; background: #1c1e22; padding: 8px 16px 8px 8px; border-radius: 30px; border: 1px solid var(--border-color); cursor: pointer; }
-    .user-avatar { width: 30px; height: 30px; border-radius: 50%; background: #2b2d33; display: grid; place-items: center; color: var(--text-main); font-size: 14px; }
-    .badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+    /* Profil Butonu */
+    .user-profile { display: flex; align-items: center; gap: 10px; background: #1c1e22; padding: 6px 16px 6px 6px; border-radius: 30px; border: 1px solid var(--border-color); cursor: pointer; }
+    .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: #2b2d33; display: grid; place-items: center; color: var(--text-main); font-size: 14px; font-weight: 700;}
+    .badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
     .badge-admin { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
     .badge-free { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
 
     .content { padding: 40px; max-width: 1400px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 30px; }
     
     /* Kartlar */
-    .card { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 24px; padding: 25px; }
+    .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 24px; padding: 25px; }
     .stat-card { display: flex; align-items: center; gap: 20px; }
     .stat-icon { width: 60px; height: 60px; border-radius: 20px; background: #2b2d33; display: grid; place-items: center; font-size: 28px; color: var(--text-main); }
 
@@ -218,7 +123,7 @@
     /* Modallar */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); z-index: 10000; display: none; justify-content: center; align-items: center; }
     .modal-overlay.show { display: flex; }
-    .modal-box { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 32px; padding: 40px; width: 100%; max-width: 400px; text-align: center; }
+    .modal-box { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 32px; padding: 40px; width: 100%; max-width: 400px; text-align: center; }
     
     .hidden { display: none !important; }
     .menu-toggle { display: none; cursor: pointer; font-size: 24px; color: var(--text-main); }
@@ -229,6 +134,7 @@
         .menu-toggle { display: block; }
         .content { padding: 20px; }
         .topbar { padding: 0 20px; }
+        .auth-modal { padding: 25px; }
     }
 </style>
 </head>
@@ -247,9 +153,9 @@
         <div class="auth-modal">
             <button class="auth-close-btn" onclick="document.getElementById('auth-screen').style.display='none'"><i class="ph ph-x"></i></button>
             
-            <div class="auth-logo-box"><i class="ph ph-discord-logo"></i></div>
+            <div class="auth-logo-box"><i class="ph ph-shield-check"></i></div>
             
-            <div class="auth-eyebrow">101M Method's</div>
+            <div class="auth-eyebrow">Syncra Cloud</div>
             <h2 class="auth-title">Sunucumuza<br>sen de katıl.</h2>
             <p class="auth-desc">Premium Çekilişleri 60+ Method Kanalları Ücretsiz<br>Sorgu Botları+++</p>
             
@@ -277,7 +183,7 @@
 
     <!-- PANEL -->
     <div class="sidebar" id="sidebar" style="display:none;">
-        <div class="brand"><i class="ph ph-shield-check text-white"></i> SYNCRA</div>
+        <div class="brand"><i class="ph ph-shield-check"></i> SYNCRA</div>
         <div class="nav-section">
             <div class="nav-item active" data-page="dashboard"><i class="ph ph-squares-four"></i> Ana Sayfa</div>
             <div class="nav-title">Sorgu Çözümleri</div>
@@ -304,10 +210,10 @@
             <div class="flex items-center gap-4">
                 <div class="user-profile" onclick="showPage('settings')">
                     <div class="user-avatar" id="topAvatarIcon">U</div>
-                    <span id="currentUsername" class="text-sm font-semibold text-white">Kullanıcı</span>
+                    <span id="currentUsername" class="text-sm font-semibold text-white ml-2">Kullanıcı</span>
                     <span id="topBadge" class="badge badge-free">Free</span>
                 </div>
-                <button class="text-red-400 hover:text-red-300 transition" onclick="document.getElementById('logoutModal').classList.add('show')"><i class="ph ph-sign-out text-xl"></i></button>
+                <button class="text-gray-500 hover:text-red-400 transition" onclick="document.getElementById('logoutModal').classList.add('show')"><i class="ph ph-sign-out text-xl"></i></button>
             </div>
         </div>
 
@@ -318,7 +224,7 @@
                     <h2 class="text-2xl font-bold text-white">Hoş Geldin, <span id="welcomeName" class="text-gray-400">Operatör</span>.</h2>
                     <p class="text-sm text-gray-500 mt-2">Sistemdeki son durum ve istatistikler.</p>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 25px;">
                     <div class="card stat-card">
                         <div class="stat-icon"><i class="ph ph-chart-line-up"></i></div>
                         <div><h3 id="statTotalQueries" class="text-3xl font-bold text-white">0</h3><p class="text-xs text-gray-500">Toplam Sorgu</p></div>
@@ -332,7 +238,7 @@
                         <div><h3 class="text-3xl font-bold text-white">8</h3><p class="text-xs text-gray-500">Aktif Modül</p></div>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
                     <div class="card">
                         <div class="border-b border-gray-700 pb-4 mb-4"><h3 class="font-semibold text-white">Son Sorgularım</h3></div>
                         <div id="historyList"><div class="text-center text-gray-500 py-4 text-sm">Geçmiş yok.</div></div>
@@ -374,7 +280,7 @@
             <div id="queryView" style="display:none; flex-direction:column; gap:25px;">
                 <div class="card">
                     <h2 id="pageTitle" class="text-xl font-bold text-white mb-6">Sorgulama</h2>
-                    <div id="dynamicForm" class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6"></div>
+                    <div id="dynamicForm" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;"></div>
                     <div class="flex justify-end gap-3">
                         <button class="bg-gray-900 border border-gray-700 text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-800 transition" onclick="document.querySelectorAll('.input-group input').forEach(i=>i.value='')">Temizle</button>
                         <button id="runBtn" class="bg-white text-black px-6 py-3 rounded-xl font-semibold hover:bg-gray-200 transition flex items-center gap-2"><i class="ph ph-magnifying-glass"></i> Sorgula</button>
