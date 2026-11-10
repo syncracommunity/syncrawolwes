@@ -13,14 +13,15 @@
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
 <style>
+    /* --- TEMEL DEĞİŞKENLER (İLK GÖRSELDEN) --- */
     :root { 
         --bg-dark: #0e1013; 
-        --bg-gradient: radial-gradient(circle at top right, #1a2233 0%, #0e1013 50%);
+        --bg-gradient: radial-gradient(circle at top right, #1a2233 0%, #0e1013 50%); /* Hafif mavi geçiş */
         --card-bg: #1a1c22; 
         --text-main: #ffffff;
         --text-muted: #8b8f97;
         --border-color: #262930;
-        --btn-light: #e2e4e9;
+        --btn-light: #e2e4e9; /* Görseldeki beyaz buton */
         --btn-text: #0e1013;
         --danger: #ef4444;
         --success: #10b981;
@@ -28,18 +29,29 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: var(--bg-gradient); color: var(--text-main); font-family: 'Inter', sans-serif; height: 100vh; display: flex; overflow: hidden; -webkit-font-smoothing: antialiased; }
+    body { 
+        background: var(--bg-gradient); 
+        color: var(--text-main); 
+        font-family: 'Inter', sans-serif; 
+        height: 100vh; 
+        display: flex; 
+        overflow: hidden; 
+        -webkit-font-smoothing: antialiased;
+    }
 
+    /* --- İNCE KOYU SCROLLBAR --- */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #2c2f36; border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: #4b5059; }
 
+    /* --- SPLASH --- */
     #splash-screen { position: fixed; inset: 0; background: var(--bg-dark); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease; cursor: pointer; }
     .splash-logo { width: 80px; height: 80px; background: #2b2d33; border-radius: 24px; display: grid; place-items: center; font-size: 40px; color: var(--text-main); margin-bottom: 20px; }
     .splash-title { font-size: 1.5rem; font-weight: 700; color: var(--text-main); letter-spacing: 1px; }
     .splash-subtitle { font-size: 0.9rem; color: var(--text-muted); margin-top: 8px; letter-spacing: 2px; }
 
+    /* --- GİRİŞ EKRANI --- */
     #auth-screen { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(10px); z-index: 5000; display: none; justify-content: center; align-items: center; padding: 20px; }
     .auth-modal { background: linear-gradient(180deg, #1e2025 0%, #15171a 100%); border: 1px solid var(--border-color); border-radius: 32px; width: 100%; max-width: 480px; padding: 40px; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); text-align: center; }
     .auth-close-btn { position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; border-radius: 12px; background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); display: grid; place-items: center; cursor: pointer; transition: 0.2s; }
@@ -56,11 +68,25 @@
     .auth-skip-btn { margin-top: 25px; background: none; border: none; color: var(--text-muted); font-size: 14px; cursor: pointer; transition: 0.2s; }
     .auth-skip-btn:hover { color: var(--text-main); }
 
+    /* --- PANEL (GÖRSELDEKİ GİBİ) --- */
     .sidebar { width: 260px; background: var(--bg-dark); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; z-index: 100; }
     .brand { padding: 24px 20px; font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 10px; color: var(--text-main); border-bottom: 1px solid var(--border-color); }
-    .nav-section { padding: 20px 15px; flex: 1; overflow-y: auto; }
+    
+    .nav-section { padding: 20px 15px; flex: 1; overflow-y: auto; /* Sağdaki scrollbar */ }
     .nav-title { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); font-weight: 700; margin-bottom: 12px; padding-left: 15px; margin-top: 20px; }
-    .nav-item { padding: 14px 20px; color: var(--text-muted); cursor: pointer; font-size: 14px; font-weight: 500; border-radius: 16px; transition: 0.2s; display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+    .nav-item { 
+        padding: 14px 20px; 
+        color: var(--text-muted); 
+        cursor: pointer; 
+        font-size: 14px; 
+        font-weight: 500; 
+        border-radius: 16px; 
+        transition: 0.2s; 
+        display: flex; 
+        align-items: center; 
+        gap: 12px; 
+        margin-bottom: 4px; 
+    }
     .nav-item:hover { background: #1c1e22; color: var(--text-main); }
     .nav-item.active { background: #2b2d33; color: var(--text-main); font-weight: 600; }
     .nav-item i { font-size: 20px; }
@@ -68,28 +94,33 @@
     .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
     .topbar { height: 80px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 40px; background: transparent; position: sticky; top: 0; z-index: 50; }
     
-    /* Sadece isim ve rozet */
-    .user-profile { display: flex; align-items: center; gap: 10px; background: #1c1e22; padding: 10px 20px; border-radius: 30px; border: 1px solid var(--border-color); cursor: pointer; }
+    /* Profil Butonu */
+    .user-profile { display: flex; align-items: center; gap: 10px; background: #1c1e22; padding: 6px 16px 6px 6px; border-radius: 30px; border: 1px solid var(--border-color); cursor: pointer; }
+    .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: #2b2d33; display: grid; place-items: center; color: var(--text-main); font-size: 14px; font-weight: 700;}
     .badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
     .badge-admin { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
     .badge-free { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
 
     .content { padding: 40px; max-width: 1400px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 30px; }
     
+    /* Kartlar */
     .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 24px; padding: 25px; }
     .stat-card { display: flex; align-items: center; gap: 20px; }
     .stat-icon { width: 60px; height: 60px; border-radius: 20px; background: #2b2d33; display: grid; place-items: center; font-size: 28px; color: var(--text-main); }
 
+    /* Inputlar */
     .input-group { display: flex; flex-direction: column; gap: 8px; }
     .input-group label { font-size: 13px; color: var(--text-muted); font-weight: 600; }
     .main-input { width: 100%; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 16px 20px; border-radius: 16px; font-size: 15px; outline: none; }
     .main-input:focus { border-color: #5c626d; }
 
+    /* Butonlar */
     .btn-white { background: var(--btn-light); color: var(--btn-text); padding: 14px 24px; border-radius: 16px; border: none; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px; font-size: 14px; }
     .btn-white:hover { background: #fff; transform: scale(1.02); }
     .btn-dark { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); padding: 14px 24px; border-radius: 16px; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px; font-size: 14px; }
     .btn-dark:hover { background: #1c1e22; }
 
+    /* Tablo (Oval Satırlar) */
     table { width: 100%; border-collapse: separate; border-spacing: 0 8px; text-align: left; }
     th { padding: 15px 20px; font-size: 12px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 1px;}
     td { padding: 18px 20px; font-size: 14px; color: var(--text-main); background: #1c1e22; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); }
@@ -97,6 +128,7 @@
     td:last-child { border-right: 1px solid var(--border-color); border-radius: 0 16px 16px 0; }
     tr:hover td { background: #23262b; }
 
+    /* Modallar */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); z-index: 10000; display: none; justify-content: center; align-items: center; }
     .modal-overlay.show { display: flex; }
     .modal-box { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 32px; padding: 40px; width: 100%; max-width: 400px; text-align: center; }
@@ -104,10 +136,8 @@
     .hidden { display: none !important; }
     .menu-toggle { display: none; cursor: pointer; font-size: 24px; color: var(--text-main); }
 
-    .bomber-log { margin-top:25px; background:#0e1013; border:1px solid #262930; border-radius:16px; padding:20px; min-height:150px; font-family:monospace; font-size:13px; color:#8b8f97; overflow-y:auto; max-height:400px; display: flex; flex-direction: column; gap: 5px; }
-
     @media (max-width: 900px) {
-        .sidebar { position: fixed; left: 0; top: 0; height: 100vh; transform: translateX(-100%); transition: 0.3s; z-index: 1000;}
+        .sidebar { position: fixed; left: 0; top: 0; height: 100vh; transform: translateX(-100%); transition: 0.3s; }
         .sidebar.open { transform: translateX(0); }
         .menu-toggle { display: block; }
         .content { padding: 20px; }
@@ -117,14 +147,16 @@
 </style>
 </head>
 <body>
-    <div id="toast-container" style="position:fixed; top:20px; right:20px; z-index:99999; display:flex; flex-direction:column; gap:10px;"></div>
+    <div id="toast-container" class="fixed top-5 right-5 z-[99999] flex flex-col gap-2"></div>
 
+    <!-- SPLASH -->
     <div id="splash-screen" onclick="window.skipSplash()">
         <div class="splash-logo"><i class="ph ph-command-line"></i></div>
         <div class="splash-title">Developed by Onur</div>
         <div class="splash-subtitle">SYNCRA CLOUD SYSTEM</div>
     </div>
 
+    <!-- GİRİŞ (GÖRSELDEKİ MODAL) -->
     <div id="auth-screen">
         <div class="auth-modal">
             <button class="auth-close-btn" onclick="document.getElementById('auth-screen').style.display='none'"><i class="ph ph-x"></i></button>
@@ -153,11 +185,11 @@
         </div>
     </div>
 
+    <!-- PANEL -->
     <div class="sidebar" id="sidebar" style="display:none;">
         <div class="brand"><i class="ph ph-shield-check"></i> SYNCRA</div>
         <div class="nav-section">
             <div class="nav-item active" data-page="dashboard"><i class="ph ph-squares-four"></i> Ana Sayfa</div>
-            
             <div class="nav-title">Sorgu Çözümleri</div>
             <div class="nav-item" data-page="tc"><i class="ph ph-identification-card"></i> TC Sorgu</div>
             <div class="nav-item" data-page="adsoyad"><i class="ph ph-user"></i> Ad Soyad</div>
@@ -167,10 +199,8 @@
             <div class="nav-item" data-page="gsmtc"><i class="ph ph-phone-call"></i> GSM → TC</div>
             <div class="nav-item" data-page="eokul"><i class="ph ph-graduation-cap"></i> E-Okul</div>
             <div class="nav-item" data-page="adres"><i class="ph ph-map-pin"></i> Adres</div>
-            
             <div class="nav-title">Araçlar</div>
-            <div class="nav-item" data-page="smsbomber"><i class="ph ph-paper-plane-tilt"></i> SMS Bomber</div>
-
+            <div class="nav-item" data-page="smsbomber"><i class="ph ph-chat-teardrop-text"></i> SMS Bomber</div>
             <div class="nav-title">Sistem</div>
             <div class="nav-item" data-page="settings"><i class="ph ph-gear"></i> Hesap Ayarları</div>
             <div class="nav-item hidden" id="adminNav" data-page="admin"><i class="ph ph-users-three"></i> Admin Paneli</div>
@@ -184,9 +214,9 @@
                 <span id="topbarTitle" style="font-weight:600; color:#fff;">Ana Sayfa</span>
             </div>
             <div style="display:flex; align-items:center; gap:15px;">
-                <!-- Sadece isim ve rozet -->
                 <div class="user-profile" onclick="showPage('settings')">
-                    <span id="currentUsername" style="font-size:14px; font-weight:600; color:#fff;">Kullanıcı</span>
+                    <div class="user-avatar" id="topAvatarIcon">U</div>
+                    <span id="currentUsername" style="font-size:14px; font-weight:600; color:#fff; margin-left:5px;">Kullanıcı</span>
                     <span id="topBadge" class="badge badge-free">Free</span>
                 </div>
                 <button style="background:none; border:none; color:#8b8f97; cursor:pointer; transition:0.2s;" onclick="document.getElementById('logoutModal').classList.add('show')" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#8b8f97'"><i class="ph ph-sign-out" style="font-size:24px;"></i></button>
@@ -194,6 +224,7 @@
         </div>
 
         <div class="content">
+            <!-- DASHBOARD -->
             <div id="dashboardView">
                 <div class="card" style="padding: 30px; margin-bottom: 25px;">
                     <h2 style="font-size:24px; font-weight:700; color:#fff;">Hoş Geldin, <span id="welcomeName" style="color:#8b8f97;">Operatör</span>.</h2>
@@ -210,7 +241,7 @@
                     </div>
                     <div class="card stat-card">
                         <div class="stat-icon"><i class="ph ph-database"></i></div>
-                        <div><h3 style="font-size:32px; font-weight:700; color:#fff;">8</h3><p style="font-size:12px; color:#8b8f97;">Aktif Modül</p></div>
+                        <div><h3 style="font-size:32px; font-weight:700; color:#fff;">9</h3><p style="font-size:12px; color:#8b8f97;">Aktif Modül</p></div>
                     </div>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
@@ -225,31 +256,17 @@
                 </div>
             </div>
 
-            <div id="smsbomberView" style="display:none; flex-direction:column; gap:25px;">
-                <div class="card">
-                    <h2 style="font-size:20px; font-weight:700; color:#fff; margin-bottom:15px;">SMS Bomber</h2>
-                    <p style="font-size:13px; color:#8b8f97; margin-bottom:20px;">Telefon numarasını girin, sisteme kayıtlı tüm servislere SMS isteği gönderilsin.</p>
-                    <div class="input-group" style="margin-bottom:20px;">
-                        <label>Telefon Numarası (10 hane, başında 0 olmadan)</label>
-                        <input type="text" id="bomberPhone" class="main-input" placeholder="5XX XXX XX XX" maxlength="10">
-                    </div>
-                    <div style="display:flex; gap:15px;">
-                        <button class="btn-white" id="startBomberBtn"><i class="ph ph-paper-plane-tilt"></i> Başlat</button>
-                    </div>
-                    <div id="bomberLog" class="bomber-log">
-                        <div>İşlem başlatılmadı...</div>
-                    </div>
-                </div>
-            </div>
-
+            <!-- AYARLAR -->
             <div id="settingsView" style="display:none;">
                 <div class="card" style="max-width:600px;">
                     <div style="border-bottom:1px solid #262930; padding-bottom:15px; margin-bottom:20px;"><h3 style="font-size:16px; font-weight:600; color:#fff;">Profil Bilgileri</h3></div>
                     <div class="input-group" style="margin-bottom:15px;"><label>Görünen Ad</label><input type="text" id="settingsName" class="main-input"></div>
+                    <div class="input-group" style="margin-bottom:20px;"><label>Avatar URL</label><input type="text" id="settingsAvatar" placeholder="https://..." class="main-input"></div>
                     <button class="btn-white" id="saveProfileBtn">Kaydet</button>
                 </div>
             </div>
 
+            <!-- ADMIN -->
             <div id="adminView" style="display:none;">
                 <div class="card">
                     <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #262930; padding-bottom:15px; margin-bottom:20px;">
@@ -265,6 +282,7 @@
                 </div>
             </div>
 
+            <!-- SORGU -->
             <div id="queryView" style="display:none; flex-direction:column; gap:25px;">
                 <div class="card">
                     <h2 id="pageTitle" style="font-size:20px; font-weight:700; color:#fff; margin-bottom:25px;">Sorgulama</h2>
@@ -293,9 +311,32 @@
                     </div>
                 </div>
             </div>
+
+            <!-- SMS BOMBER -->
+            <div id="smsbomberView" style="display:none; flex-direction:column; gap:25px;">
+                <div class="card">
+                    <h2 style="font-size:20px; font-weight:700; color:#fff; margin-bottom:25px;">SMS Bomber</h2>
+                    <p style="font-size:13px; color:#8b8f97; margin-bottom:20px;">Telefon numarasına kayıtlı servislere SMS doğrulama kodu gönderir. Numara 10 haneli olmalı ve başında 0 olmamalı (örn: 5551234567).</p>
+                    <div class="input-group" style="margin-bottom:20px; max-width:400px;">
+                        <label>Telefon Numarası</label>
+                        <input type="text" id="bomberPhone" class="main-input" placeholder="5551234567" maxlength="10">
+                    </div>
+                    <button class="btn-white" id="bomberRunBtn"><i class="ph ph-paper-plane-tilt"></i> SMS Gönder</button>
+                </div>
+                <div class="card">
+                    <div style="border-bottom:1px solid #262930; padding-bottom:15px; margin-bottom:20px;">
+                        <h3 style="font-size:16px; font-weight:600; color:#fff;">Sonuçlar</h3>
+                        <span id="bomberSummary" style="font-size:12px; color:#8b8f97;">Henüz istek yok.</span>
+                    </div>
+                    <div id="bomberResults" style="display:flex; flex-direction:column; gap:8px;">
+                        <div style="text-align:center; color:#8b8f97; padding:20px; font-size:14px;">SMS gönderilmedi.</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
+    <!-- MODALLAR -->
     <div class="modal-overlay" id="logoutModal">
         <div class="modal-box">
             <h3 style="font-size:20px; font-weight:700; color:#fff; margin-bottom:10px;">Çıkış Yap?</h3>
@@ -320,6 +361,7 @@
     </div>
 
     <script>
+        // --- SUPABASE ---
         let supabaseClient = null;
         try {
             supabaseClient = window.supabase.createClient(
@@ -330,6 +372,7 @@
 
         let currentUser = null;
 
+        // --- TOAST ---
         window.showToast = function(msg, type='success') {
             const c = document.getElementById('toast-container');
             const t = document.createElement('div');
@@ -339,6 +382,7 @@
             setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000);
         };
 
+        // --- SPLASH ---
         window.skipSplash = function() {
             const splash = document.getElementById('splash-screen');
             if(splash) splash.style.display = 'none';
@@ -346,6 +390,7 @@
         };
         setTimeout(window.skipSplash, 2000);
 
+        // --- AUTH ---
         let isLoginMode = true;
         const authScreen = document.getElementById('auth-screen');
         const authSubmitBtn = document.getElementById('authSubmitBtn');
@@ -436,6 +481,7 @@
             const name = currentUser.username || 'Kullanıcı';
             document.getElementById('currentUsername').textContent = name;
             document.getElementById('welcomeName').textContent = name;
+            document.getElementById('topAvatarIcon').textContent = name[0].toUpperCase();
             
             const badge = document.getElementById('topBadge');
             if (currentUser.is_admin === 1) {
@@ -445,16 +491,19 @@
             }
 
             document.getElementById('settingsName').value = name;
+            document.getElementById('settingsAvatar').value = currentUser.avatar_url || '';
         }
 
         document.getElementById('saveProfileBtn').onclick = async () => {
             const newName = document.getElementById('settingsName').value;
+            const newAvatar = document.getElementById('settingsAvatar').value;
             if (!newName) return showToast('İsim boş olamaz', 'error');
 
-            const { error } = await supabaseClient.from('profiles').update({ username: newName }).eq('id', currentUser.id);
+            const { error } = await supabaseClient.from('profiles').update({ username: newName, avatar_url: newAvatar }).eq('id', currentUser.id);
             if (error) return showToast(error.message, 'error');
 
             currentUser.username = newName;
+            currentUser.avatar_url = newAvatar;
             updateProfileUI();
             showToast('Profil güncellendi!');
         };
@@ -488,48 +537,6 @@
         document.querySelectorAll('.nav-item[data-page]').forEach(item => {
             item.onclick = () => showPage(item.dataset.page);
         });
-
-        document.getElementById('startBomberBtn').onclick = async () => {
-            const phone = document.getElementById('bomberPhone').value.trim();
-            const log = document.getElementById('bomberLog');
-            const btn = document.getElementById('startBomberBtn');
-            
-            if (phone.length !== 10 || isNaN(phone)) return showToast('Telefon numarası 10 haneli olmalı.', 'error');
-            
-            btn.disabled = true;
-            btn.innerHTML = '<i class="ph ph-spinner-gap spin"></i> Gönderiliyor...';
-            log.innerHTML = '<div style="color:#f59e0b;">> Sistem başlatıldı, istekler gönderiliyor...</div>';
-            
-            try {
-                const res = await fetch(`/api/proxy?action=smsbomber&phone=${phone}`);
-                const textData = await res.text();
-                let data;
-                try {
-                    data = JSON.parse(textData);
-                } catch (parseErr) {
-                    throw new Error('API yanıtı okunamadı: ' + textData.substring(0, 50));
-                }
-                
-                if (data.error) throw new Error(data.error);
-                
-                log.innerHTML = '';
-                data.results.forEach(r => {
-                    const color = r.success ? '#10b981' : '#ef4444';
-                    const icon = r.success ? 'ph-check-circle' : 'ph-x-circle';
-                    log.innerHTML += `<div style="color:${color}; margin-bottom:5px;"><i class="ph ${icon}"></i> [${r.service.toUpperCase()}] ${r.message}</div>`;
-                });
-                
-                const successCount = data.results.filter(r => r.success).length;
-                showToast(`İşlem tamamlandı! ${successCount}/${data.results.length} başarılı.`, successCount > 0 ? 'success' : 'error');
-                
-            } catch(e) {
-                log.innerHTML += `<div style="color:#ef4444;">> Hata: ${e.message}</div>`;
-                showToast('SMS Bomber başarısız oldu.', 'error');
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="ph ph-paper-plane-tilt"></i> Başlat';
-            }
-        };
 
         const queryConfig = {
             'tc': { title: 'TC Sorgu', endpoint: 'tc.php', f: [{ id: 'tc', l: 'TC Kimlik No' }] },
@@ -579,9 +586,21 @@
             document.getElementById('runBtn').disabled = true;
 
             try {
-                const q = new URLSearchParams({ endpoint: cfg.endpoint, ...params }).toString();
+                const q = new URLSearchParams({ endpoint: cfg.endpoint, ...params, ...(cfg.extra || {}) }).toString();
                 const res = await fetch(`/api/proxy?${q}`);
-                const data = await res.json();
+                
+                // HTTP hatası kontrolü
+                if (!res.ok) {
+                    throw new Error(`Sunucu hatası (${res.status}). Lütfen daha sonra tekrar deneyin.`);
+                }
+
+                let data;
+                try {
+                    data = await res.json();
+                } catch (jsonErr) {
+                    // JSON parse hatası — sunucu HTML hata sayfası döndürmüş olabilir
+                    throw new Error('Sunucudan geçersiz yanıt alındı. Proxy fonksiyonu çalışmıyor olabilir.');
+                }
                 
                 if(data.error) throw new Error(data.error);
                 
@@ -621,7 +640,7 @@
             } catch(e) {
                 showToast(e.message, 'error');
             } finally {
-                document.getElementById('runBtn').innerText = 'Sorgula';
+                document.getElementById('runBtn').innerHTML = '<i class="ph ph-magnifying-glass"></i> Sorgula';
                 document.getElementById('runBtn').disabled = false;
             }
         };
@@ -708,12 +727,15 @@
 
         async function loadRecentLogins() {
             try {
-                const { data, error } = await supabaseClient.from('profiles').select('username, last_login').order('last_login', { ascending: false }).limit(5);
+                const { data, error } = await supabaseClient.from('profiles').select('username, last_login, avatar_url').order('last_login', { ascending: false }).limit(5);
                 const list = document.getElementById('recentLogins');
                 if(error || !data) return list.innerHTML = '<div style="text-align:center; color:#8b8f97; padding:20px; font-size:14px;">Son giriş bilgisi mevcut değil.</div>';
                 
                 list.innerHTML = data.map(u => `
                     <div style="display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.03); padding:12px; border-radius:12px;">
+                        <div style="width:32px; height:32px; border-radius:50%; background:#2b2d33; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:12px;">
+                            ${u.avatar_url ? `<img src="${u.avatar_url}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">` : (u.username ? u.username[0].toUpperCase() : '?')}
+                        </div>
                         <div style="flex:1; font-size:13px;">
                             <b style="display:block; color:#fff;">${u.username || 'Bilinmeyen'}</b>
                             <span style="color:#8b8f97;">${u.last_login ? new Date(u.last_login).toLocaleString('tr-TR') : 'Bilinmiyor'}</span>
@@ -809,6 +831,69 @@
         }
 
         document.getElementById('menuToggle').onclick = () => document.getElementById('sidebar').classList.toggle('open');
+
+        // ─── SMS BOMBER ───
+        document.getElementById('bomberRunBtn').onclick = async () => {
+            const phone = document.getElementById('bomberPhone').value.trim();
+            if (!/^\d{10}$/.test(phone)) {
+                return showToast('Telefon numarası 10 haneli olmalı (örn: 5551234567).', 'error');
+            }
+
+            const btn = document.getElementById('bomberRunBtn');
+            const summary = document.getElementById('bomberSummary');
+            const resultsDiv = document.getElementById('bomberResults');
+
+            btn.disabled = true;
+            btn.innerHTML = 'Gönderiliyor...';
+            summary.innerText = 'İstekler gönderiliyor, lütfen bekleyin...';
+            resultsDiv.innerHTML = '<div style="text-align:center; color:#8b8f97; padding:20px; font-size:14px;">İşleniyor...</div>';
+
+            try {
+                const res = await fetch(`/api/proxy?action=smsbomber&phone=${phone}`);
+                
+                if (!res.ok) {
+                    throw new Error(`Sunucu hatası (${res.status}). Proxy fonksiyonu çalışmıyor olabilir.`);
+                }
+
+                let data;
+                try {
+                    data = await res.json();
+                } catch (jsonErr) {
+                    throw new Error('Sunucudan geçersiz yanıt alındı. Proxy fonksiyonu çalışmıyor olabilir.');
+                }
+
+                if (data.error) throw new Error(data.error);
+
+                const results = data.results || [];
+                const total = data.total || results.length;
+                const basarili = data.basarili ?? results.filter(r => r.success).length;
+                const basarisiz = data.basarisiz ?? (total - basarili);
+
+                summary.innerText = `Toplam ${total} servis • Başarılı: ${basarili} • Başarısız: ${basarisiz}`;
+
+                if (results.length === 0) {
+                    resultsDiv.innerHTML = '<div style="text-align:center; color:#8b8f97; padding:20px; font-size:14px;">Sonuç yok.</div>';
+                    return;
+                }
+
+                resultsDiv.innerHTML = results.map(r => `
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); padding:12px 16px; border-radius:12px; font-size:14px; border-left:3px solid ${r.success ? '#10b981' : '#ef4444'};">
+                        <span style="font-weight:600; text-transform:capitalize;">${r.service}</span>
+                        <span style="color:${r.success ? '#10b981' : '#ef4444'}; font-size:12px; font-weight:600;">
+                            ${r.success ? '✓ Başarılı' : '✗ Başarısız'}
+                        </span>
+                    </div>
+                `).join('');
+
+            } catch (e) {
+                summary.innerText = 'Hata oluştu.';
+                resultsDiv.innerHTML = `<div style="text-align:center; color:#ef4444; padding:20px; font-size:14px;">${e.message}</div>`;
+                showToast(e.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="ph ph-paper-plane-tilt"></i> SMS Gönder';
+            }
+        };
     </script>
 </body>
 </html>
