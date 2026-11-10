@@ -138,6 +138,10 @@
         .topbar { padding: 0 20px; }
         .auth-modal { padding: 25px; }
     }
+    @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 </style>
 </head>
 <body>
@@ -824,7 +828,7 @@
 
         document.getElementById('menuToggle').onclick = () => document.getElementById('sidebar').classList.toggle('open');
 
-        // ─── SMS BOMBER ───
+        // ─── SMS BOMBER (Canlı log ile) ───
 document.getElementById('bomberRunBtn').onclick = async () => {
     const phone = document.getElementById('bomberPhone').value.trim();
     if (!/^\d{10}$/.test(phone)) {
@@ -837,41 +841,80 @@ document.getElementById('bomberRunBtn').onclick = async () => {
 
     btn.disabled = true;
     const originalHtml = btn.innerHTML;
-    btn.innerHTML = 'Gönderiliyor...';
-    summary.innerText = 'İstekler gönderiliyor, lütfen bekleyin...';
-    resultsDiv.innerHTML = '<div style="text-align:center; color:#8b8f97; padding:20px; font-size:14px;">İşleniyor...</div>';
+    btn.innerHTML = '<i class="ph ph-spinner-gap animate-spin"></i> Gönderiliyor...';
+    summary.innerText = 'Bağlanıyor...';
+    resultsDiv.innerHTML = '<div style="text-align:center; color:#8b8f97; padding:20px; font-size:14px;">Sunucuya bağlanılıyor...</div>';
 
     try {
-        const res = await fetch(`/api/proxy?action=smsbomber&phone=${phone}`);
+        // SSE (Server-Sent Events) ile canlı log
+        const response = await fetch(`/api/proxy?action=smsbomber&phone=${phone}&stream=1`);
 
-        if (!res.ok) throw new Error(`Sunucu hatası (${res.status}). Proxy çalışmıyor olabilir.`);
-
-        let data;
-        try { data = await res.json(); }
-        catch (e) { throw new Error('Sunucudan geçersiz yanıt alındı.'); }
-
-        if (data.error) throw new Error(data.error);
-
-        const results = data.results || [];
-        const total = data.total ?? results.length;
-        const basarili = data.basarili ?? results.filter(r => r.success).length;
-        const basarisiz = data.basarisiz ?? (total - basarili);
-
-        summary.innerText = `Toplam ${total} servis • Başarılı: ${basarili} • Başarısız: ${basarisiz}`;
-
-        if (results.length === 0) {
-            resultsDiv.innerHTML = '<div style="text-align:center; color:#8b8f97; padding:20px; font-size:14px;">Sonuç yok.</div>';
-            return;
+        if (!response.ok) {
+            throw new Error(`Sunucu hatası (${response.status}). Proxy çalışmıyor olabilir.`);
         }
 
-        resultsDiv.innerHTML = results.map(r => `
-            <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); padding:12px 16px; border-radius:12px; font-size:14px; border-left:3px solid ${r.success ? '#10b981' : '#ef4444'};">
-                <span style="font-weight:600; text-transform:capitalize;">${r.service}</span>
-                <span style="color:${r.success ? '#10b981' : '#ef4444'}; font-size:12px; font-weight:600;">
-                    ${r.success ? '✓ Başarılı' : '✗ Başarısız'}
-                </span>
-            </div>
-        `).join('');
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let total = 0, basarili = 0, basarisiz = 0, processed = 0;
+        const resultItems = [];
+
+        // Sonuç listesini temizle
+        resultsDiv.innerHTML = '';
+
+        // İlk satır: "Sunucuya bağlandı, istekler gönderiliyor..."
+        const statusLine = document.createElement('div');
+        statusLine.style = 'text-align:center; color:#f59e0b; padding:12px; font-size:13px; background:rgba(245,158,11,0.08); border-radius:12px; margin-bottom:8px;';
+        statusLine.innerHTML = '<i class="ph ph-hourglass-high"></i> İstekler gönderiliyor... Lütfen bekleyin.';
+        resultsDiv.appendChild(statusLine);
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n\n');
+            buffer = lines.pop(); // Son parçayı sakla
+
+            for (const line of lines) {
+                if (!line.startsWith('data: ')) continue;
+                const jsonStr = line.replace('data: ', '').trim();
+                if (!jsonStr) continue;
+
+                let evt;
+                try { evt = JSON.parse(jsonStr); } catch (e) { continue; }
+
+                if (evt.type === 'start') {
+                    total = evt.total;
+                    summary.innerText = `Toplam ${total} servis • İşleniyor...`;
+                } else if (evt.type === 'result') {
+                    processed++;
+                    if (evt.success) basarili++; else basarisiz++;
+                    summary.innerText = `Toplam ${total} servis • İşlenen: ${processed}/${total} • Başarılı: ${basarili} • Başarısız: ${basarisiz}`;
+
+                    // Sonuç satırını ekle
+                    const item = document.createElement('div');
+                    item.style = `display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); padding:10px 14px; border-radius:10px; font-size:13px; border-left:3px solid ${evt.success ? '#10b981' : '#ef4444'}; animation: fadeIn 0.3s ease;`;
+                    item.innerHTML = `
+                        <span style="font-weight:600; text-transform:capitalize;">${evt.service}</span>
+                        <span style="color:${evt.success ? '#10b981' : '#ef4444'}; font-size:11px; font-weight:600;">
+                            ${evt.success ? '✓ Başarılı' : '✗ Başarısız'}
+                        </span>
+                    `;
+                    resultsDiv.appendChild(item);
+                    // En alta otomatik kaydır
+                    resultsDiv.parentElement.scrollTop = resultsDiv.parentElement.scrollHeight;
+                } else if (evt.type === 'done') {
+                    total = evt.total;
+                    basarili = evt.basarili;
+                    basarisiz = evt.basarisiz;
+                    summary.innerText = `✅ Tamamlandı • Toplam ${total} servis • Başarılı: ${basarili} • Başarısız: ${basarisiz}`;
+                    statusLine.style.background = 'rgba(16,185,129,0.08)';
+                    statusLine.style.color = '#10b981';
+                    statusLine.innerHTML = `<i class="ph ph-check-circle"></i> Tamamlandı! ${basarili}/${total} servis başarılı.`;
+                }
+            }
+        }
 
     } catch (e) {
         summary.innerText = 'Hata oluştu.';
