@@ -48,8 +48,8 @@
         to { opacity: 1; transform: translateY(0); }
     }
 
+    /* Splash Ekranı - Gri kutu kaldırıldı */
     #splash-screen { position: fixed; inset: 0; background: var(--bg-dark); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease; cursor: pointer; }
-    .splash-logo { width: 80px; height: 80px; background: #2b2d33; border-radius: 24px; display: grid; place-items: center; font-size: 40px; color: var(--text-main); margin-bottom: 20px; }
     .splash-title { font-size: 1.5rem; font-weight: 700; color: var(--text-main); letter-spacing: 1px; }
     .splash-subtitle { font-size: 0.9rem; color: var(--text-muted); margin-top: 8px; letter-spacing: 2px; }
 
@@ -94,8 +94,9 @@
     .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
     .topbar { height: 80px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 40px; background: transparent; position: sticky; top: 0; z-index: 50; }
     
-    .user-profile { display: flex; align-items: center; gap: 10px; background: #1c1e22; padding: 6px 16px 6px 6px; border-radius: 30px; border: 1px solid var(--border-color); cursor: pointer; }
-    .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: #2b2d33; display: grid; place-items: center; color: var(--text-main); font-size: 14px; font-weight: 700;}
+    /* Kullanıcı Profili - Avatar Kaldırıldı, İsim ve Rozet Yan Yana */
+    .user-profile { display: flex; align-items: center; gap: 12px; background: #1c1e22; padding: 8px 16px; border-radius: 30px; border: 1px solid var(--border-color); cursor: pointer; transition: 0.2s; }
+    .user-profile:hover { background: #23262b; border-color: #3f434d; }
     .badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
     .badge-admin { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
     .badge-free { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
@@ -166,9 +167,8 @@
 <body>
     <div id="toast-container" class="fixed top-5 right-5 z-[99999] flex flex-col gap-2"></div>
 
-    <!-- SPLASH -->
+    <!-- SPLASH (Gri kutu kaldırıldı) -->
     <div id="splash-screen" onclick="window.skipSplash()">
-        <div class="splash-logo"><i class="ph ph-command-line"></i></div>
         <div class="splash-title">Developed by Onur</div>
         <div class="splash-subtitle">ONUR SYSTEM 2026</div>
     </div>
@@ -231,9 +231,9 @@
                 <span id="topbarTitle" style="font-weight:600; color:#fff;">Ana Sayfa</span>
             </div>
             <div style="display:flex; align-items:center; gap:15px;">
+                <!-- Profil Kısmı: Avatar Yok, Sadece İsim ve Rozet -->
                 <div class="user-profile" onclick="showPage('settings')">
-                    <div class="user-avatar" id="topAvatarIcon">U</div>
-                    <span id="currentUsername" style="font-size:14px; font-weight:600; color:#fff; margin-left:5px;">Kullanıcı</span>
+                    <span id="currentUsername" style="font-size:14px; font-weight:600; color:#fff;">Kullanıcı</span>
                     <span id="topBadge" class="badge badge-free">Free</span>
                 </div>
                 <button style="background:none; border:none; color:#8b8f97; cursor:pointer; transition:0.2s;" onclick="document.getElementById('logoutModal').classList.add('show')" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#8b8f97'"><i class="ph ph-sign-out" style="font-size:24px;"></i></button>
@@ -277,8 +277,8 @@
             <div id="settingsView" style="display:none;">
                 <div class="card" style="max-width:600px;">
                     <div style="border-bottom:1px solid #262930; padding-bottom:15px; margin-bottom:20px;"><h3 style="font-size:16px; font-weight:600; color:#fff;">Profil Bilgileri</h3></div>
-                    <div class="input-group" style="margin-bottom:15px;"><label>Görünen Ad</label><input type="text" id="settingsName" class="main-input"></div>
-                    <div class="input-group" style="margin-bottom:20px;"><label>Avatar URL</label><input type="text" id="settingsAvatar" placeholder="https://..." class="main-input"></div>
+                    <!-- Avatar URL kaldırıldı -->
+                    <div class="input-group" style="margin-bottom:20px;"><label>Görünen Ad</label><input type="text" id="settingsName" class="main-input"></div>
                     <button class="btn-white" id="saveProfileBtn">Kaydet</button>
                 </div>
             </div>
@@ -510,7 +510,7 @@
             showPage('dashboard');
             loadHistory();
             loadRecentLogins();
-            refreshStats(); // <-- Sayfa açılınca mevcut değerleri yükle
+            refreshStats();
             
             if (currentUser.is_admin === 1) {
                 document.getElementById('adminNav').classList.remove('hidden');
@@ -523,7 +523,6 @@
             const name = currentUser.username || 'Kullanıcı';
             document.getElementById('currentUsername').textContent = name;
             document.getElementById('welcomeName').textContent = name;
-            document.getElementById('topAvatarIcon').textContent = name[0].toUpperCase();
             
             const badge = document.getElementById('topBadge');
             if (currentUser.is_admin === 1) {
@@ -533,19 +532,16 @@
             }
 
             document.getElementById('settingsName').value = name;
-            document.getElementById('settingsAvatar').value = currentUser.avatar_url || '';
         }
 
         document.getElementById('saveProfileBtn').onclick = async () => {
             const newName = document.getElementById('settingsName').value;
-            const newAvatar = document.getElementById('settingsAvatar').value;
             if (!newName) return showToast('İsim boş olamaz', 'error');
 
-            const { error } = await supabaseClient.from('profiles').update({ username: newName, avatar_url: newAvatar }).eq('id', currentUser.id);
+            const { error } = await supabaseClient.from('profiles').update({ username: newName }).eq('id', currentUser.id);
             if (error) return showToast(error.message, 'error');
 
             currentUser.username = newName;
-            currentUser.avatar_url = newAvatar;
             updateProfileUI();
             showToast('Profil güncellendi!');
         };
@@ -593,7 +589,6 @@
             };
         });
 
-        // Her sorgu sayfası için veri notu
         const queryConfig = {
             'tc': { title: 'TC Sorgu', endpoint: 'tc.php', note: '101 milyon veri içerisinden sorgulama', f: [{ id: 'tc', l: 'TC Kimlik No' }] },
             'adsoyad': { title: 'Ad Soyad Sorgu', endpoint: 'adsoyad.php', note: '101 milyon veri içerisinden sorgulama', f: [{ id: 'ad', l: 'Ad' }, { id: 'soyad', l: 'Soyad' }, { id: 'il', l: 'İl' }, { id: 'ilce', l: 'İlçe' }] },
@@ -671,13 +666,13 @@
                 if(rows.length === 0) {
                     document.getElementById('resultSummary').innerText = 'Sonuç bulunamadı.';
                     document.getElementById('tableBody').innerHTML = '<tr><td colspan="10" style="text-align:center; color:#8b8f97; padding:30px; font-size:14px;">Sonuç yok.</td></tr>';
-                    logQuery(cfg.title, params, 0); // Sonuç 0 olsa da logla
+                    logQuery(cfg.title, params, 0);
                     return;
                 }
 
                 updateStats(1);
                 saveHistory(cfg.title);
-                logQuery(cfg.title, params, rows.length); // Supabase'e logla
+                logQuery(cfg.title, params, rows.length);
 
                 currentResults = rows;
                 currentColumns = Object.keys(rows[0]);
@@ -702,7 +697,6 @@
             }
         };
 
-        // Supabase'e sorgu logu yaz
         async function logQuery(queryType, params, resultCount) {
             if (!supabaseClient || !currentUser) return;
             try {
@@ -763,7 +757,6 @@
         };
         document.addEventListener('click', () => document.getElementById('downloadDropdown').classList.add('hidden'));
 
-        // Sayfa açılınca mevcut stat'ları yükle
         function refreshStats() {
             if (!currentUser) return;
             const today = new Date().toDateString();
@@ -815,19 +808,14 @@
 
         async function loadRecentLogins() {
             try {
-                const { data, error } = await supabaseClient.from('profiles').select('username, last_login, avatar_url').order('last_login', { ascending: false }).limit(5);
+                const { data, error } = await supabaseClient.from('profiles').select('username, last_login').order('last_login', { ascending: false }).limit(5);
                 const list = document.getElementById('recentLogins');
                 if(error || !data) return list.innerHTML = '<div style="text-align:center; color:#8b8f97; padding:20px; font-size:14px;">Son giriş bilgisi mevcut değil.</div>';
                 
                 list.innerHTML = data.map(u => `
-                    <div style="display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.03); padding:12px; border-radius:12px;">
-                        <div style="width:32px; height:32px; border-radius:50%; background:#2b2d33; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:12px;">
-                            ${u.avatar_url ? `<img src="${u.avatar_url}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">` : (u.username ? u.username[0].toUpperCase() : '?')}
-                        </div>
-                        <div style="flex:1; font-size:13px;">
-                            <b style="display:block; color:#fff;">${u.username || 'Bilinmeyen'}</b>
-                            <span style="color:#8b8f97;">${u.last_login ? new Date(u.last_login).toLocaleString('tr-TR') : 'Bilinmiyor'}</span>
-                        </div>
+                    <div style="display:flex; align-items:center; justify-content:space-between; background:rgba(255,255,255,0.03); padding:12px; border-radius:12px;">
+                        <b style="color:#fff; font-size:13px;">${u.username || 'Bilinmeyen'}</b>
+                        <span style="color:#8b8f97; font-size:12px;">${u.last_login ? new Date(u.last_login).toLocaleString('tr-TR') : 'Bilinmiyor'}</span>
                     </div>
                 `).join('');
             } catch(e) { console.error(e); }
@@ -945,10 +933,8 @@
 
         document.getElementById('menuToggle').onclick = () => document.getElementById('sidebar').classList.toggle('open');
 
-        // SMS Bomber veri notu
         document.getElementById('smsDataNoteText').innerText = '9 API üzerinden gönderim yapılır';
 
-        // ─── SMS BOMBER (Canlı log ile) ───
         document.getElementById('bomberRunBtn').onclick = async () => {
             const phone = document.getElementById('bomberPhone').value.trim();
             if (!/^\d{10}$/.test(phone)) {
