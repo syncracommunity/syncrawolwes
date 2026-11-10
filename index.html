@@ -312,13 +312,10 @@
                     <h2 style="font-size:20px; font-weight:700; color:#fff; margin-bottom:25px;">SMS Bomber</h2>
                     <p style="font-size:13px; color:#8b8f97; margin-bottom:20px;">Telefon numarasına kayıtlı servislere SMS doğrulama kodu gönderir. Numara 10 haneli olmalı ve başında 0 olmamalı (örn: 5551234567).</p>
                     <div class="input-group" style="margin-bottom:20px; max-width:400px;">
-                        <label>Telefon Numarası</label>
-                        <input type="text" id="bomberPhone" class="main-input" placeholder="5551234567" maxlength="10">
-                    </div>
-                    <div style="display:flex; gap:12px; flex-wrap:wrap;">
-                        <button class="btn-white" id="bomberRunBtn"><i class="ph ph-paper-plane-tilt"></i> Normal Gönder</button>
-                        <button class="btn-white" id="bomberTurboBtn" style="background:#f59e0b; color:#0e1013;"><i class="ph ph-lightning"></i> Turbo Gönder (4x)</button>
-                    </div>
+    <label>Telefon Numarası</label>
+    <input type="text" id="bomberPhone" class="main-input" placeholder="5551234567" maxlength="10">
+</div>
+<button class="btn-white" id="bomberRunBtn"><i class="ph ph-paper-plane-tilt"></i> SMS Gönder</button>
                 </div>
                 <div class="card">
                     <div style="border-bottom:1px solid #262930; padding-bottom:15px; margin-bottom:20px;">
@@ -828,74 +825,63 @@
         document.getElementById('menuToggle').onclick = () => document.getElementById('sidebar').classList.toggle('open');
 
         // ─── SMS BOMBER ───
-        async function runBomber(turbo) {
-            const phone = document.getElementById('bomberPhone').value.trim();
-            if (!/^\d{10}$/.test(phone)) {
-                return showToast('Telefon numarası 10 haneli olmalı (örn: 5551234567).', 'error');
-            }
+document.getElementById('bomberRunBtn').onclick = async () => {
+    const phone = document.getElementById('bomberPhone').value.trim();
+    if (!/^\d{10}$/.test(phone)) {
+        return showToast('Telefon numarası 10 haneli olmalı (örn: 5551234567).', 'error');
+    }
 
-            const normalBtn = document.getElementById('bomberRunBtn');
-            const turboBtn = document.getElementById('bomberTurboBtn');
-            const summary = document.getElementById('bomberSummary');
-            const resultsDiv = document.getElementById('bomberResults');
+    const btn = document.getElementById('bomberRunBtn');
+    const summary = document.getElementById('bomberSummary');
+    const resultsDiv = document.getElementById('bomberResults');
 
-            normalBtn.disabled = true;
-            turboBtn.disabled = true;
-            const activeBtn = turbo ? turboBtn : normalBtn;
-            const originalHtml = activeBtn.innerHTML;
-            activeBtn.innerHTML = turbo ? '⚡ Turbo gönderiliyor...' : 'Gönderiliyor...';
-            summary.innerText = turbo ? '4x paralel istek gönderiliyor, lütfen bekleyin...' : 'İstekler gönderiliyor, lütfen bekleyin...';
-            resultsDiv.innerHTML = '<div style="text-align:center; color:#8b8f97; padding:20px; font-size:14px;">İşleniyor...</div>';
+    btn.disabled = true;
+    const originalHtml = btn.innerHTML;
+    btn.innerHTML = 'Gönderiliyor...';
+    summary.innerText = 'İstekler gönderiliyor, lütfen bekleyin...';
+    resultsDiv.innerHTML = '<div style="text-align:center; color:#8b8f97; padding:20px; font-size:14px;">İşleniyor...</div>';
 
-            try {
-                const url = `/api/proxy?action=smsbomber&phone=${phone}${turbo ? '&turbo=1' : ''}`;
-                const res = await fetch(url);
+    try {
+        const res = await fetch(`/api/proxy?action=smsbomber&phone=${phone}`);
 
-                if (!res.ok) throw new Error(`Sunucu hatası (${res.status}). Proxy çalışmıyor olabilir.`);
+        if (!res.ok) throw new Error(`Sunucu hatası (${res.status}). Proxy çalışmıyor olabilir.`);
 
-                let data;
-                try { data = await res.json(); }
-                catch (e) { throw new Error('Sunucudan geçersiz yanıt alındı.'); }
+        let data;
+        try { data = await res.json(); }
+        catch (e) { throw new Error('Sunucudan geçersiz yanıt alındı.'); }
 
-                if (data.error) throw new Error(data.error);
+        if (data.error) throw new Error(data.error);
 
-                const results = data.results || [];
-                const total = data.total ?? results.length;
-                const basarili = data.basarili ?? results.filter(r => r.success).length;
-                const basarisiz = data.basarisiz ?? (total - basarili);
+        const results = data.results || [];
+        const total = data.total ?? results.length;
+        const basarili = data.basarili ?? results.filter(r => r.success).length;
+        const basarisiz = data.basarisiz ?? (total - basarili);
 
-                summary.innerText = `${turbo ? '⚡ Turbo • ' : ''}Toplam ${total} istek • Başarılı: ${basarili} • Başarısız: ${basarisiz}`;
+        summary.innerText = `Toplam ${total} servis • Başarılı: ${basarili} • Başarısız: ${basarisiz}`;
 
-                if (results.length === 0) {
-                    resultsDiv.innerHTML = '<div style="text-align:center; color:#8b8f97; padding:20px; font-size:14px;">Sonuç yok.</div>';
-                    return;
-                }
-
-                resultsDiv.innerHTML = results.map(r => {
-                    const label = r.total ? `${r.count}/${r.total}` : (r.success ? '✓' : '✗');
-                    return `
-                        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); padding:12px 16px; border-radius:12px; font-size:14px; border-left:3px solid ${r.success ? '#10b981' : '#ef4444'};">
-                            <span style="font-weight:600; text-transform:capitalize;">${r.service}</span>
-                            <span style="color:${r.success ? '#10b981' : '#ef4444'}; font-size:12px; font-weight:600;">
-                                ${r.success ? `✓ ${label}` : `✗ ${label}`}
-                            </span>
-                        </div>
-                    `;
-                }).join('');
-
-            } catch (e) {
-                summary.innerText = 'Hata oluştu.';
-                resultsDiv.innerHTML = `<div style="text-align:center; color:#ef4444; padding:20px; font-size:14px;">${e.message}</div>`;
-                showToast(e.message, 'error');
-            } finally {
-                normalBtn.disabled = false;
-                turboBtn.disabled = false;
-                activeBtn.innerHTML = originalHtml;
-            }
+        if (results.length === 0) {
+            resultsDiv.innerHTML = '<div style="text-align:center; color:#8b8f97; padding:20px; font-size:14px;">Sonuç yok.</div>';
+            return;
         }
 
-        document.getElementById('bomberRunBtn').onclick = () => runBomber(false);
-        document.getElementById('bomberTurboBtn').onclick = () => runBomber(true);
+        resultsDiv.innerHTML = results.map(r => `
+            <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); padding:12px 16px; border-radius:12px; font-size:14px; border-left:3px solid ${r.success ? '#10b981' : '#ef4444'};">
+                <span style="font-weight:600; text-transform:capitalize;">${r.service}</span>
+                <span style="color:${r.success ? '#10b981' : '#ef4444'}; font-size:12px; font-weight:600;">
+                    ${r.success ? '✓ Başarılı' : '✗ Başarısız'}
+                </span>
+            </div>
+        `).join('');
+
+    } catch (e) {
+        summary.innerText = 'Hata oluştu.';
+        resultsDiv.innerHTML = `<div style="text-align:center; color:#ef4444; padding:20px; font-size:14px;">${e.message}</div>`;
+        showToast(e.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+    }
+};
     </script>
 </body>
 </html>
