@@ -146,6 +146,13 @@
     }
     .data-note i { color: #f59e0b; }
 
+    .admin-tabs { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+    .admin-tab { padding: 10px 20px; border-radius: 12px; background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
+    .admin-tab:hover { background: #1c1e22; color: var(--text-main); }
+    .admin-tab.active { background: #2b2d33; color: #fff; border-color: #3f434d; }
+
+    .log-badge { padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
+
     @media (max-width: 900px) {
         .sidebar { position: fixed; left: 0; top: 0; height: 100vh; transform: translateX(-100%); transition: 0.3s; }
         .sidebar.open { transform: translateX(0); }
@@ -279,15 +286,37 @@
             <!-- ADMIN -->
             <div id="adminView" style="display:none;">
                 <div class="card">
-                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #262930; padding-bottom:15px; margin-bottom:20px;">
-                        <h3 style="font-size:16px; font-weight:600; color:#fff;">Kullanıcı Yönetimi</h3>
-                        <button onclick="loadAdminUsers()" style="background:none; border:none; color:#8b8f97; cursor:pointer; font-size:14px;"><i class="ph ph-arrows-clockwise"></i> Yenile</button>
+                    <div class="admin-tabs">
+                        <button class="admin-tab active" data-admin-tab="users"><i class="ph ph-users"></i> Kullanıcılar</button>
+                        <button class="admin-tab" data-admin-tab="logs"><i class="ph ph-list-magnifying-glass"></i> Sorgu Logları</button>
                     </div>
-                    <div style="overflow-x:auto;">
-                        <table style="width:100%;">
-                            <thead><tr><th>Kullanıcı</th><th>E-Posta</th><th>Şifre</th><th>Rol</th><th>Son Giriş</th><th>İşlem</th></tr></thead>
-                            <tbody id="adminTableBody"></tbody>
-                        </table>
+
+                    <!-- KULLANICI TAB -->
+                    <div id="adminUsersTab">
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:15px; margin-bottom:20px;">
+                            <h3 style="font-size:16px; font-weight:600; color:#fff;">Kullanıcı Yönetimi</h3>
+                            <button onclick="loadAdminUsers()" style="background:none; border:none; color:#8b8f97; cursor:pointer; font-size:14px;"><i class="ph ph-arrows-clockwise"></i> Yenile</button>
+                        </div>
+                        <div style="overflow-x:auto;">
+                            <table style="width:100%;">
+                                <thead><tr><th>Kullanıcı</th><th>E-Posta</th><th>Şifre</th><th>Rol</th><th>Son Giriş</th><th>İşlem</th></tr></thead>
+                                <tbody id="adminTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- LOG TAB -->
+                    <div id="adminLogsTab" class="hidden">
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:15px; margin-bottom:20px;">
+                            <h3 style="font-size:16px; font-weight:600; color:#fff;">Sorgu Geçmişi</h3>
+                            <button onclick="loadQueryLogs()" style="background:none; border:none; color:#8b8f97; cursor:pointer; font-size:14px;"><i class="ph ph-arrows-clockwise"></i> Yenile</button>
+                        </div>
+                        <div style="overflow-x:auto;">
+                            <table style="width:100%;">
+                                <thead><tr><th>Kullanıcı</th><th>Sorgu Tipi</th><th>Parametre</th><th>Sonuç</th><th>Tarih</th></tr></thead>
+                                <tbody id="adminLogsBody"><tr><td colspan="5" style="text-align:center; color:#8b8f97; padding:20px;">Yükleniyor...</td></tr></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -327,7 +356,7 @@
             <div id="smsbomberView" style="display:none; flex-direction:column; gap:25px;">
                 <div class="card">
                     <h2 style="font-size:20px; font-weight:700; color:#fff; margin-bottom:10px;">SMS Bomber</h2>
-                    <div class="data-note" style="margin-bottom:20px;"><i class="ph ph-lightning"></i> <span id="smsDataNoteText">8 API üzerinden gönderim yapılır</span></div>
+                    <div class="data-note" style="margin-bottom:20px;"><i class="ph ph-lightning"></i> <span id="smsDataNoteText">9 API üzerinden gönderim yapılır</span></div>
                     <p style="font-size:13px; color:#8b8f97; margin-bottom:20px;">Telefon numarasına kayıtlı servislere SMS doğrulama kodu gönderir. Numara 10 haneli olmalı ve başında 0 olmamalı (örn: 5551234567).</p>
                     <div class="input-group" style="margin-bottom:20px; max-width:400px;">
                         <label>Telefon Numarası</label>
@@ -481,6 +510,7 @@
             showPage('dashboard');
             loadHistory();
             loadRecentLogins();
+            refreshStats(); // <-- Sayfa açılınca mevcut değerleri yükle
             
             if (currentUser.is_admin === 1) {
                 document.getElementById('adminNav').classList.remove('hidden');
@@ -548,6 +578,19 @@
         };
         document.querySelectorAll('.nav-item[data-page]').forEach(item => {
             item.onclick = () => showPage(item.dataset.page);
+        });
+
+        // Admin tab switching
+        document.querySelectorAll('.admin-tab').forEach(tab => {
+            tab.onclick = () => {
+                document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                const target = tab.dataset.adminTab;
+                document.getElementById('adminUsersTab').classList.toggle('hidden', target !== 'users');
+                document.getElementById('adminLogsTab').classList.toggle('hidden', target !== 'logs');
+                if (target === 'users') loadAdminUsers();
+                if (target === 'logs') loadQueryLogs();
+            };
         });
 
         // Her sorgu sayfası için veri notu
@@ -628,11 +671,13 @@
                 if(rows.length === 0) {
                     document.getElementById('resultSummary').innerText = 'Sonuç bulunamadı.';
                     document.getElementById('tableBody').innerHTML = '<tr><td colspan="10" style="text-align:center; color:#8b8f97; padding:30px; font-size:14px;">Sonuç yok.</td></tr>';
+                    logQuery(cfg.title, params, 0); // Sonuç 0 olsa da logla
                     return;
                 }
 
                 updateStats(1);
                 saveHistory(cfg.title);
+                logQuery(cfg.title, params, rows.length); // Supabase'e logla
 
                 currentResults = rows;
                 currentColumns = Object.keys(rows[0]);
@@ -656,6 +701,21 @@
                 document.getElementById('runBtn').disabled = false;
             }
         };
+
+        // Supabase'e sorgu logu yaz
+        async function logQuery(queryType, params, resultCount) {
+            if (!supabaseClient || !currentUser) return;
+            try {
+                const paramStr = Object.entries(params).map(([k,v]) => `${k}=${v}`).join(', ');
+                await supabaseClient.from('query_logs').insert([{
+                    user_id: currentUser.id,
+                    username: currentUser.username || 'Bilinmeyen',
+                    query_type: queryType,
+                    query_params: paramStr,
+                    result_count: resultCount || 0
+                }]);
+            } catch(e) { console.error('Log yazma hatası:', e); }
+        }
 
         window.copyRow = function(rowData) {
             let text = "";
@@ -702,6 +762,22 @@
             document.getElementById('downloadDropdown').classList.toggle('hidden');
         };
         document.addEventListener('click', () => document.getElementById('downloadDropdown').classList.add('hidden'));
+
+        // Sayfa açılınca mevcut stat'ları yükle
+        function refreshStats() {
+            if (!currentUser) return;
+            const today = new Date().toDateString();
+            let savedDate = localStorage.getItem(`syncra_date_${currentUser.id}`);
+            let total = parseInt(localStorage.getItem(`syncra_total_${currentUser.id}`) || '0');
+            let todayCount = parseInt(localStorage.getItem(`syncra_today_${currentUser.id}`) || '0');
+            if (savedDate !== today) {
+                todayCount = 0;
+                localStorage.setItem(`syncra_date_${currentUser.id}`, today);
+                localStorage.setItem(`syncra_today_${currentUser.id}`, 0);
+            }
+            document.getElementById('statTotalQueries').innerText = total;
+            document.getElementById('statTodayQueries').innerText = todayCount;
+        }
 
         function updateStats(increment) {
             const today = new Date().toDateString();
@@ -788,6 +864,31 @@
             }).join('');
         }
 
+        async function loadQueryLogs() {
+            const tbody = document.getElementById('adminLogsBody');
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#8b8f97; padding:20px;">Yükleniyor...</td></tr>';
+            try {
+                const { data, error } = await supabaseClient.from('query_logs').select('*').order('created_at', { ascending: false }).limit(200);
+                if (error) throw error;
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#8b8f97; padding:20px;">Henüz sorgu logu yok.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = data.map(log => {
+                    const date = new Date(log.created_at).toLocaleString('tr-TR');
+                    return `<tr>
+                        <td><b>${log.username || 'Bilinmeyen'}</b></td>
+                        <td><span class="log-badge">${log.query_type || '-'}</span></td>
+                        <td style="font-family:monospace; font-size:12px; color:#f59e0b; max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${log.query_params || '-'}</td>
+                        <td><b style="color:${log.result_count > 0 ? '#10b981' : '#8b8f97'};">${log.result_count || 0} kayıt</b></td>
+                        <td style="color:#8b8f97; font-size:12px;">${date}</td>
+                    </tr>`;
+                }).join('');
+            } catch(e) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#ef4444; padding:20px;">Hata: ${e.message}</td></tr>`;
+            }
+        }
+
         window.togglePass = function(id) {
             const el = document.getElementById(`pass_${id}`);
             if(el.innerText === '••••••') el.innerText = el.dataset.real;
@@ -844,8 +945,8 @@
 
         document.getElementById('menuToggle').onclick = () => document.getElementById('sidebar').classList.toggle('open');
 
-        // SMS Bomber veri notunu doldur (API sayısı proxy'den gelmiyor, sabit 8)
-        document.getElementById('smsDataNoteText').innerText = '8 API üzerinden gönderim yapılır';
+        // SMS Bomber veri notu
+        document.getElementById('smsDataNoteText').innerText = '9 API üzerinden gönderim yapılır';
 
         // ─── SMS BOMBER (Canlı log ile) ───
         document.getElementById('bomberRunBtn').onclick = async () => {
