@@ -13,7 +13,6 @@
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
 <style>
-    /* --- TEMEL DEĞİŞKENLER --- */
     :root { 
         --bg-dark: #0e1013; 
         --bg-gradient: radial-gradient(circle at top right, #1a2233 0%, #0e1013 50%);
@@ -44,13 +43,16 @@
     ::-webkit-scrollbar-thumb { background: #2c2f36; border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: #4b5059; }
 
-    /* --- SPLASH --- */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
     #splash-screen { position: fixed; inset: 0; background: var(--bg-dark); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease; cursor: pointer; }
     .splash-logo { width: 80px; height: 80px; background: #2b2d33; border-radius: 24px; display: grid; place-items: center; font-size: 40px; color: var(--text-main); margin-bottom: 20px; }
     .splash-title { font-size: 1.5rem; font-weight: 700; color: var(--text-main); letter-spacing: 1px; }
     .splash-subtitle { font-size: 0.9rem; color: var(--text-muted); margin-top: 8px; letter-spacing: 2px; }
 
-    /* --- GİRİŞ EKRANI --- */
     #auth-screen { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(10px); z-index: 5000; display: none; justify-content: center; align-items: center; padding: 20px; }
     .auth-modal { background: linear-gradient(180deg, #1e2025 0%, #15171a 100%); border: 1px solid var(--border-color); border-radius: 32px; width: 100%; max-width: 480px; padding: 40px; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); text-align: center; }
     .auth-close-btn { position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; border-radius: 12px; background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); display: grid; place-items: center; cursor: pointer; transition: 0.2s; }
@@ -67,7 +69,6 @@
     .auth-skip-btn { margin-top: 25px; background: none; border: none; color: var(--text-muted); font-size: 14px; cursor: pointer; transition: 0.2s; }
     .auth-skip-btn:hover { color: var(--text-main); }
 
-    /* --- PANEL --- */
     .sidebar { width: 260px; background: var(--bg-dark); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; z-index: 100; }
     .brand { padding: 24px 20px; font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 10px; color: var(--text-main); border-bottom: 1px solid var(--border-color); }
     
@@ -130,6 +131,21 @@
     .hidden { display: none !important; }
     .menu-toggle { display: none; cursor: pointer; font-size: 24px; color: var(--text-main); }
 
+    .data-note {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: #8b8f97;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--border-color);
+        padding: 6px 12px;
+        border-radius: 20px;
+        margin-top: 10px;
+        font-weight: 500;
+    }
+    .data-note i { color: #f59e0b; }
+
     @media (max-width: 900px) {
         .sidebar { position: fixed; left: 0; top: 0; height: 100vh; transform: translateX(-100%); transition: 0.3s; }
         .sidebar.open { transform: translateX(0); }
@@ -138,10 +154,6 @@
         .topbar { padding: 0 20px; }
         .auth-modal { padding: 25px; }
     }
-    @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-5px); }
-    to { opacity: 1; transform: translateY(0); }
-}
 </style>
 </head>
 <body>
@@ -161,7 +173,7 @@
             <div class="auth-logo-box"><i class="ph ph-shield-check"></i></div>
             <div class="auth-eyebrow">ONUR SYSTEM</div>
             <h2 class="auth-title">Hoş<br>geldiniz.</h2>
-            <p class="auth-desc">Tüm sistemler ve sorgular ücretsiz!<br>Sorgu Botları</p>
+            <p class="auth-desc">Tüm Sistemler Ücretsiz'dir.<br>Sorgu Botları vb.</p>
             <div id="authError" class="hidden" style="color:#ef4444; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2); border-radius:12px; padding:12px; font-size:14px; margin-bottom:15px;"></div>
 
             <div class="auth-input-group">
@@ -185,7 +197,7 @@
 
     <!-- PANEL -->
     <div class="sidebar" id="sidebar" style="display:none;">
-        <div class="brand"><i class="ph ph-shield-check"></i> SYNCRA</div>
+        <div class="brand"><i class="ph ph-shield-check"></i> SORGU PANELİ</div>
         <div class="nav-section">
             <div class="nav-item active" data-page="dashboard"><i class="ph ph-squares-four"></i> Ana Sayfa</div>
             <div class="nav-title">Sorgu Çözümleri</div>
@@ -283,8 +295,9 @@
             <!-- SORGU -->
             <div id="queryView" style="display:none; flex-direction:column; gap:25px;">
                 <div class="card">
-                    <h2 id="pageTitle" style="font-size:20px; font-weight:700; color:#fff; margin-bottom:25px;">Sorgulama</h2>
-                    <div id="dynamicForm" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;"></div>
+                    <h2 id="pageTitle" style="font-size:20px; font-weight:700; color:#fff;">Sorgulama</h2>
+                    <div id="pageDataNote" class="data-note"><i class="ph ph-database"></i> <span id="pageDataNoteText"></span></div>
+                    <div id="dynamicForm" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 25px 0;"></div>
                     <div style="display:flex; justify-content:flex-end; gap:15px;">
                         <button class="btn-dark" onclick="document.querySelectorAll('.input-group input').forEach(i=>i.value='')">Temizle</button>
                         <button id="runBtn" class="btn-white"><i class="ph ph-magnifying-glass"></i> Sorgula</button>
@@ -313,20 +326,21 @@
             <!-- SMS BOMBER -->
             <div id="smsbomberView" style="display:none; flex-direction:column; gap:25px;">
                 <div class="card">
-                    <h2 style="font-size:20px; font-weight:700; color:#fff; margin-bottom:25px;">SMS Bomber</h2>
+                    <h2 style="font-size:20px; font-weight:700; color:#fff; margin-bottom:10px;">SMS Bomber</h2>
+                    <div class="data-note" style="margin-bottom:20px;"><i class="ph ph-lightning"></i> <span id="smsDataNoteText">8 API üzerinden gönderim yapılır</span></div>
                     <p style="font-size:13px; color:#8b8f97; margin-bottom:20px;">Telefon numarasına kayıtlı servislere SMS doğrulama kodu gönderir. Numara 10 haneli olmalı ve başında 0 olmamalı (örn: 5551234567).</p>
                     <div class="input-group" style="margin-bottom:20px; max-width:400px;">
-    <label>Telefon Numarası</label>
-    <input type="text" id="bomberPhone" class="main-input" placeholder="5551234567" maxlength="10">
-</div>
-<button class="btn-white" id="bomberRunBtn"><i class="ph ph-paper-plane-tilt"></i> SMS Gönder</button>
+                        <label>Telefon Numarası</label>
+                        <input type="text" id="bomberPhone" class="main-input" placeholder="5551234567" maxlength="10">
+                    </div>
+                    <button class="btn-white" id="bomberRunBtn"><i class="ph ph-paper-plane-tilt"></i> SMS Gönder</button>
                 </div>
                 <div class="card">
                     <div style="border-bottom:1px solid #262930; padding-bottom:15px; margin-bottom:20px;">
                         <h3 style="font-size:16px; font-weight:600; color:#fff;">Sonuçlar</h3>
                         <span id="bomberSummary" style="font-size:12px; color:#8b8f97;">Henüz istek yok.</span>
                     </div>
-                    <div id="bomberResults" style="display:flex; flex-direction:column; gap:8px;">
+                    <div id="bomberResults" style="display:flex; flex-direction:column; gap:8px; max-height:500px; overflow-y:auto;">
                         <div style="text-align:center; color:#8b8f97; padding:20px; font-size:14px;">SMS gönderilmedi.</div>
                     </div>
                 </div>
@@ -536,15 +550,16 @@
             item.onclick = () => showPage(item.dataset.page);
         });
 
+        // Her sorgu sayfası için veri notu
         const queryConfig = {
-            'tc': { title: 'TC Sorgu', endpoint: 'tc.php', f: [{ id: 'tc', l: 'TC Kimlik No' }] },
-            'adsoyad': { title: 'Ad Soyad Sorgu', endpoint: 'adsoyad.php', f: [{ id: 'ad', l: 'Ad' }, { id: 'soyad', l: 'Soyad' }, { id: 'il', l: 'İl' }, { id: 'ilce', l: 'İlçe' }] },
-            'aile': { title: 'Aile Sorgu', endpoint: 'aile.php', f: [{ id: 'tc', l: 'TC Kimlik No' }] },
-            'sulale': { title: 'Sülale Sorgu', endpoint: 'sulale.php', f: [{ id: 'tc', l: 'TC Kimlik No' }] },
-            'tcgsm': { title: 'TC → GSM', endpoint: 'tcgsm.php', f: [{ id: 'tc', l: 'TC Kimlik No' }] },
-            'gsmtc': { title: 'GSM → TC', endpoint: 'gsmtc.php', f: [{ id: 'gsm', l: 'Telefon No' }], extra: { auth: 'fire' } },
-            'eokul': { title: 'E-Okul', endpoint: 'eokul.php', f: [{ id: 'tc', l: 'TC Kimlik No' }] },
-            'adres': { title: 'Adres', endpoint: 'adres.php', f: [{ id: 'tc', l: 'TC Kimlik No' }] }
+            'tc': { title: 'TC Sorgu', endpoint: 'tc.php', note: '101 milyon veri içerisinden sorgulama', f: [{ id: 'tc', l: 'TC Kimlik No' }] },
+            'adsoyad': { title: 'Ad Soyad Sorgu', endpoint: 'adsoyad.php', note: '101 milyon veri içerisinden sorgulama', f: [{ id: 'ad', l: 'Ad' }, { id: 'soyad', l: 'Soyad' }, { id: 'il', l: 'İl' }, { id: 'ilce', l: 'İlçe' }] },
+            'aile': { title: 'Aile Sorgu', endpoint: 'aile.php', note: '101 milyon veri içerisinden sorgulama', f: [{ id: 'tc', l: 'TC Kimlik No' }] },
+            'sulale': { title: 'Sülale Sorgu', endpoint: 'sulale.php', note: '101 milyon veri içerisinden sorgulama', f: [{ id: 'tc', l: 'TC Kimlik No' }] },
+            'tcgsm': { title: 'TC → GSM', endpoint: 'tcgsm.php', note: '109 milyon veri içerisinden sorgulama', f: [{ id: 'tc', l: 'TC Kimlik No' }] },
+            'gsmtc': { title: 'GSM → TC', endpoint: 'gsmtc.php', note: '109 milyon veri içerisinden sorgulama', f: [{ id: 'gsm', l: 'Telefon No' }], extra: { auth: 'fire' } },
+            'eokul': { title: 'E-Okul', endpoint: 'eokul.php', note: '25 milyon veri içerisinden sorgulama', f: [{ id: 'tc', l: 'TC Kimlik No' }] },
+            'adres': { title: 'Adres', endpoint: 'adres.php', note: '83 milyon veri içerisinden sorgulama', f: [{ id: 'tc', l: 'TC Kimlik No' }] }
         };
 
         let activeQuery = 'tc';
@@ -555,6 +570,7 @@
             activeQuery = page;
             const cfg = queryConfig[page];
             document.getElementById('pageTitle').innerText = cfg.title;
+            document.getElementById('pageDataNoteText').innerText = cfg.note;
             const form = document.getElementById('dynamicForm');
             form.innerHTML = '';
             cfg.f.forEach(f => {
@@ -828,103 +844,100 @@
 
         document.getElementById('menuToggle').onclick = () => document.getElementById('sidebar').classList.toggle('open');
 
+        // SMS Bomber veri notunu doldur (API sayısı proxy'den gelmiyor, sabit 8)
+        document.getElementById('smsDataNoteText').innerText = '8 API üzerinden gönderim yapılır';
+
         // ─── SMS BOMBER (Canlı log ile) ───
-document.getElementById('bomberRunBtn').onclick = async () => {
-    const phone = document.getElementById('bomberPhone').value.trim();
-    if (!/^\d{10}$/.test(phone)) {
-        return showToast('Telefon numarası 10 haneli olmalı (örn: 5551234567).', 'error');
-    }
-
-    const btn = document.getElementById('bomberRunBtn');
-    const summary = document.getElementById('bomberSummary');
-    const resultsDiv = document.getElementById('bomberResults');
-
-    btn.disabled = true;
-    const originalHtml = btn.innerHTML;
-    btn.innerHTML = '<i class="ph ph-spinner-gap animate-spin"></i> Gönderiliyor...';
-    summary.innerText = 'Bağlanıyor...';
-    resultsDiv.innerHTML = '<div style="text-align:center; color:#8b8f97; padding:20px; font-size:14px;">Sunucuya bağlanılıyor...</div>';
-
-    try {
-        // SSE (Server-Sent Events) ile canlı log
-        const response = await fetch(`/api/proxy?action=smsbomber&phone=${phone}&stream=1`);
-
-        if (!response.ok) {
-            throw new Error(`Sunucu hatası (${response.status}). Proxy çalışmıyor olabilir.`);
-        }
-
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = '';
-        let total = 0, basarili = 0, basarisiz = 0, processed = 0;
-        const resultItems = [];
-
-        // Sonuç listesini temizle
-        resultsDiv.innerHTML = '';
-
-        // İlk satır: "Sunucuya bağlandı, istekler gönderiliyor..."
-        const statusLine = document.createElement('div');
-        statusLine.style = 'text-align:center; color:#f59e0b; padding:12px; font-size:13px; background:rgba(245,158,11,0.08); border-radius:12px; margin-bottom:8px;';
-        statusLine.innerHTML = '<i class="ph ph-hourglass-high"></i> İstekler gönderiliyor... Lütfen bekleyin.';
-        resultsDiv.appendChild(statusLine);
-
-        while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-
-            buffer += decoder.decode(value, { stream: true });
-            const lines = buffer.split('\n\n');
-            buffer = lines.pop(); // Son parçayı sakla
-
-            for (const line of lines) {
-                if (!line.startsWith('data: ')) continue;
-                const jsonStr = line.replace('data: ', '').trim();
-                if (!jsonStr) continue;
-
-                let evt;
-                try { evt = JSON.parse(jsonStr); } catch (e) { continue; }
-
-                if (evt.type === 'start') {
-                    total = evt.total;
-                    summary.innerText = `Toplam ${total} servis • İşleniyor...`;
-                } else if (evt.type === 'result') {
-                    processed++;
-                    if (evt.success) basarili++; else basarisiz++;
-                    summary.innerText = `Toplam ${total} servis • İşlenen: ${processed}/${total} • Başarılı: ${basarili} • Başarısız: ${basarisiz}`;
-
-                    // Sonuç satırını ekle
-                    const item = document.createElement('div');
-                    item.style = `display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); padding:10px 14px; border-radius:10px; font-size:13px; border-left:3px solid ${evt.success ? '#10b981' : '#ef4444'}; animation: fadeIn 0.3s ease;`;
-                    item.innerHTML = `
-                        <span style="font-weight:600; text-transform:capitalize;">${evt.service}</span>
-                        <span style="color:${evt.success ? '#10b981' : '#ef4444'}; font-size:11px; font-weight:600;">
-                            ${evt.success ? '✓ Başarılı' : '✗ Başarısız'}
-                        </span>
-                    `;
-                    resultsDiv.appendChild(item);
-                    // En alta otomatik kaydır
-                    resultsDiv.parentElement.scrollTop = resultsDiv.parentElement.scrollHeight;
-                } else if (evt.type === 'done') {
-                    total = evt.total;
-                    basarili = evt.basarili;
-                    basarisiz = evt.basarisiz;
-                    summary.innerText = `✅ Tamamlandı • Toplam ${total} servis • Başarılı: ${basarili} • Başarısız: ${basarisiz}`;
-                    statusLine.style.background = 'rgba(16,185,129,0.08)';
-                    statusLine.style.color = '#10b981';
-                    statusLine.innerHTML = `<i class="ph ph-check-circle"></i> Tamamlandı! ${basarili}/${total} servis başarılı.`;
-                }
+        document.getElementById('bomberRunBtn').onclick = async () => {
+            const phone = document.getElementById('bomberPhone').value.trim();
+            if (!/^\d{10}$/.test(phone)) {
+                return showToast('Telefon numarası 10 haneli olmalı (örn: 5551234567).', 'error');
             }
-        }
 
-    } catch (e) {
-        summary.innerText = 'Hata oluştu.';
-        resultsDiv.innerHTML = `<div style="text-align:center; color:#ef4444; padding:20px; font-size:14px;">${e.message}</div>`;
-        showToast(e.message, 'error');
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = originalHtml;
-    }
-};
+            const btn = document.getElementById('bomberRunBtn');
+            const summary = document.getElementById('bomberSummary');
+            const resultsDiv = document.getElementById('bomberResults');
+
+            btn.disabled = true;
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="ph ph-spinner-gap"></i> Gönderiliyor...';
+            summary.innerText = 'Bağlanıyor...';
+            resultsDiv.innerHTML = '<div style="text-align:center; color:#8b8f97; padding:20px; font-size:14px;">Sunucuya bağlanılıyor...</div>';
+
+            try {
+                const response = await fetch(`/api/proxy?action=smsbomber&phone=${phone}&stream=1`);
+
+                if (!response.ok) {
+                    throw new Error(`Sunucu hatası (${response.status}). Proxy çalışmıyor olabilir.`);
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+                let total = 0, basarili = 0, basarisiz = 0, processed = 0;
+
+                resultsDiv.innerHTML = '';
+
+                const statusLine = document.createElement('div');
+                statusLine.style = 'text-align:center; color:#f59e0b; padding:12px; font-size:13px; background:rgba(245,158,11,0.08); border-radius:12px; margin-bottom:8px;';
+                statusLine.innerHTML = '<i class="ph ph-hourglass-high"></i> İstekler gönderiliyor... Lütfen bekleyin.';
+                resultsDiv.appendChild(statusLine);
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split('\n\n');
+                    buffer = lines.pop();
+
+                    for (const line of lines) {
+                        if (!line.startsWith('data: ')) continue;
+                        const jsonStr = line.replace('data: ', '').trim();
+                        if (!jsonStr) continue;
+
+                        let evt;
+                        try { evt = JSON.parse(jsonStr); } catch (e) { continue; }
+
+                        if (evt.type === 'start') {
+                            total = evt.total;
+                            summary.innerText = `Toplam ${total} servis • İşleniyor...`;
+                        } else if (evt.type === 'result') {
+                            processed++;
+                            if (evt.success) basarili++; else basarisiz++;
+                            summary.innerText = `Toplam ${total} servis • İşlenen: ${processed}/${total} • Başarılı: ${basarili} • Başarısız: ${basarisiz}`;
+
+                            const item = document.createElement('div');
+                            item.style = `display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); padding:10px 14px; border-radius:10px; font-size:13px; border-left:3px solid ${evt.success ? '#10b981' : '#ef4444'}; animation: fadeIn 0.3s ease;`;
+                            item.innerHTML = `
+                                <span style="font-weight:600; text-transform:capitalize;">${evt.service}</span>
+                                <span style="color:${evt.success ? '#10b981' : '#ef4444'}; font-size:11px; font-weight:600;">
+                                    ${evt.success ? '✓ Başarılı' : '✗ Başarısız'}
+                                </span>
+                            `;
+                            resultsDiv.appendChild(item);
+                            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+                        } else if (evt.type === 'done') {
+                            total = evt.total;
+                            basarili = evt.basarili;
+                            basarisiz = evt.basarisiz;
+                            summary.innerText = `✅ Tamamlandı • Toplam ${total} servis • Başarılı: ${basarili} • Başarısız: ${basarisiz}`;
+                            statusLine.style.background = 'rgba(16,185,129,0.08)';
+                            statusLine.style.color = '#10b981';
+                            statusLine.innerHTML = `<i class="ph ph-check-circle"></i> Tamamlandı! ${basarili}/${total} servis başarılı.`;
+                        }
+                    }
+                }
+
+            } catch (e) {
+                summary.innerText = 'Hata oluştu.';
+                resultsDiv.innerHTML = `<div style="text-align:center; color:#ef4444; padding:20px; font-size:14px;">${e.message}</div>`;
+                showToast(e.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            }
+        };
     </script>
 </body>
 </html>
