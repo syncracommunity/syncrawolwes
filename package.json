@@ -2,13 +2,6 @@
   "name": "syncra-web",
   "version": "1.0.0",
   "description": "Syncra Cloud Sorgu Paneli",
-  "main": "index.html",
-  "scripts": {
-    "start": "vercel dev"
-  },
-  "dependencies": {
-    "axios": "^1.7.9"
-  },
   "engines": {
     "node": "18.x"
   }
