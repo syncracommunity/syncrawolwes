@@ -13,15 +13,15 @@
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
 <style>
-    /* --- TEMEL DEĞİŞKENLER (İLK GÖRSELDEN) --- */
+    /* --- TEMEL DEĞİŞKENLER --- */
     :root { 
         --bg-dark: #0e1013; 
-        --bg-gradient: radial-gradient(circle at top right, #1a2233 0%, #0e1013 50%); /* Hafif mavi geçiş */
+        --bg-gradient: radial-gradient(circle at top right, #1a2233 0%, #0e1013 50%);
         --card-bg: #1a1c22; 
         --text-main: #ffffff;
         --text-muted: #8b8f97;
         --border-color: #262930;
-        --btn-light: #e2e4e9; /* Görseldeki beyaz buton */
+        --btn-light: #e2e4e9;
         --btn-text: #0e1013;
         --danger: #ef4444;
         --success: #10b981;
@@ -39,7 +39,6 @@
         -webkit-font-smoothing: antialiased;
     }
 
-    /* --- İNCE KOYU SCROLLBAR --- */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #2c2f36; border-radius: 10px; }
@@ -68,11 +67,11 @@
     .auth-skip-btn { margin-top: 25px; background: none; border: none; color: var(--text-muted); font-size: 14px; cursor: pointer; transition: 0.2s; }
     .auth-skip-btn:hover { color: var(--text-main); }
 
-    /* --- PANEL (GÖRSELDEKİ GİBİ) --- */
+    /* --- PANEL --- */
     .sidebar { width: 260px; background: var(--bg-dark); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; z-index: 100; }
     .brand { padding: 24px 20px; font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 10px; color: var(--text-main); border-bottom: 1px solid var(--border-color); }
     
-    .nav-section { padding: 20px 15px; flex: 1; overflow-y: auto; /* Sağdaki scrollbar */ }
+    .nav-section { padding: 20px 15px; flex: 1; overflow-y: auto; }
     .nav-title { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); font-weight: 700; margin-bottom: 12px; padding-left: 15px; margin-top: 20px; }
     .nav-item { 
         padding: 14px 20px; 
@@ -94,7 +93,6 @@
     .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
     .topbar { height: 80px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 40px; background: transparent; position: sticky; top: 0; z-index: 50; }
     
-    /* Profil Butonu */
     .user-profile { display: flex; align-items: center; gap: 10px; background: #1c1e22; padding: 6px 16px 6px 6px; border-radius: 30px; border: 1px solid var(--border-color); cursor: pointer; }
     .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: #2b2d33; display: grid; place-items: center; color: var(--text-main); font-size: 14px; font-weight: 700;}
     .badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
@@ -103,24 +101,21 @@
 
     .content { padding: 40px; max-width: 1400px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 30px; }
     
-    /* Kartlar */
     .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 24px; padding: 25px; }
     .stat-card { display: flex; align-items: center; gap: 20px; }
     .stat-icon { width: 60px; height: 60px; border-radius: 20px; background: #2b2d33; display: grid; place-items: center; font-size: 28px; color: var(--text-main); }
 
-    /* Inputlar */
     .input-group { display: flex; flex-direction: column; gap: 8px; }
     .input-group label { font-size: 13px; color: var(--text-muted); font-weight: 600; }
     .main-input { width: 100%; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 16px 20px; border-radius: 16px; font-size: 15px; outline: none; }
     .main-input:focus { border-color: #5c626d; }
 
-    /* Butonlar */
     .btn-white { background: var(--btn-light); color: var(--btn-text); padding: 14px 24px; border-radius: 16px; border: none; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px; font-size: 14px; }
     .btn-white:hover { background: #fff; transform: scale(1.02); }
+    .btn-white:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
     .btn-dark { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); padding: 14px 24px; border-radius: 16px; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px; font-size: 14px; }
     .btn-dark:hover { background: #1c1e22; }
 
-    /* Tablo (Oval Satırlar) */
     table { width: 100%; border-collapse: separate; border-spacing: 0 8px; text-align: left; }
     th { padding: 15px 20px; font-size: 12px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 1px;}
     td { padding: 18px 20px; font-size: 14px; color: var(--text-main); background: #1c1e22; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); }
@@ -128,7 +123,6 @@
     td:last-child { border-right: 1px solid var(--border-color); border-radius: 0 16px 16px 0; }
     tr:hover td { background: #23262b; }
 
-    /* Modallar */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); z-index: 10000; display: none; justify-content: center; align-items: center; }
     .modal-overlay.show { display: flex; }
     .modal-box { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 32px; padding: 40px; width: 100%; max-width: 400px; text-align: center; }
@@ -156,7 +150,7 @@
         <div class="splash-subtitle">SYNCRA CLOUD SYSTEM</div>
     </div>
 
-    <!-- GİRİŞ (GÖRSELDEKİ MODAL) -->
+    <!-- GİRİŞ -->
     <div id="auth-screen">
         <div class="auth-modal">
             <button class="auth-close-btn" onclick="document.getElementById('auth-screen').style.display='none'"><i class="ph ph-x"></i></button>
@@ -322,9 +316,10 @@
                         <input type="text" id="bomberPhone" class="main-input" placeholder="5551234567" maxlength="10">
                     </div>
                     <div style="display:flex; gap:12px; flex-wrap:wrap;">
-    <button class="btn-white" id="bomberRunBtn"><i class="ph ph-paper-plane-tilt"></i> Normal Gönder</button>
-    <button class="btn-white" id="bomberTurboBtn" style="background:#f59e0b; color:#0e1013;"><i class="ph ph-lightning"></i> Turbo Gönder</button>
-</div>
+                        <button class="btn-white" id="bomberRunBtn"><i class="ph ph-paper-plane-tilt"></i> Normal Gönder</button>
+                        <button class="btn-white" id="bomberTurboBtn" style="background:#f59e0b; color:#0e1013;"><i class="ph ph-lightning"></i> Turbo Gönder (4x)</button>
+                    </div>
+                </div>
                 <div class="card">
                     <div style="border-bottom:1px solid #262930; padding-bottom:15px; margin-bottom:20px;">
                         <h3 style="font-size:16px; font-weight:600; color:#fff;">Sonuçlar</h3>
@@ -591,7 +586,6 @@
                 const q = new URLSearchParams({ endpoint: cfg.endpoint, ...params, ...(cfg.extra || {}) }).toString();
                 const res = await fetch(`/api/proxy?${q}`);
                 
-                // HTTP hatası kontrolü
                 if (!res.ok) {
                     throw new Error(`Sunucu hatası (${res.status}). Lütfen daha sonra tekrar deneyin.`);
                 }
@@ -600,7 +594,6 @@
                 try {
                     data = await res.json();
                 } catch (jsonErr) {
-                    // JSON parse hatası — sunucu HTML hata sayfası döndürmüş olabilir
                     throw new Error('Sunucudan geçersiz yanıt alındı. Proxy fonksiyonu çalışmıyor olabilir.');
                 }
                 
@@ -835,76 +828,74 @@
         document.getElementById('menuToggle').onclick = () => document.getElementById('sidebar').classList.toggle('open');
 
         // ─── SMS BOMBER ───
-async function runBomber(turbo) {
-    const phone = document.getElementById('bomberPhone').value.trim();
-    if (!/^\d{10}$/.test(phone)) {
-        return showToast('Telefon numarası 10 haneli olmalı (örn: 5551234567).', 'error');
-    }
+        async function runBomber(turbo) {
+            const phone = document.getElementById('bomberPhone').value.trim();
+            if (!/^\d{10}$/.test(phone)) {
+                return showToast('Telefon numarası 10 haneli olmalı (örn: 5551234567).', 'error');
+            }
 
-    const normalBtn = document.getElementById('bomberRunBtn');
-    const turboBtn = document.getElementById('bomberTurboBtn');
-    const summary = document.getElementById('bomberSummary');
-    const resultsDiv = document.getElementById('bomberResults');
+            const normalBtn = document.getElementById('bomberRunBtn');
+            const turboBtn = document.getElementById('bomberTurboBtn');
+            const summary = document.getElementById('bomberSummary');
+            const resultsDiv = document.getElementById('bomberResults');
 
-    normalBtn.disabled = true;
-    turboBtn.disabled = true;
-    const activeBtn = turbo ? turboBtn : normalBtn;
-    const originalHtml = activeBtn.innerHTML;
-    activeBtn.innerHTML = turbo ? '⚡ Turbo gönderiliyor...' : 'Gönderiliyor...';
-    summary.innerText = turbo ? '4x paralel istek gönderiliyor, lütfen bekleyin...' : 'İstekler gönderiliyor, lütfen bekleyin...';
-    resultsDiv.innerHTML = '<div style="text-align:center; color:#8b8f97; padding:20px; font-size:14px;">İşleniyor...</div>';
+            normalBtn.disabled = true;
+            turboBtn.disabled = true;
+            const activeBtn = turbo ? turboBtn : normalBtn;
+            const originalHtml = activeBtn.innerHTML;
+            activeBtn.innerHTML = turbo ? '⚡ Turbo gönderiliyor...' : 'Gönderiliyor...';
+            summary.innerText = turbo ? '4x paralel istek gönderiliyor, lütfen bekleyin...' : 'İstekler gönderiliyor, lütfen bekleyin...';
+            resultsDiv.innerHTML = '<div style="text-align:center; color:#8b8f97; padding:20px; font-size:14px;">İşleniyor...</div>';
 
-    try {
-        const url = `/api/proxy?action=smsbomber&phone=${phone}${turbo ? '&turbo=1' : ''}`;
-        const res = await fetch(url);
+            try {
+                const url = `/api/proxy?action=smsbomber&phone=${phone}${turbo ? '&turbo=1' : ''}`;
+                const res = await fetch(url);
 
-        if (!res.ok) throw new Error(`Sunucu hatası (${res.status}). Proxy çalışmıyor olabilir.`);
+                if (!res.ok) throw new Error(`Sunucu hatası (${res.status}). Proxy çalışmıyor olabilir.`);
 
-        let data;
-        try { data = await res.json(); }
-        catch (e) { throw new Error('Sunucudan geçersiz yanıt alındı.'); }
+                let data;
+                try { data = await res.json(); }
+                catch (e) { throw new Error('Sunucudan geçersiz yanıt alındı.'); }
 
-        if (data.error) throw new Error(data.error);
+                if (data.error) throw new Error(data.error);
 
-        const results = data.results || [];
-        const total = data.total ?? results.length;
-        const basarili = data.basarili ?? results.filter(r => r.success).length;
-        const basarisiz = data.basarisiz ?? (total - basarili);
+                const results = data.results || [];
+                const total = data.total ?? results.length;
+                const basarili = data.basarili ?? results.filter(r => r.success).length;
+                const basarisiz = data.basarisiz ?? (total - basarili);
 
-        summary.innerText = `${turbo ? '⚡ Turbo • ' : ''}Toplam ${total} istek • Başarılı: ${basarili} • Başarısız: ${basarisiz}`;
+                summary.innerText = `${turbo ? '⚡ Turbo • ' : ''}Toplam ${total} istek • Başarılı: ${basarili} • Başarısız: ${basarisiz}`;
 
-        if (results.length === 0) {
-            resultsDiv.innerHTML = '<div style="text-align:center; color:#8b8f97; padding:20px; font-size:14px;">Sonuç yok.</div>';
-            return;
+                if (results.length === 0) {
+                    resultsDiv.innerHTML = '<div style="text-align:center; color:#8b8f97; padding:20px; font-size:14px;">Sonuç yok.</div>';
+                    return;
+                }
+
+                resultsDiv.innerHTML = results.map(r => {
+                    const label = r.total ? `${r.count}/${r.total}` : (r.success ? '✓' : '✗');
+                    return `
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); padding:12px 16px; border-radius:12px; font-size:14px; border-left:3px solid ${r.success ? '#10b981' : '#ef4444'};">
+                            <span style="font-weight:600; text-transform:capitalize;">${r.service}</span>
+                            <span style="color:${r.success ? '#10b981' : '#ef4444'}; font-size:12px; font-weight:600;">
+                                ${r.success ? `✓ ${label}` : `✗ ${label}`}
+                            </span>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (e) {
+                summary.innerText = 'Hata oluştu.';
+                resultsDiv.innerHTML = `<div style="text-align:center; color:#ef4444; padding:20px; font-size:14px;">${e.message}</div>`;
+                showToast(e.message, 'error');
+            } finally {
+                normalBtn.disabled = false;
+                turboBtn.disabled = false;
+                activeBtn.innerHTML = originalHtml;
+            }
         }
 
-        resultsDiv.innerHTML = results.map(r => {
-            const label = r.total ? `${r.count}/${r.total}` : (r.success ? '✓' : '✗');
-            return `
-                <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); padding:12px 16px; border-radius:12px; font-size:14px; border-left:3px solid ${r.success ? '#10b981' : '#ef4444'};">
-                    <span style="font-weight:600; text-transform:capitalize;">${r.service}</span>
-                    <span style="color:${r.success ? '#10b981' : '#ef4444'}; font-size:12px; font-weight:600;">
-                        ${r.success ? `✓ ${label}` : `✗ ${label}`}
-                    </span>
-                </div>
-            `;
-        }).join('');
-
-    } catch (e) {
-        summary.innerText = 'Hata oluştu.';
-        resultsDiv.innerHTML = `<div style="text-align:center; color:#ef4444; padding:20px; font-size:14px;">${e.message}</div>`;
-        showToast(e.message, 'error');
-    } finally {
-        normalBtn.disabled = false;
-        turboBtn.disabled = false;
-        activeBtn.innerHTML = originalHtml;
-    }
-}
-
-document.getElementById('bomberRunBtn').onclick = () => runBomber(false);
-document.getElementById('bomberTurboBtn').onclick = () => runBomber(true);
-            }
-        };
+        document.getElementById('bomberRunBtn').onclick = () => runBomber(false);
+        document.getElementById('bomberTurboBtn').onclick = () => runBomber(true);
     </script>
 </body>
 </html>
