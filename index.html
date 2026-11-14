@@ -413,7 +413,7 @@
                 <div class="announcement-content">
                     <div class="announcement-icon"><i class="ph ph-megaphone"></i></div>
                     <div class="announcement-text" id="announcement-text">Duyuru metni buraya gelecek.</div>
-                    <button class="announcement-close" onclick="document.getElementById('announcement-bar').style.display='none'"><i class="ph ph-x"></i></button>
+                    <button class="announcement-close" onclick="closeAnnouncement()"><i class="ph ph-x"></i></button>
                 </div>
             </div>
 
@@ -682,8 +682,14 @@
         
         applyTheme(localStorage.getItem('syncra_theme') || 'dark');
 
+        // ==================== DUYURU KAPATMA (sessionStorage) ====================
+        // X'e basınca sessionStorage'a kaydet → F5'te sıfırlanır, duyuru tekrar görünür
+        window.closeAnnouncement = function() {
+            document.getElementById('announcement-bar').style.display = 'none';
+            sessionStorage.setItem('syncra_announcement_closed', '1');
+        };
+
         // ==================== GERÇEK ÇEVRİMİÇİ SAYACI ====================
-        // Son 5 dakika içinde giriş yapmış kullanıcıları sayar
         async function updateLiveUserCount() {
             if (!supabaseClient) return;
             try {
@@ -693,19 +699,16 @@
                     .select('*', { count: 'exact', head: true })
                     .gte('last_login', fiveMinAgo);
                 
-                // Eğer count null dönerse, en az 1 kullanıcı (kendisi) göster
                 const displayCount = (count && count > 0) ? count : 1;
                 document.getElementById('liveUserCount').innerText = displayCount;
             } catch(e) {
-                // Hata olursa en az 1 göster
                 document.getElementById('liveUserCount').innerText = '1';
             }
         }
 
-        // Her 30 saniyede bir sayacı güncelle (sürekli değişmesin)
         function startLiveUserPolling() {
             if (liveUserInterval) clearInterval(liveUserInterval);
-            updateLiveUserCount(); // İlk çağrı
+            updateLiveUserCount();
             liveUserInterval = setInterval(updateLiveUserCount, 30000);
         }
 
@@ -722,13 +725,17 @@
                     // DUYURU KONTROLÜ - trim() ile boşluk kontrolü
                     const announcementText = (data.announcement || '').trim();
                     if (announcementText !== '') {
-                        document.getElementById('announcement-text').innerText = announcementText;
-                        document.getElementById('announcement-bar').style.display = 'block';
+                        // Session'da kapatılmış mı kontrol et
+                        const isClosed = sessionStorage.getItem('syncra_announcement_closed');
+                        if (!isClosed) {
+                            document.getElementById('announcement-text').innerText = announcementText;
+                            document.getElementById('announcement-bar').style.display = 'block';
+                        }
                     } else {
                         document.getElementById('announcement-bar').style.display = 'none';
                     }
 
-                    // BAKIM MODU - admin değilse kapat
+                    // BAKIM MODU
                     const isAdmin = currentUser && currentUser.is_admin === 1;
                     if (data.maintenance_mode && !isAdmin) {
                         document.getElementById('maintenance-msg').innerText = data.maintenance_message || 'Sistem şu anda bakımda.';
@@ -745,7 +752,6 @@
             return false;
         }
 
-        // Her 15 saniyede bir kontrol et (daha hızlı güncelleme)
         function startSystemStatusPolling() {
             if (systemStatusInterval) clearInterval(systemStatusInterval);
             systemStatusInterval = setInterval(() => {
@@ -902,6 +908,7 @@
 
         document.getElementById('confirmLogoutBtn').onclick = async () => {
             if(supabaseClient) await supabaseClient.auth.signOut();
+            sessionStorage.removeItem('syncra_announcement_closed');
             location.reload();
         };
 
@@ -987,7 +994,6 @@
             document.getElementById('downloadBtn').classList.add('hidden');
         }
 
-        // Kredi Güncelleme - Canlı Animasyonlu
         function updateCreditDisplay() {
             const creditEl = document.getElementById('topCredits');
             const credits = currentUser.credits !== undefined ? currentUser.credits : 0;
@@ -1020,26 +1026,37 @@
                 }
             }
 
-            // ===== KREDİYİ HEMEN DÜŞ VE VERİTABANINA YAZ =====
+            // ===== KREDİYİ HEMEN DÜŞ (Upsert ile) =====
             if (currentUser.is_admin !== 1) {
-                const oldCredits = currentUser.credits;
-                currentUser.credits -= CREDIT_PER_QUERY;
+                const newCredits = currentUser.credits - CREDIT_PER_QUERY;
+                
+                // Önce yerel olarak güncelle ve göster (anlık feedback)
+                currentUser.credits = newCredits;
                 updateCreditDisplay();
                 
-                // Veritabanına yaz ve doğrula
-                const { error: creditErr } = await supabaseClient.from('profiles').update({ credits: currentUser.credits }).eq('id', currentUser.id);
+                // Sonra veritabanına yaz
+                const { data: updateData, error: creditErr } = await supabaseClient
+                    .from('profiles')
+                    .update({ credits: newCredits })
+                    .eq('id', currentUser.id)
+                    .select('credits')
+                    .single();
+                
                 if (creditErr) {
                     console.error('Kredi düşme hatası:', creditErr);
-                    currentUser.credits = oldCredits;
-                    updateProfileUI();
+                    currentUser.credits = newCredits + CREDIT_PER_QUERY;
+                    updateCreditDisplay();
                     return showToast('Kredi güncellenemedi: ' + creditErr.message, 'error');
                 }
                 
-                // Veritabanından tekrar oku (doğrulama)
-                const { data: checkData } = await supabaseClient.from('profiles').select('credits').eq('id', currentUser.id).single();
-                if (checkData) {
-                    currentUser.credits = checkData.credits;
+                // Veritabanından dönen değerle senkronize et
+                if (updateData && updateData.credits !== undefined) {
+                    currentUser.credits = updateData.credits;
                     updateCreditDisplay();
+                }
+                
+                if (currentUser.credits < CREDIT_PER_QUERY) {
+                    showToast(`Dikkat! Krediniz azaldı. Kalan: ${currentUser.credits}`, 'error');
                 }
             }
 
@@ -1076,10 +1093,6 @@
                 updateStats(1);
                 saveHistory(cfg.title);
                 logQuery(cfg.title, params, rows.length);
-
-                if (currentUser.is_admin !== 1 && currentUser.credits < CREDIT_PER_QUERY) {
-                    showToast(`Dikkat! Krediniz azaldı. Kalan: ${currentUser.credits}`, 'error');
-                }
 
                 currentResults = rows;
                 currentColumns = Object.keys(rows[0]);
@@ -1304,14 +1317,15 @@
                 showToast('Ayarlar kaydedilemedi: ' + error.message, 'error');
             } else {
                 showToast('Sistem ayarları güncellendi!');
-                // ANINDA DOM güncelle
+                // sessionStorage'daki kapatma bilgisini sıfırla (admin duyuru attığında görsün)
+                sessionStorage.removeItem('syncra_announcement_closed');
+                
                 if (announcement !== '') {
                     document.getElementById('announcement-text').innerText = announcement;
                     document.getElementById('announcement-bar').style.display = 'block';
                 } else {
                     document.getElementById('announcement-bar').style.display = 'none';
                 }
-                // Ayrıca Supabase'den tekrar çek (doğrulama)
                 await checkSystemStatus();
             }
         };
@@ -1474,7 +1488,7 @@
                 document.getElementById('creditModal').classList.remove('show');
                 loadAdminUsers();
                 
-                // Eğer admin kendi kredisini değiştirdiyse canlı güncelle
+                // Admin kendi kredisini değiştirdiyse canlı güncelle
                 if (currentUser && currentUser.id === selectedCreditId) {
                     currentUser.credits = newBalance;
                     updateProfileUI();
