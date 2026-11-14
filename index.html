@@ -59,102 +59,50 @@
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
-    
     @keyframes bannerGlow {
         0% { box-shadow: 0 4px 20px rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.3); }
         50% { box-shadow: 0 4px 30px rgba(245, 158, 11, 0.3); border-color: rgba(245, 158, 11, 0.6); }
         100% { box-shadow: 0 4px 20px rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.3); }
     }
 
-    #splash-screen { 
-        position: fixed; inset: 0; 
-        background: var(--bg-dark); 
-        z-index: 9999; 
-        display: flex; flex-direction: column; 
-        justify-content: center; align-items: center; 
-        cursor: pointer;
-        overflow: hidden;
-        transition: opacity 0.8s ease, visibility 0.8s;
-    }
-    #splash-screen::before {
-        content: '';
-        position: absolute;
-        width: 600px; height: 600px;
-        background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
-        border-radius: 50%;
-        animation: pulseLight 4s ease-in-out infinite;
-    }
-    @keyframes pulseLight {
-        0% { transform: scale(1); opacity: 0.5; }
-        50% { transform: scale(1.2); opacity: 1; }
-        100% { transform: scale(1); opacity: 0.5; }
-    }
-
-    .splash-text-wrapper {
-        position: relative;
-        z-index: 2;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 5px;
-    }
-
-    .splash-title-line {
-        display: flex;
-        gap: 3px;
-        perspective: 1000px;
-    }
-
-    .splash-char {
-        font-size: 2rem;
-        font-weight: 800;
-        color: var(--text-main);
-        display: inline-block;
-        opacity: 0;
-        transform-origin: top center;
-        animation: charDrop 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-        letter-spacing: 1px;
-    }
-
+    #splash-screen { position: fixed; inset: 0; background: var(--bg-dark); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; overflow: hidden; transition: opacity 0.8s ease, visibility 0.8s; }
+    #splash-screen::before { content: ''; position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%); border-radius: 50%; animation: pulseLight 4s ease-in-out infinite; }
+    @keyframes pulseLight { 0% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(1); opacity: 0.5; } }
+    .splash-text-wrapper { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
+    .splash-title-line { display: flex; gap: 3px; perspective: 1000px; }
+    .splash-char { font-size: 2rem; font-weight: 800; color: var(--text-main); display: inline-block; opacity: 0; transform-origin: top center; animation: charDrop 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; letter-spacing: 1px; }
     @keyframes charDrop {
         0% { opacity: 0; transform: translateY(-150px) rotateX(90deg) scale(1.5); filter: blur(10px); color: #3b82f6; }
         60% { opacity: 1; transform: translateY(15px) rotateX(0deg) scale(1); filter: blur(0px); color: #3b82f6; }
         80% { transform: translateY(-5px); color: var(--text-main); }
         100% { opacity: 1; transform: translateY(0) rotateX(0deg) scale(1); filter: blur(0px); color: var(--text-main); }
     }
-
-    .splash-subtitle-anim {
-        font-size: 0.85rem;
-        color: var(--text-muted);
-        letter-spacing: 6px;
-        font-weight: 600;
-        text-transform: uppercase;
-        margin-top: 15px;
-        opacity: 0;
-        animation: subFadeIn 1s ease forwards 1.2s;
-    }
-
-    @keyframes subFadeIn {
-        0% { opacity: 0; transform: translateY(10px); filter: blur(5px); }
-        100% { opacity: 1; transform: translateY(0); filter: blur(0); }
-    }
-
-    .splash-line {
-        width: 0;
-        height: 2px;
-        background: linear-gradient(90deg, transparent, #3b82f6, transparent);
-        margin-top: 20px;
-        animation: expandLine 0.8s ease forwards 1.5s;
-    }
-
-    @keyframes expandLine {
-        0% { width: 0; opacity: 0; }
-        100% { width: 200px; opacity: 1; }
-    }
+    .splash-subtitle-anim { font-size: 0.85rem; color: var(--text-muted); letter-spacing: 6px; font-weight: 600; text-transform: uppercase; margin-top: 15px; opacity: 0; animation: subFadeIn 1s ease forwards 1.2s; }
+    @keyframes subFadeIn { 0% { opacity: 0; transform: translateY(10px); filter: blur(5px); } 100% { opacity: 1; transform: translateY(0); filter: blur(0); } }
+    .splash-line { width: 0; height: 2px; background: linear-gradient(90deg, transparent, #3b82f6, transparent); margin-top: 20px; animation: expandLine 0.8s ease forwards 1.5s; }
+    @keyframes expandLine { 0% { width: 0; opacity: 0; } 100% { width: 200px; opacity: 1; } }
 
     #maintenance-screen { position: fixed; inset: 0; background: var(--bg-gradient); z-index: 99999; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
     #maintenance-screen i { font-size: 80px; color: #f59e0b; margin-bottom: 20px; }
+
+    /* DUYURU BARI - body'nin direkt altında, #main-content dışında */
+    #announcement-bar {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        z-index: 9998;
+        display: none;
+        background: linear-gradient(90deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.08));
+        border-bottom: 2px solid rgba(245, 158, 11, 0.5);
+        padding: 4px;
+        animation: bannerGlow 3s infinite;
+    }
+    .announcement-content { display: flex; align-items: center; gap: 12px; background: rgba(14, 16, 19, 0.95); padding: 12px 20px; border-radius: 12px; margin: 0 auto; max-width: 1400px; }
+    body.light-mode .announcement-content { background: rgba(255, 255, 255, 0.95); }
+    .announcement-icon { width: 36px; height: 36px; background: rgba(245, 158, 11, 0.2); color: #f59e0b; border-radius: 50%; display: grid; place-items: center; font-size: 20px; flex-shrink: 0; animation: pulse 2s infinite; }
+    .announcement-text { flex: 1; font-size: 14px; font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .announcement-close { background: rgba(255,255,255,0.1); border: none; color: var(--text-main); width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: grid; place-items: center; transition: 0.2s; flex-shrink: 0; }
+    body.light-mode .announcement-close { background: rgba(0,0,0,0.05); }
+    .announcement-close:hover { background: #ef4444; color: #fff; }
 
     #auth-screen { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(10px); z-index: 5000; display: none; justify-content: center; align-items: center; padding: 20px; }
     .auth-modal { background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--border-color); border-radius: 32px; width: 100%; max-width: 480px; padding: 40px; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); text-align: center; }
@@ -174,22 +122,9 @@
 
     .sidebar { width: 260px; background: var(--bg-dark); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; z-index: 100; transition: background 0.3s; }
     .brand { padding: 24px 20px; font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 10px; color: var(--text-main); border-bottom: 1px solid var(--border-color); }
-    
     .nav-section { padding: 20px 15px; flex: 1; overflow-y: auto; }
     .nav-title { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); font-weight: 700; margin-bottom: 12px; padding-left: 15px; margin-top: 20px; }
-    .nav-item { 
-        padding: 14px 20px; 
-        color: var(--text-muted); 
-        cursor: pointer; 
-        font-size: 14px; 
-        font-weight: 500; 
-        border-radius: 16px; 
-        transition: 0.2s; 
-        display: flex; 
-        align-items: center; 
-        gap: 12px; 
-        margin-bottom: 4px; 
-    }
+    .nav-item { padding: 14px 20px; color: var(--text-muted); cursor: pointer; font-size: 14px; font-weight: 500; border-radius: 16px; transition: 0.2s; display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
     .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
     body.light-mode .nav-item:hover { background: rgba(0,0,0,0.05); }
     .nav-item.active { background: #2b2d33; color: var(--text-main); font-weight: 600; }
@@ -208,7 +143,6 @@
     .badge-credit { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); transition: 0.3s; }
 
     .content { padding: 40px; max-width: 1400px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 30px; }
-    
     .card { background: var(--card-bg); backdrop-filter: blur(15px); border: 1px solid var(--border-color); border-radius: 24px; padding: 25px; transition: background 0.3s, border 0.3s; }
     .stat-card { display: flex; align-items: center; gap: 20px; }
     .stat-icon { width: 60px; height: 60px; border-radius: 20px; background: rgba(255,255,255,0.05); display: grid; place-items: center; font-size: 28px; color: var(--text-main); }
@@ -252,60 +186,6 @@
 
     .log-badge { padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
 
-    #announcement-bar {
-        display: none;
-        margin-bottom: 25px;
-        background: linear-gradient(90deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05));
-        border: 1px solid rgba(245, 158, 11, 0.4);
-        border-radius: 16px;
-        padding: 4px;
-        animation: bannerGlow 3s infinite;
-        position: relative;
-        overflow: hidden;
-    }
-    .announcement-content {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        background: rgba(14, 16, 19, 0.8);
-        padding: 12px 20px;
-        border-radius: 12px;
-        position: relative;
-        z-index: 2;
-    }
-    body.light-mode .announcement-content { background: rgba(255, 255, 255, 0.9); }
-    
-    .announcement-icon {
-        width: 36px; height: 36px;
-        background: rgba(245, 158, 11, 0.2);
-        color: #f59e0b;
-        border-radius: 50%;
-        display: grid; place-items: center;
-        font-size: 20px;
-        flex-shrink: 0;
-        animation: pulse 2s infinite;
-    }
-    .announcement-text {
-        flex: 1;
-        font-size: 14px;
-        font-weight: 600;
-        color: var(--text-main);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    .announcement-close {
-        background: rgba(255,255,255,0.1);
-        border: none; color: var(--text-main);
-        width: 30px; height: 30px;
-        border-radius: 50%;
-        cursor: pointer;
-        display: grid; place-items: center;
-        transition: 0.2s; flex-shrink: 0;
-    }
-    body.light-mode .announcement-close { background: rgba(0,0,0,0.05); }
-    .announcement-close:hover { background: #ef4444; color: #fff; }
-
     @media (max-width: 900px) {
         .sidebar { position: fixed; left: 0; top: 0; height: 100vh; transform: translateX(-100%); transition: 0.3s; }
         .sidebar.open { transform: translateX(0); }
@@ -319,6 +199,15 @@
 </head>
 <body>
     <div id="toast-container" class="fixed top-5 right-5 z-[99999] flex flex-col gap-2"></div>
+
+    <!-- DUYURU BARI - body'nin direkt altında, her zaman görünür -->
+    <div id="announcement-bar">
+        <div class="announcement-content">
+            <div class="announcement-icon"><i class="ph ph-megaphone"></i></div>
+            <div class="announcement-text" id="announcement-text">Duyuru metni buraya gelecek.</div>
+            <button class="announcement-close" onclick="closeAnnouncement()"><i class="ph ph-x"></i></button>
+        </div>
+    </div>
 
     <div id="splash-screen" onclick="window.skipSplash()">
         <div class="splash-text-wrapper">
@@ -409,14 +298,6 @@
         </div>
 
         <div class="content">
-            <div id="announcement-bar">
-                <div class="announcement-content">
-                    <div class="announcement-icon"><i class="ph ph-megaphone"></i></div>
-                    <div class="announcement-text" id="announcement-text">Duyuru metni buraya gelecek.</div>
-                    <button class="announcement-close" onclick="closeAnnouncement()"><i class="ph ph-x"></i></button>
-                </div>
-            </div>
-
             <div id="dashboardView">
                 <div class="card" style="padding: 30px; margin-bottom: 25px;">
                     <h2 style="font-size:24px; font-weight:700; color:var(--text-main);">Hoş Geldin, <span id="welcomeName" style="color:var(--text-muted);">Operatör</span>.</h2>
@@ -635,6 +516,7 @@
         const CREDIT_PER_QUERY = 10;
         let systemStatusInterval = null;
         let liveUserInterval = null;
+        let creditSyncInterval = null;
 
         // --- SPLASH ANİMASYONU HARF HARF ---
         const titleText = "Developed by Onur";
@@ -682,14 +564,13 @@
         
         applyTheme(localStorage.getItem('syncra_theme') || 'dark');
 
-        // ==================== DUYURU KAPATMA (sessionStorage) ====================
-        // X'e basınca sessionStorage'a kaydet → F5'te sıfırlanır, duyuru tekrar görünür
+        // ==================== DUYURU KAPATMA ====================
         window.closeAnnouncement = function() {
             document.getElementById('announcement-bar').style.display = 'none';
             sessionStorage.setItem('syncra_announcement_closed', '1');
         };
 
-        // ==================== GERÇEK ÇEVRİMİÇİ SAYACI ====================
+        // ==================== ÇEVRİMİÇİ SAYACI ====================
         async function updateLiveUserCount() {
             if (!supabaseClient) return;
             try {
@@ -712,20 +593,34 @@
             liveUserInterval = setInterval(updateLiveUserCount, 30000);
         }
 
+        // ==================== KREDİ SENKRONİZASYONU ====================
+        // Her 10 saniyede bir veritabanından krediyi çek, değişmişse UI'ı güncelle
+        async function syncCredits() {
+            if (!supabaseClient || !currentUser) return;
+            try {
+                const { data } = await supabaseClient.from('profiles').select('credits').eq('id', currentUser.id).single();
+                if (data && data.credits !== undefined && data.credits !== currentUser.credits) {
+                    currentUser.credits = data.credits;
+                    updateProfileUI();
+                }
+            } catch(e) { /* sessizce geç */ }
+        }
+
+        function startCreditSync() {
+            if (creditSyncInterval) clearInterval(creditSyncInterval);
+            creditSyncInterval = setInterval(syncCredits, 10000);
+        }
+
         // ==================== BAKIM MODU VE DUYURU ====================
         async function checkSystemStatus() {
             if (!supabaseClient) return false;
             try {
                 const { data, error } = await supabaseClient.from('site_settings').select('*').eq('id', 1).single();
-                if (error) {
-                    console.error('Sistem ayarları çekilemedi:', error);
-                    return false;
-                }
+                if (error) { console.error('Sistem ayarları çekilemedi:', error); return false; }
                 if (data) {
-                    // DUYURU KONTROLÜ - trim() ile boşluk kontrolü
+                    // DUYURU KONTROLÜ
                     const announcementText = (data.announcement || '').trim();
                     if (announcementText !== '') {
-                        // Session'da kapatılmış mı kontrol et
                         const isClosed = sessionStorage.getItem('syncra_announcement_closed');
                         if (!isClosed) {
                             document.getElementById('announcement-text').innerText = announcementText;
@@ -733,6 +628,7 @@
                         }
                     } else {
                         document.getElementById('announcement-bar').style.display = 'none';
+                        sessionStorage.removeItem('syncra_announcement_closed');
                     }
 
                     // BAKIM MODU
@@ -752,11 +648,12 @@
             return false;
         }
 
+        // Her 5 saniyede bir kontrol et (duyuru için hızlı, bakım modu için de iyi)
         function startSystemStatusPolling() {
             if (systemStatusInterval) clearInterval(systemStatusInterval);
             systemStatusInterval = setInterval(() => {
                 if (currentUser) checkSystemStatus();
-            }, 15000);
+            }, 5000);
         }
 
         // SPLASH
@@ -868,6 +765,7 @@
             refreshStats();
             startSystemStatusPolling();
             startLiveUserPolling();
+            startCreditSync();
             
             if (currentUser.is_admin === 1) {
                 document.getElementById('adminNav').classList.remove('hidden');
@@ -1026,15 +924,15 @@
                 }
             }
 
-            // ===== KREDİYİ HEMEN DÜŞ (Upsert ile) =====
+            // ===== KREDİYİ DÜŞ VE DOĞRULA =====
             if (currentUser.is_admin !== 1) {
                 const newCredits = currentUser.credits - CREDIT_PER_QUERY;
                 
-                // Önce yerel olarak güncelle ve göster (anlık feedback)
+                // 1. Yerel güncelle (anlık feedback)
                 currentUser.credits = newCredits;
                 updateCreditDisplay();
                 
-                // Sonra veritabanına yaz
+                // 2. Veritabanına yaz ve dönen değeri al
                 const { data: updateData, error: creditErr } = await supabaseClient
                     .from('profiles')
                     .update({ credits: newCredits })
@@ -1049,7 +947,7 @@
                     return showToast('Kredi güncellenemedi: ' + creditErr.message, 'error');
                 }
                 
-                // Veritabanından dönen değerle senkronize et
+                // 3. Dönen değerle senkronize et
                 if (updateData && updateData.credits !== undefined) {
                     currentUser.credits = updateData.credits;
                     updateCreditDisplay();
@@ -1317,7 +1215,7 @@
                 showToast('Ayarlar kaydedilemedi: ' + error.message, 'error');
             } else {
                 showToast('Sistem ayarları güncellendi!');
-                // sessionStorage'daki kapatma bilgisini sıfırla (admin duyuru attığında görsün)
+                // Session storage'ı sıfırla
                 sessionStorage.removeItem('syncra_announcement_closed');
                 
                 if (announcement !== '') {
@@ -1480,7 +1378,13 @@
             const newBalance = parseInt(document.getElementById('newCreditInput').value);
             if(isNaN(newBalance) || newBalance < 0) return showToast('Geçerli bir miktar girin', 'error');
             
-            const { error } = await supabaseClient.from('profiles').update({ credits: newBalance }).eq('id', selectedCreditId);
+            const { data: updateData, error } = await supabaseClient
+                .from('profiles')
+                .update({ credits: newBalance })
+                .eq('id', selectedCreditId)
+                .select('credits')
+                .single();
+            
             if(error) {
                 showToast(error.message, 'error');
             } else {
