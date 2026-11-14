@@ -59,50 +59,125 @@
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
-    @keyframes bannerGlow {
-        0% { box-shadow: 0 4px 20px rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.3); }
-        50% { box-shadow: 0 4px 30px rgba(245, 158, 11, 0.3); border-color: rgba(245, 158, 11, 0.6); }
-        100% { box-shadow: 0 4px 20px rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.3); }
+    @keyframes pulseLight {
+        0% { transform: scale(1); opacity: 0.5; }
+        50% { transform: scale(1.2); opacity: 1; }
+        100% { transform: scale(1); opacity: 0.5; }
     }
-
-    #splash-screen { position: fixed; inset: 0; background: var(--bg-dark); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; overflow: hidden; transition: opacity 0.8s ease, visibility 0.8s; }
-    #splash-screen::before { content: ''; position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%); border-radius: 50%; animation: pulseLight 4s ease-in-out infinite; }
-    @keyframes pulseLight { 0% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(1); opacity: 0.5; } }
-    .splash-text-wrapper { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
-    .splash-title-line { display: flex; gap: 3px; perspective: 1000px; }
-    .splash-char { font-size: 2rem; font-weight: 800; color: var(--text-main); display: inline-block; opacity: 0; transform-origin: top center; animation: charDrop 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; letter-spacing: 1px; }
     @keyframes charDrop {
         0% { opacity: 0; transform: translateY(-150px) rotateX(90deg) scale(1.5); filter: blur(10px); color: #3b82f6; }
         60% { opacity: 1; transform: translateY(15px) rotateX(0deg) scale(1); filter: blur(0px); color: #3b82f6; }
         80% { transform: translateY(-5px); color: var(--text-main); }
         100% { opacity: 1; transform: translateY(0) rotateX(0deg) scale(1); filter: blur(0px); color: var(--text-main); }
     }
+    @keyframes subFadeIn {
+        0% { opacity: 0; transform: translateY(10px); filter: blur(5px); }
+        100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+    }
+    @keyframes expandLine {
+        0% { width: 0; opacity: 0; }
+        100% { width: 200px; opacity: 1; }
+    }
+    @keyframes announcementPop {
+        0% { opacity: 0; transform: scale(0.8) translateY(30px); }
+        100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* SPLASH */
+    #splash-screen { position: fixed; inset: 0; background: var(--bg-dark); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; overflow: hidden; transition: opacity 0.8s ease, visibility 0.8s; }
+    #splash-screen::before { content: ''; position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%); border-radius: 50%; animation: pulseLight 4s ease-in-out infinite; }
+    .splash-text-wrapper { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
+    .splash-title-line { display: flex; gap: 3px; perspective: 1000px; }
+    .splash-char { font-size: 2rem; font-weight: 800; color: var(--text-main); display: inline-block; opacity: 0; transform-origin: top center; animation: charDrop 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; letter-spacing: 1px; }
     .splash-subtitle-anim { font-size: 0.85rem; color: var(--text-muted); letter-spacing: 6px; font-weight: 600; text-transform: uppercase; margin-top: 15px; opacity: 0; animation: subFadeIn 1s ease forwards 1.2s; }
-    @keyframes subFadeIn { 0% { opacity: 0; transform: translateY(10px); filter: blur(5px); } 100% { opacity: 1; transform: translateY(0); filter: blur(0); } }
     .splash-line { width: 0; height: 2px; background: linear-gradient(90deg, transparent, #3b82f6, transparent); margin-top: 20px; animation: expandLine 0.8s ease forwards 1.5s; }
-    @keyframes expandLine { 0% { width: 0; opacity: 0; } 100% { width: 200px; opacity: 1; } }
+
+    /* DUYURU MODAL - Ekranın ortasında büyük popup */
+    #announcement-modal {
+        position: fixed; inset: 0;
+        background: rgba(0, 0, 0, 0.75);
+        backdrop-filter: blur(8px);
+        z-index: 99999;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+    #announcement-modal.show { display: flex; }
+    .announcement-modal-box {
+        background: linear-gradient(135deg, rgba(26, 28, 34, 0.98), rgba(38, 41, 48, 0.98));
+        backdrop-filter: blur(20px);
+        border: 2px solid rgba(245, 158, 11, 0.5);
+        border-radius: 32px;
+        padding: 40px;
+        max-width: 550px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 25px 80px rgba(245, 158, 11, 0.3), 0 0 0 1px rgba(245, 158, 11, 0.2);
+        animation: announcementPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: relative;
+        overflow: hidden;
+    }
+    .announcement-modal-box::before {
+        content: '';
+        position: absolute;
+        top: -50%; left: -50%;
+        width: 200%; height: 200%;
+        background: radial-gradient(circle, rgba(245, 158, 11, 0.1) 0%, transparent 70%);
+        animation: pulseLight 3s ease-in-out infinite;
+        pointer-events: none;
+    }
+    .announcement-modal-icon {
+        width: 80px; height: 80px;
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        border-radius: 50%;
+        display: grid; place-items: center;
+        margin: 0 auto 20px;
+        font-size: 40px;
+        color: #fff;
+        box-shadow: 0 10px 30px rgba(245, 158, 11, 0.4);
+        position: relative;
+        z-index: 2;
+        animation: pulse 2s infinite;
+    }
+    .announcement-modal-title {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--text-main);
+        margin-bottom: 15px;
+        position: relative;
+        z-index: 2;
+    }
+    .announcement-modal-text {
+        font-size: 15px;
+        color: var(--text-muted);
+        line-height: 1.6;
+        margin-bottom: 30px;
+        position: relative;
+        z-index: 2;
+        white-space: pre-wrap;
+    }
+    .announcement-modal-btn {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: #fff;
+        border: none;
+        padding: 14px 40px;
+        border-radius: 16px;
+        font-weight: 700;
+        font-size: 15px;
+        cursor: pointer;
+        transition: 0.2s;
+        position: relative;
+        z-index: 2;
+        box-shadow: 0 4px 20px rgba(245, 158, 11, 0.4);
+    }
+    .announcement-modal-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(245, 158, 11, 0.6);
+    }
 
     #maintenance-screen { position: fixed; inset: 0; background: var(--bg-gradient); z-index: 99999; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
     #maintenance-screen i { font-size: 80px; color: #f59e0b; margin-bottom: 20px; }
-
-    /* DUYURU BARI - body'nin direkt altında, #main-content dışında */
-    #announcement-bar {
-        position: fixed;
-        top: 0; left: 0; right: 0;
-        z-index: 9998;
-        display: none;
-        background: linear-gradient(90deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.08));
-        border-bottom: 2px solid rgba(245, 158, 11, 0.5);
-        padding: 4px;
-        animation: bannerGlow 3s infinite;
-    }
-    .announcement-content { display: flex; align-items: center; gap: 12px; background: rgba(14, 16, 19, 0.95); padding: 12px 20px; border-radius: 12px; margin: 0 auto; max-width: 1400px; }
-    body.light-mode .announcement-content { background: rgba(255, 255, 255, 0.95); }
-    .announcement-icon { width: 36px; height: 36px; background: rgba(245, 158, 11, 0.2); color: #f59e0b; border-radius: 50%; display: grid; place-items: center; font-size: 20px; flex-shrink: 0; animation: pulse 2s infinite; }
-    .announcement-text { flex: 1; font-size: 14px; font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .announcement-close { background: rgba(255,255,255,0.1); border: none; color: var(--text-main); width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: grid; place-items: center; transition: 0.2s; flex-shrink: 0; }
-    body.light-mode .announcement-close { background: rgba(0,0,0,0.05); }
-    .announcement-close:hover { background: #ef4444; color: #fff; }
 
     #auth-screen { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(10px); z-index: 5000; display: none; justify-content: center; align-items: center; padding: 20px; }
     .auth-modal { background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--border-color); border-radius: 32px; width: 100%; max-width: 480px; padding: 40px; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); text-align: center; }
@@ -140,7 +215,7 @@
     .badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 4px; }
     .badge-admin { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
     .badge-free { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
-    .badge-credit { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); transition: 0.3s; }
+    .badge-credit { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); transition: all 0.3s; }
 
     .content { padding: 40px; max-width: 1400px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 30px; }
     .card { background: var(--card-bg); backdrop-filter: blur(15px); border: 1px solid var(--border-color); border-radius: 24px; padding: 25px; transition: background 0.3s, border 0.3s; }
@@ -194,18 +269,26 @@
         .topbar { padding: 0 20px; }
         .auth-modal { padding: 25px; }
         .splash-char { font-size: 1.5rem; }
+        .announcement-modal-box { padding: 30px 25px; }
+        .announcement-modal-icon { width: 60px; height: 60px; font-size: 30px; }
+        .announcement-modal-title { font-size: 18px; }
     }
 </style>
 </head>
 <body>
     <div id="toast-container" class="fixed top-5 right-5 z-[99999] flex flex-col gap-2"></div>
 
-    <!-- DUYURU BARI - body'nin direkt altında, her zaman görünür -->
-    <div id="announcement-bar">
-        <div class="announcement-content">
-            <div class="announcement-icon"><i class="ph ph-megaphone"></i></div>
-            <div class="announcement-text" id="announcement-text">Duyuru metni buraya gelecek.</div>
-            <button class="announcement-close" onclick="closeAnnouncement()"><i class="ph ph-x"></i></button>
+    <!-- DUYURU MODAL - Ekran ortasında popup -->
+    <div id="announcement-modal">
+        <div class="announcement-modal-box">
+            <div class="announcement-modal-icon">
+                <i class="ph ph-megaphone"></i>
+            </div>
+            <div class="announcement-modal-title">📢 Duyuru</div>
+            <div class="announcement-modal-text" id="announcement-modal-text">Duyuru metni buraya gelecek.</div>
+            <button class="announcement-modal-btn" onclick="closeAnnouncementModal()">
+                <i class="ph ph-check"></i> Anladım, Kapat
+            </button>
         </div>
     </div>
 
@@ -514,11 +597,10 @@
         let currentUser = null;
         let queriesChartInstance = null;
         const CREDIT_PER_QUERY = 10;
-        let systemStatusInterval = null;
         let liveUserInterval = null;
         let creditSyncInterval = null;
 
-        // --- SPLASH ANİMASYONU HARF HARF ---
+        // Splash harf animasyonu
         const titleText = "Developed by Onur";
         const titleLine = document.getElementById('splashTitleLine');
         if (titleLine) {
@@ -540,10 +622,9 @@
             setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000);
         };
 
-        // TEMA YÖNETİMİ
+        // TEMA
         const themeToggle = document.getElementById('themeToggle');
         const themeIcon = document.getElementById('themeIcon');
-        
         function applyTheme(theme) {
             if (theme === 'light') {
                 document.body.classList.add('light-mode');
@@ -556,19 +637,72 @@
             }
             if (queriesChartInstance) updateChartColors();
         }
-
         themeToggle.onclick = () => {
             const current = document.body.classList.contains('light-mode') ? 'light' : 'dark';
             applyTheme(current === 'light' ? 'dark' : 'light');
         };
-        
         applyTheme(localStorage.getItem('syncra_theme') || 'dark');
 
-        // ==================== DUYURU KAPATMA ====================
-        window.closeAnnouncement = function() {
-            document.getElementById('announcement-bar').style.display = 'none';
+        // ==================== DUYURU MODAL ====================
+        // X'e basınca sessionStorage'a kaydediyoruz → F5 atınca temizlenir → tekrar gösterilir
+        window.closeAnnouncementModal = function() {
+            document.getElementById('announcement-modal').classList.remove('show');
             sessionStorage.setItem('syncra_announcement_closed', '1');
         };
+
+        // Duyuruyu kontrol et ve gerekirse modal'ı aç
+        async function checkAnnouncement() {
+            if (!supabaseClient) return;
+            try {
+                const { data, error } = await supabaseClient
+                    .from('site_settings')
+                    .select('announcement')
+                    .eq('id', 1)
+                    .single();
+                
+                if (error) {
+                    console.error('[Duyuru] Çekilemedi:', error);
+                    return;
+                }
+                
+                if (!data || !data.announcement) return;
+                
+                const text = data.announcement.trim();
+                if (text === '') return;
+                
+                // Bu oturumda kapatılmış mı?
+                const closed = sessionStorage.getItem('syncra_announcement_closed');
+                if (closed === '1') return;
+                
+                // Göster
+                document.getElementById('announcement-modal-text').innerText = text;
+                document.getElementById('announcement-modal').classList.add('show');
+                console.log('[Duyuru] Modal gösterildi:', text);
+            } catch(e) {
+                console.error('[Duyuru] Hata:', e);
+            }
+        }
+
+        // ==================== BAKIM MODU ====================
+        async function checkMaintenance() {
+            if (!supabaseClient) return false;
+            try {
+                const { data } = await supabaseClient.from('site_settings').select('maintenance_mode, maintenance_message').eq('id', 1).single();
+                if (data && data.maintenance_mode) {
+                    const isAdmin = currentUser && currentUser.is_admin === 1;
+                    if (!isAdmin) {
+                        document.getElementById('maintenance-msg').innerText = data.maintenance_message || 'Sistem şu anda bakımda.';
+                        document.getElementById('maintenance-screen').style.display = 'flex';
+                        document.getElementById('auth-screen').style.display = 'none';
+                        document.getElementById('main-content').style.display = 'none';
+                        document.getElementById('sidebar').style.display = 'none';
+                        return true;
+                    }
+                }
+                document.getElementById('maintenance-screen').style.display = 'none';
+            } catch(e) {}
+            return false;
+        }
 
         // ==================== ÇEVRİMİÇİ SAYACI ====================
         async function updateLiveUserCount() {
@@ -579,14 +713,12 @@
                     .from('profiles')
                     .select('*', { count: 'exact', head: true })
                     .gte('last_login', fiveMinAgo);
-                
                 const displayCount = (count && count > 0) ? count : 1;
                 document.getElementById('liveUserCount').innerText = displayCount;
             } catch(e) {
                 document.getElementById('liveUserCount').innerText = '1';
             }
         }
-
         function startLiveUserPolling() {
             if (liveUserInterval) clearInterval(liveUserInterval);
             updateLiveUserCount();
@@ -594,69 +726,22 @@
         }
 
         // ==================== KREDİ SENKRONİZASYONU ====================
-        // Her 10 saniyede bir veritabanından krediyi çek, değişmişse UI'ı güncelle
         async function syncCredits() {
             if (!supabaseClient || !currentUser) return;
             try {
-                const { data } = await supabaseClient.from('profiles').select('credits').eq('id', currentUser.id).single();
-                if (data && data.credits !== undefined && data.credits !== currentUser.credits) {
+                const { data, error } = await supabaseClient.from('profiles').select('credits').eq('id', currentUser.id).single();
+                if (!error && data && data.credits !== undefined && data.credits !== currentUser.credits) {
                     currentUser.credits = data.credits;
                     updateProfileUI();
                 }
-            } catch(e) { /* sessizce geç */ }
+            } catch(e) {}
         }
-
         function startCreditSync() {
             if (creditSyncInterval) clearInterval(creditSyncInterval);
             creditSyncInterval = setInterval(syncCredits, 10000);
         }
 
-        // ==================== BAKIM MODU VE DUYURU ====================
-        async function checkSystemStatus() {
-            if (!supabaseClient) return false;
-            try {
-                const { data, error } = await supabaseClient.from('site_settings').select('*').eq('id', 1).single();
-                if (error) { console.error('Sistem ayarları çekilemedi:', error); return false; }
-                if (data) {
-                    // DUYURU KONTROLÜ
-                    const announcementText = (data.announcement || '').trim();
-                    if (announcementText !== '') {
-                        const isClosed = sessionStorage.getItem('syncra_announcement_closed');
-                        if (!isClosed) {
-                            document.getElementById('announcement-text').innerText = announcementText;
-                            document.getElementById('announcement-bar').style.display = 'block';
-                        }
-                    } else {
-                        document.getElementById('announcement-bar').style.display = 'none';
-                        sessionStorage.removeItem('syncra_announcement_closed');
-                    }
-
-                    // BAKIM MODU
-                    const isAdmin = currentUser && currentUser.is_admin === 1;
-                    if (data.maintenance_mode && !isAdmin) {
-                        document.getElementById('maintenance-msg').innerText = data.maintenance_message || 'Sistem şu anda bakımda.';
-                        document.getElementById('maintenance-screen').style.display = 'flex';
-                        document.getElementById('auth-screen').style.display = 'none';
-                        document.getElementById('main-content').style.display = 'none';
-                        document.getElementById('sidebar').style.display = 'none';
-                        return true;
-                    } else {
-                        document.getElementById('maintenance-screen').style.display = 'none';
-                    }
-                }
-            } catch(e) { console.error('Sistem durumu hatası:', e); }
-            return false;
-        }
-
-        // Her 5 saniyede bir kontrol et (duyuru için hızlı, bakım modu için de iyi)
-        function startSystemStatusPolling() {
-            if (systemStatusInterval) clearInterval(systemStatusInterval);
-            systemStatusInterval = setInterval(() => {
-                if (currentUser) checkSystemStatus();
-            }, 5000);
-        }
-
-        // SPLASH
+        // ==================== SPLASH & AUTH ====================
         window.skipSplash = function() {
             const splash = document.getElementById('splash-screen');
             if(splash) {
@@ -669,10 +754,8 @@
                 checkAuth();
             }
         };
-        
         setTimeout(window.skipSplash, 3200);
 
-        // AUTH
         let isLoginMode = true;
         const authScreen = document.getElementById('auth-screen');
         const authSubmitBtn = document.getElementById('authSubmitBtn');
@@ -716,14 +799,12 @@
                     const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
                     if (error) throw error;
                     supabaseClient.from('profiles').update({ last_login: new Date() }).eq('id', data.user.id).then(()=>{});
-                    
                     await supabaseClient.from('login_logs').insert([{
                         user_id: data.user.id,
                         username: data.user.email.split('@')[0],
                         ip_address: 'Bilinmiyor (Client-Side)',
                         user_agent: navigator.userAgent
                     }]);
-
                     const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', data.user.id).single();
                     loadApp(profile || { id: data.user.id, username: email.split('@')[0], email: email, is_admin: 0, credits: 500 });
                 } else {
@@ -751,7 +832,9 @@
 
         async function loadApp(profile) {
             currentUser = profile;
-            const isMaintenance = await checkSystemStatus();
+            
+            // Bakım kontrolü
+            const isMaintenance = await checkMaintenance();
             if (isMaintenance && profile.is_admin !== 1) return;
 
             authScreen.style.display = 'none';
@@ -763,9 +846,11 @@
             loadHistory();
             loadRecentLogins();
             refreshStats();
-            startSystemStatusPolling();
             startLiveUserPolling();
             startCreditSync();
+            
+            // ===== DUYURU MODAL'INI GÖSTER (giriş sonrası) =====
+            setTimeout(checkAnnouncement, 500);
             
             if (currentUser.is_admin === 1) {
                 document.getElementById('adminNav').classList.remove('hidden');
@@ -778,27 +863,22 @@
             const name = currentUser.username || 'Kullanıcı';
             document.getElementById('currentUsername').textContent = name;
             document.getElementById('welcomeName').textContent = name;
-            
             const credits = currentUser.credits !== undefined ? currentUser.credits : 0;
             document.getElementById('topCredits').innerHTML = `<i class="ph ph-coins"></i> ${credits}`;
-            
             const badge = document.getElementById('topBadge');
             if (currentUser.is_admin === 1) {
                 badge.textContent = 'Admin'; badge.className = 'badge badge-admin';
             } else {
                 badge.textContent = 'Free'; badge.className = 'badge badge-free';
             }
-
             document.getElementById('settingsName').value = name;
         }
 
         document.getElementById('saveProfileBtn').onclick = async () => {
             const newName = document.getElementById('settingsName').value;
             if (!newName) return showToast('İsim boş olamaz', 'error');
-
             const { error } = await supabaseClient.from('profiles').update({ username: newName }).eq('id', currentUser.id);
             if (error) return showToast(error.message, 'error');
-
             currentUser.username = newName;
             updateProfileUI();
             showToast('Profil güncellendi!');
@@ -835,19 +915,16 @@
             item.onclick = () => showPage(item.dataset.page);
         });
 
-        // Admin Tab Mantığı
         document.querySelectorAll('.admin-tab').forEach(tab => {
             tab.onclick = () => {
                 document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
                 const target = tab.dataset.adminTab;
-                
                 document.getElementById('adminUsersTab').classList.toggle('hidden', target !== 'users');
                 document.getElementById('adminLogsTab').classList.toggle('hidden', target !== 'logs');
                 document.getElementById('adminSettingsTab').classList.toggle('hidden', target !== 'settings');
                 document.getElementById('adminStatsTab').classList.toggle('hidden', target !== 'stats');
                 document.getElementById('adminLoginLogsTab').classList.toggle('hidden', target !== 'logins');
-                
                 if (target === 'users') loadAdminUsers();
                 if (target === 'logs') loadQueryLogs();
                 if (target === 'settings') loadSystemSettings();
@@ -924,15 +1001,12 @@
                 }
             }
 
-            // ===== KREDİYİ DÜŞ VE DOĞRULA =====
+            // ===== KREDİYİ DÜŞ =====
             if (currentUser.is_admin !== 1) {
                 const newCredits = currentUser.credits - CREDIT_PER_QUERY;
-                
-                // 1. Yerel güncelle (anlık feedback)
                 currentUser.credits = newCredits;
                 updateCreditDisplay();
                 
-                // 2. Veritabanına yaz ve dönen değeri al
                 const { data: updateData, error: creditErr } = await supabaseClient
                     .from('profiles')
                     .update({ credits: newCredits })
@@ -941,17 +1015,18 @@
                     .single();
                 
                 if (creditErr) {
-                    console.error('Kredi düşme hatası:', creditErr);
+                    console.error('[KREDİ] Hata:', creditErr);
                     currentUser.credits = newCredits + CREDIT_PER_QUERY;
                     updateCreditDisplay();
                     return showToast('Kredi güncellenemedi: ' + creditErr.message, 'error');
                 }
                 
-                // 3. Dönen değerle senkronize et
                 if (updateData && updateData.credits !== undefined) {
                     currentUser.credits = updateData.credits;
                     updateCreditDisplay();
                 }
+                
+                console.log('[KREDİ] Yeni bakiye:', currentUser.credits);
                 
                 if (currentUser.credits < CREDIT_PER_QUERY) {
                     showToast(`Dikkat! Krediniz azaldı. Kalan: ${currentUser.credits}`, 'error');
@@ -964,12 +1039,9 @@
             try {
                 const q = new URLSearchParams({ endpoint: cfg.endpoint, ...params, ...(cfg.extra || {}) }).toString();
                 const res = await fetch(`/api/proxy?${q}`);
-                
                 if (!res.ok) throw new Error(`Sunucu hatası (${res.status}).`);
-
                 let data;
                 try { data = await res.json(); } catch (jsonErr) { throw new Error('Geçersiz yanıt alındı.'); }
-                
                 if(data.error) throw new Error(data.error);
                 
                 let rows = [];
@@ -978,7 +1050,6 @@
                     else if (typeof data.data === 'object' && data.data !== null) rows = [data.data];
                 } else if (Array.isArray(data)) rows = data;
                 else if (typeof data === 'object' && data !== null) rows = [data];
-
                 rows = rows.filter(r => r && Object.keys(r).length > 0 && !r.error);
 
                 if(rows.length === 0) {
@@ -1040,7 +1111,6 @@
         window.downloadData = function(format) {
             if (!currentResults || currentResults.length === 0) return;
             const fileName = `syncra_sorgu_${Date.now()}`;
-            
             if (format === 'txt') {
                 let txt = '';
                 currentResults.forEach((r, i) => {
@@ -1095,18 +1165,14 @@
             let savedDate = localStorage.getItem(`syncra_date_${currentUser.id}`);
             let total = parseInt(localStorage.getItem(`syncra_total_${currentUser.id}`) || '0');
             let todayCount = parseInt(localStorage.getItem(`syncra_today_${currentUser.id}`) || '0');
-
             if(savedDate !== today) {
                 todayCount = 0;
                 localStorage.setItem(`syncra_date_${currentUser.id}`, today);
             }
-
             total += increment;
             todayCount += increment;
-            
             localStorage.setItem(`syncra_total_${currentUser.id}`, total);
             localStorage.setItem(`syncra_today_${currentUser.id}`, todayCount);
-
             document.getElementById('statTotalQueries').innerText = total;
             document.getElementById('statTodayQueries').innerText = todayCount;
         }
@@ -1129,7 +1195,6 @@
                 const { data, error } = await supabaseClient.from('profiles').select('username, last_login').order('last_login', { ascending: false }).limit(5);
                 const list = document.getElementById('recentLogins');
                 if(error || !data) return list.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:20px; font-size:14px;">Son giriş bilgisi mevcut değil.</div>';
-                
                 list.innerHTML = data.map(u => `
                     <div style="display:flex; align-items:center; justify-content:space-between; background:rgba(255,255,255,0.03); padding:12px; border-radius:12px;">
                         <b style="color:var(--text-main); font-size:13px;">${u.username || 'Bilinmeyen'}</b>
@@ -1143,7 +1208,6 @@
             const { data, error } = await supabaseClient.from('profiles').select('*');
             const tbody = document.getElementById('adminTableBody');
             if(error) return tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#ef4444; padding:20px;">Hata: ${error.message}</td></tr>`;
-
             tbody.innerHTML = data.map(u => {
                 const isAdmin = u.is_admin === 1;
                 return `<tr>
@@ -1215,16 +1279,12 @@
                 showToast('Ayarlar kaydedilemedi: ' + error.message, 'error');
             } else {
                 showToast('Sistem ayarları güncellendi!');
-                // Session storage'ı sıfırla
                 sessionStorage.removeItem('syncra_announcement_closed');
-                
+                // Eğer duyuru girildiyse admin'e hemen göster
                 if (announcement !== '') {
-                    document.getElementById('announcement-text').innerText = announcement;
-                    document.getElementById('announcement-bar').style.display = 'block';
-                } else {
-                    document.getElementById('announcement-bar').style.display = 'none';
+                    document.getElementById('announcement-modal-text').innerText = announcement;
+                    document.getElementById('announcement-modal').classList.add('show');
                 }
-                await checkSystemStatus();
             }
         };
 
@@ -1258,7 +1318,6 @@
             try {
                 const { data } = await supabaseClient.from('query_logs').select('created_at').order('created_at', { ascending: true });
                 if (!data) return;
-
                 const days = [];
                 const dayCounts = [];
                 for (let i = 6; i >= 0; i--) {
@@ -1266,24 +1325,19 @@
                     d.setDate(d.getDate() - i);
                     const dayStr = d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit' });
                     days.push(dayStr);
-                    
                     const start = new Date(d.setHours(0,0,0,0)).getTime();
                     const end = new Date(d.setHours(23,59,59,999)).getTime();
-                    
                     const count = data.filter(log => {
                         const t = new Date(log.created_at).getTime();
                         return t >= start && t <= end;
                     }).length;
                     dayCounts.push(count);
                 }
-
                 const ctx = document.getElementById('queriesChart').getContext('2d');
                 if (queriesChartInstance) queriesChartInstance.destroy();
-
                 const isLight = document.body.classList.contains('light-mode');
                 const gridColor = isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)';
                 const textColor = isLight ? '#4b5563' : '#8b8f97';
-
                 queriesChartInstance = new Chart(ctx, {
                     type: 'line',
                     data: {
@@ -1305,9 +1359,7 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: {
-                            legend: { labels: { color: textColor, font: { family: 'Inter', weight: 600 } } }
-                        },
+                        plugins: { legend: { labels: { color: textColor, font: { family: 'Inter', weight: 600 } } } },
                         scales: {
                             y: { beginAtZero: true, grid: { color: gridColor }, ticks: { color: textColor, stepSize: 1 } },
                             x: { grid: { display: false }, ticks: { color: textColor } }
@@ -1330,20 +1382,11 @@
             }
         }
 
-        window.togglePass = function(id) {
-            const el = document.getElementById(`pass_${id}`);
-            if(el.innerText === '••••••') el.innerText = el.dataset.real;
-            else el.innerText = '••••••';
-        };
-
         window.toggleAdmin = async function(id, currentStatus) {
             const newVal = currentStatus === 1 ? 0 : 1;
             const { error } = await supabaseClient.from('profiles').update({ is_admin: newVal }).eq('id', id);
             if(error) showToast(error.message, 'error');
-            else {
-                showToast('Yetki güncellendi!');
-                loadAdminUsers();
-            }
+            else { showToast('Yetki güncellendi!'); loadAdminUsers(); }
         };
 
         let selectedPwdId = null;
@@ -1377,22 +1420,17 @@
         document.getElementById('saveCreditBtn').onclick = async () => {
             const newBalance = parseInt(document.getElementById('newCreditInput').value);
             if(isNaN(newBalance) || newBalance < 0) return showToast('Geçerli bir miktar girin', 'error');
-            
             const { data: updateData, error } = await supabaseClient
                 .from('profiles')
                 .update({ credits: newBalance })
                 .eq('id', selectedCreditId)
                 .select('credits')
                 .single();
-            
-            if(error) {
-                showToast(error.message, 'error');
-            } else {
+            if(error) { showToast(error.message, 'error'); }
+            else {
                 showToast(`Kredi bakiyesi ${newBalance} olarak güncellendi!`);
                 document.getElementById('creditModal').classList.remove('show');
                 loadAdminUsers();
-                
-                // Admin kendi kredisini değiştirdiyse canlı güncelle
                 if (currentUser && currentUser.id === selectedCreditId) {
                     currentUser.credits = newBalance;
                     updateProfileUI();
@@ -1427,52 +1465,38 @@
             if (!/^\d{10}$/.test(phone)) {
                 return showToast('Telefon numarası 10 haneli olmalı (örn: 5551234567).', 'error');
             }
-
             const btn = document.getElementById('bomberRunBtn');
             const summary = document.getElementById('bomberSummary');
             const resultsDiv = document.getElementById('bomberResults');
-
             btn.disabled = true;
             const originalHtml = btn.innerHTML;
             btn.innerHTML = '<i class="ph ph-spinner-gap"></i> Gönderiliyor...';
             summary.innerText = 'Bağlanıyor...';
             resultsDiv.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:20px; font-size:14px;">Sunucuya bağlanılıyor...</div>';
-
             try {
                 const response = await fetch(`/api/proxy?action=smsbomber&phone=${phone}&stream=1`);
-
-                if (!response.ok) {
-                    throw new Error(`Sunucu hatası (${response.status}). Proxy çalışmıyor olabilir.`);
-                }
-
+                if (!response.ok) throw new Error(`Sunucu hatası (${response.status}).`);
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder();
                 let buffer = '';
                 let total = 0, basarili = 0, basarisiz = 0, processed = 0;
-
                 resultsDiv.innerHTML = '';
-
                 const statusLine = document.createElement('div');
                 statusLine.style = 'text-align:center; color:#f59e0b; padding:12px; font-size:13px; background:rgba(245,158,11,0.08); border-radius:12px; margin-bottom:8px;';
                 statusLine.innerHTML = '<i class="ph ph-hourglass-high"></i> İstekler gönderiliyor... Lütfen bekleyin.';
                 resultsDiv.appendChild(statusLine);
-
                 while (true) {
                     const { done, value } = await reader.read();
                     if (done) break;
-
                     buffer += decoder.decode(value, { stream: true });
                     const lines = buffer.split('\n\n');
                     buffer = lines.pop();
-
                     for (const line of lines) {
                         if (!line.startsWith('data: ')) continue;
                         const jsonStr = line.replace('data: ', '').trim();
                         if (!jsonStr) continue;
-
                         let evt;
                         try { evt = JSON.parse(jsonStr); } catch (e) { continue; }
-
                         if (evt.type === 'start') {
                             total = evt.total;
                             summary.innerText = `Toplam ${total} servis • İşleniyor...`;
@@ -1480,7 +1504,6 @@
                             processed++;
                             if (evt.success) basarili++; else basarisiz++;
                             summary.innerText = `Toplam ${total} servis • İşlenen: ${processed}/${total} • Başarılı: ${basarili} • Başarısız: ${basarisiz}`;
-
                             const item = document.createElement('div');
                             item.style = `display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); padding:10px 14px; border-radius:10px; font-size:13px; border-left:3px solid ${evt.success ? '#10b981' : '#ef4444'}; animation: fadeIn 0.3s ease;`;
                             item.innerHTML = `
@@ -1502,7 +1525,6 @@
                         }
                     }
                 }
-
             } catch (e) {
                 summary.innerText = 'Hata oluştu.';
                 resultsDiv.innerHTML = `<div style="text-align:center; color:#ef4444; padding:20px; font-size:14px;">${e.message}</div>`;
